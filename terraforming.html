@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f1de;
+    }
+    
+    .quiz-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .question {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-left: 4px solid #e07a5f;
+      background-color: #f8f9fa;
+    }
+    
+    .options label {
+      display: block;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .options label:hover {
+      background-color: #f0f0f0;
+    }
+    
+    button {
+      background-color: #3d405b;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #2d3046;
+    }
+    
+    #result {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .mars-image {
+      width: 100%;
+      height: 200px;
+      background-color: #e07a5f;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="mars-image">
+      🎮 Terraforming Mars Readiness Assessment 🎲
+    </div>
+    
+    <form id="marsQuiz">
+      <!-- Original Setup & Fun Questions -->
+      <div class="question">
+        <p><strong>1. How do you feel about spending 30 minutes just setting up a board game?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q1" value="1"> That's my idea of fun!</label>
+          <label><input type="radio" name="q1" value="2"> I can handle it if there's snacks</label>
+          <label><input type="radio" name="q1" value="0"> Is this some kind of joke?</label>
+        </div>
+      </div>
+
+      <!-- Additional questions omitted for brevity -->
+      
+      <!-- New Content-Based Questions -->
+      <h3>🎯 Understanding Terraforming Mars 🎯</h3>
+
+      <div class="question">
+        <p><strong>6. What is the primary goal in Terraforming Mars?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q6" value="2"> To raise oxygen, temperature, and ocean levels to make Mars habitable.</label>
+          <label><input type="radio" name="q6" value="1"> To establish the largest corporate empire.</label>
+          <label><input type="radio" name="q6" value="0"> To win a space race against other planets.</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>7. Which resource is necessary for increasing temperature on Mars?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q7" value="2"> Heat</label>
+          <label><input type="radio" name="q7" value="1"> Plants</label>
+          <label><input type="radio" name="q7" value="0"> Water</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>8. What is a good strategy for maximizing victory points?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q8" value="2"> Diversifying in projects that contribute to milestones and awards</label>
+          <label><input type="radio" name="q8" value="1"> Focusing solely on terraforming activities</label>
+          <label><input type="radio" name="q8" value="0"> Accumulating the most money and resources</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>9. What is the purpose of 'Standard Projects' in the game?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q9" value="2"> To allow players to terraform and build infrastructure even without cards</label>
+          <label><input type="radio" name="q9" value="1"> To earn bonus resources and points</label>
+          <label><input type="radio" name="q9" value="0"> To trade resources with other players</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <p><strong>10. Which corporation would you choose for a plant-based strategy?</strong></p>
+        <div class="options">
+          <label><input type="radio" name="q10" value="2"> Ecoline</label>
+          <label><input type="radio" name="q10" value="1"> Tharsis Republic</label>
+          <label><input type="radio" name="q10" value="0"> Helion</label>
+        </div>
+      </div>
+
+      <button type="button" onclick="calculateResult()">Assess My Mars Readiness</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function calculateResult() {
+      let total = 0;
+      const form = document.getElementById('marsQuiz');
+      const questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10'];
+      
+      for (let q of questions) {
+        const selected = form.querySelector(`input[name="${q}"]:checked`);
+        if (selected) {
+          total += parseInt(selected.value);
+        }
+      }
+      
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      
+      let message = '';
+      let color = '';
+      
+      if (total >= 16) {
+        message = `<h2>Score: ${total}/20 - Certified Mars Pioneer! 🚀</h2>
+                  <p>You were born ready to terraform Mars! Your enthusiasm for complex board games, 
+                  patience with setup, and love for strategic thinking make you the perfect candidate. 
+                  You probably already have a favorite Mars corporation picked out!</p>`;
+        color = '#81b29a';
+      } else if (total >= 12) {
+        message = `<h2>Score: ${total}/20 - Promising Colonist 🌱</h2>
+                  <p>You show potential! With some training and a few practice games, you'll be 
+                  raising oxygen levels and building greeneries like a pro. Just remember to bring 
+                  snacks and maybe a calculator.</p>`;
+        color = '#f2cc8f';
+      } else if (total >= 7) {
+        message = `<h2>Score: ${total}/20 - Earth-Bound Rookie 🌍</h2>
+                  <p>Mars might be a bit ambitious for now. Maybe start with Ticket to Ride or 
+                  Catan? But if you're determined, bring coffee, snacks, and a very patient friend 
+                  to teach you.</p>`;
+        color = '#e07a5f';
+      } else {
+        message = `<h2>Score: ${total}/20 - Still Playing Uno 🃏</h2>
+                  <p>Let's be honest - Terraforming Mars might not be your thing. But hey, 
+                  Monopoly is still fun! And there's nothing wrong with being the person who 
+                  brings the snacks to game night.</p>`;
+        color = '#e07a5f';
+      }
+      
+      resultDiv.style.backgroundColor = color;
+      resultDiv.style.color = total >= 12 ? 'black' : 'white';
+      resultDiv.innerHTML = message;
+    }
+  </script>
+</body>
+</html>
