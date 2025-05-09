@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interaktiv 3D-tratt - Svenska Etiketter</title>
+    <title>Främjande, förebyggande och åtgärdande system</title>
     <style>
         body {
             margin: 0;
@@ -170,7 +170,7 @@
         };
         const ANIMATION_DURATION = 300;
         const SEGMENT_OPACITY = 0.15;
-        const BUBBLE_RADIUS = 0.08;
+        const BUBBLE_RADIUS = 0.1;
         const LABEL_FONT_SIZE = 32;
         const SECTION_LABEL_FONT_SIZE = 36; // Adjusted for potentially longer Swedish labels
 
@@ -182,19 +182,19 @@
                 "Åtgärdande system (”112-system”) bestående av orosanmälningar och myndighetsutövande insatser"
             ],
             LEVEL_DEFINITIONS: {
-                "green": { name: "Universell nivå: Riktad till hela populationen", hexColor: 0x5cb85c },
-                "yellow": { name: "Selektiv nivå: Riktad till särskilda grupper", hexColor: 0xf0ad4e },
-                "orange": { name: "Indikerad nivå: Riktade till individer", hexColor: 0xd9534f }
+                "green": { name: "Universell: Till hela populationen", hexColor: 0x5cb85c },
+                "yellow": { name: "Selektiv: Till särskilda grupper", hexColor: 0xf0ad4e },
+                "orange": { name: "Indikerad: Till individer", hexColor: 0xd9534f }
             },
             CONTROL_GROUP_TITLES: {
-                FUNNEL_DISPLAY: "Trattvyer",
+                FUNNEL_DISPLAY: "Visa",
                 FUNNEL_DISPLAY_SUBTITLE: "Trattens bredd representerar andelen barn som omfattas.",
                 PROGRAM_LEVELS: "Insatsnivåer",
-                PROGRAM_DETAILS: "Programdetaljer"
+                PROGRAM_DETAILS: "Insatsnamn"
             },
             TOGGLE_LABELS: {
-                PROMOTION_PREVENTIVE: "Backa barnet (Främjande & Förebyggande System)", // Clarified
-                SHOW_PROGRAM_NAMES: "Visa programnamn"
+                PROMOTION_PREVENTIVE: "Backa barnet",
+                SHOW_PROGRAM_NAMES: "Visa insatsnamn
             }
         };
 
