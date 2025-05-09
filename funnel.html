@@ -244,8 +244,8 @@
             
             const canvasContainer = document.getElementById('main-canvas-container');
             camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-            camera.position.set(0, 4, 6); // Adjusted camera for better overall view
-            camera.lookAt(0, 0.5, 0); // Adjusted lookAt for new layout
+            camera.position.set(0, 3, 6); // Adjusted camera for better overall view
+            camera.lookAt(0, 0.2, 0); // Adjusted lookAt for new layout
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
@@ -268,7 +268,7 @@
             controls.maxDistance = 35;
             controls.maxPolarAngle = Math.PI / 1.5;
             controls.minPolarAngle = Math.PI / 12;
-            controls.target.set(0, 0.5, 0); // Adjusted target higher due to section labels
+            controls.target.set(0, 0.2, 0); // Adjusted target higher due to section labels
 
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
