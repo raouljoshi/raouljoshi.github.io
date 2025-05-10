@@ -19,22 +19,36 @@
         #topbar-controls {
             width: 100%;
             background-color: rgba(25, 25, 25, 0.95);
-            padding: 10px 15px; /* Adjusted padding */
+            padding: 10px 20px; /* Adjusted padding for better spacing */
             box-sizing: border-box;
             z-index: 200;
             display: flex;
-            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-            justify-content: center; /* Center groups in the bar */
-            align-items: center;
-            gap: 15px 25px; /* Row and column gap for control groups */
+            flex-wrap: wrap; 
+            justify-content: space-between; /* Key change for two-column layout */
+            align-items: flex-start; 
+            gap: 20px; /* Gap between the two main columns */
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            height: auto; /* Auto height based on content */
+            height: auto; 
+        }
+        
+        .topbar-column-left, .topbar-column-right {
+            display: flex;
+            /* flex-direction: row; Changed to column for right side to stack if needed */
+            flex-direction: column; 
+            gap: 15px; /* Gap between control groups within a column */
+            align-items: flex-start;
         }
 
+        .topbar-column-left .control-group, 
+        .topbar-column-right .control-group {
+             /* Control groups are now direct children of columns */
+        }
+
+
         #main-canvas-container {
-            flex-grow: 1; /* Canvas takes remaining vertical space */
+            flex-grow: 1; 
             width: 100%;
-            position: relative; /* For potential future absolutely positioned elements within */
+            position: relative; 
         }
 
         canvas {
@@ -45,43 +59,32 @@
 
         .control-group {
             display: flex;
-            flex-direction: column; /* Title above toggles */
-            align-items: flex-start; /* Align items to the start */
-            gap: 8px; /* Space between title and first item, and between items */
-            padding: 5px 0; /* Padding for the group itself */
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 8px; 
         }
 
-        .group-title {
+        .group-title { 
             font-size: 14px;
             font-weight: bold;
             color: #c0c0c0;
-            margin-bottom: 3px; /* Smaller margin below title */
-            /* border-bottom: 1px solid #444; */ /* Optional: remove border for cleaner top bar */
-            /* padding-bottom: 3px; */
-            white-space: nowrap; /* Prevent title from wrapping */
+            margin-bottom: 3px; 
+            white-space: nowrap; 
         }
         
-        .group-title .subtitle {
-            font-size: 11px;
-            font-weight: normal;
-            color: #999;
-            display: block; /* Make subtitle appear on a new line */
-        }
-
-
         .legend-item, .toggle-switch-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%; /* Make items take full width of their column in the group if needed */
-            min-width: 200px; /* Minimum width for items to prevent too much squishing */
+            width: 100%; 
+            min-width: 180px; 
         }
         
         .legend-item-label-group {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-grow: 1; /* Allow label group to take available space */
+            flex-grow: 1; 
         }
 
         .legend-color-indicator {
@@ -90,14 +93,14 @@
             border-radius: 3px;
             display: inline-block;
             border: 1px solid rgba(255,255,255,0.2);
-            flex-shrink: 0; /* Prevent color indicator from shrinking */
+            flex-shrink: 0; 
         }
 
         .legend-item label, .toggle-switch-container label {
-            font-size: 12px; /* Slightly smaller for more text */
+            font-size: 12px; 
             color: #e0e0e0;
             cursor: pointer;
-            line-height: 1.3; /* Better for multi-line labels */
+            line-height: 1.3; 
         }
 
         .toggle-checkbox {
@@ -112,8 +115,8 @@
             cursor: pointer;
             outline: none;
             transition: background-color 0.3s ease;
-            margin-left: 10px; /* Space between label text and toggle */
-            flex-shrink: 0; /* Prevent toggle from shrinking */
+            margin-left: 10px; 
+            flex-shrink: 0; 
         }
 
         .toggle-checkbox::before {
@@ -153,7 +156,7 @@
         let scene, camera, renderer, controls;
         let funnelSegments = [];
         let sectionHeaderLabels = [];
-        // let axisDescriptiveLabels = []; // Removed
+        // let footnoteLabel = null; // Footnote label is removed
         let allBubbles = [];
         let allLabels = [];
         let raycaster, mouse;
@@ -161,8 +164,8 @@
 
         // --- Constants ---
         const SEGMENT_COUNT = 3;
-        const SEGMENT_LENGTH = 2.8; // Slightly increased length for better label spacing
-        const SEGMENT_SPACING = 0.2; // Slightly increased spacing
+        const SEGMENT_LENGTH = 2.8; 
+        const SEGMENT_SPACING = 0.2; 
         const COLORS = {
             default: 0xcccccc,
             hover: 0xaaaaaa,
@@ -172,30 +175,30 @@
         const SEGMENT_OPACITY = 0.15;
         const BUBBLE_RADIUS = 0.08;
         const LABEL_FONT_SIZE = 32;
-        const SECTION_LABEL_FONT_SIZE = 36; // Adjusted for potentially longer Swedish labels
+        const SECTION_LABEL_FONT_SIZE = 30; 
+        // const FOOTNOTE_FONT_SIZE = 24; // Footnote font size not needed
 
         // Swedish Translations
         const SWEDISH_LABELS = {
-            SEGMENT_NAMES: [
-                "Främjande system bestående av insatser för ökat välbefinnande",
-                "Förebyggande system (”114 14-system”) bestående av upptäckter och insatser för förbättrade uppväxtvillkor",
-                "Åtgärdande system (”112-system”) bestående av orosanmälningar och myndighetsutövande insatser"
+            SEGMENT_NAMES: [ 
+                "bestående av insatser för ökat välbefinnande",
+                "(”114 14”) bestående av upptäckter och insatser för förbättrade uppväxtvillkor",
+                "(”112”) bestående av orosanmälningar och myndighetsutövande insatser"
             ],
             LEVEL_DEFINITIONS: {
                 "green": { name: "Universell: Till hela populationen", hexColor: 0x5cb85c },
                 "yellow": { name: "Selektiv: Till särskilda grupper", hexColor: 0xf0ad4e },
                 "orange": { name: "Indikerad: Till individer", hexColor: 0xd9534f }
             },
-            CONTROL_GROUP_TITLES: {
-                FUNNEL_DISPLAY: "Visa",
-                FUNNEL_DISPLAY_SUBTITLE: "Trattens bredd representerar andelen barn som omfattas.",
-                PROGRAM_LEVELS: "Insatsnivåer",
-                PROGRAM_DETAILS: "Insatsnamn"
+            CONTROL_GROUP_TITLES: { 
+                SYSTEM: "System", 
+                PROGRAM_LEVELS: "Insatser" // Renamed from "Insatsnivåer" for consistency if desired, or keep as is
             },
-            TOGGLE_LABELS: {
-                PROMOTION_PREVENTIVE: "Backa barnet",
-                SHOW_PROGRAM_NAMES: "Visa insatsnamn"
-            }
+            TOGGLE_LABELS: { 
+                VISA_BACKA_BARNET: "Visa Backa barnet", 
+                VISA_INSATSNAMN: "Visa insatsnamn"
+            },
+            // FOOTNOTE_TEXT: "Trattens bredd representerar andelen barn som omfattas." // Footnote text removed
         };
 
         const SECTION_MAPPING = { "left": 0, "middle": 1, "right": 2 };
@@ -205,7 +208,7 @@
             { name: "Elevhälsans medicinska insats", color: "green", section: "middle" },
             { name: "Ferierarbeten", color: "yellow", section: "middle" },
             { name: "Familjerådgivning", color: "yellow", section: "middle" },
-            { name: "Extra anpassningar", color: "orange", section: "middle" },
+            { name: "Extra anpassningar", color: "yellow", section: "middle" }, // Data was orange, changed to yellow based on user's list
             { name: "Fältgruppen", color: "yellow", section: "middle" },
             { name: "Orossamtal", color: "orange", section: "middle" },
             { name: "ABC-kurser", color: "green", section: "left" },
@@ -213,7 +216,7 @@
             { name: "Tvärprofessionell screening", color: "green", section: "middle" },
             { name: "Vårdens samverkansteam", color: "orange", section: "middle" },
             { name: "Skolsociala team", color: "orange", section: "middle" },
-            { name: "SSPF", color: "orange", section: "middle" },
+            { name: "SSPF", color: "yellow", section: "middle" }, // Data was orange, changed to yellow based on user's list
             { name: "Familjecentralen", color: "green", section: "left" },
             { name: "Växthuset", color: "green", section: "left" },
             { name: "Fritidsgårdar", color: "yellow", section: "left" },
@@ -227,6 +230,7 @@
             { name: "Särskilt stöd", color: "orange", section: "right" },
             { name: "Familjebehandling", color: "orange", section: "right" },
             { name: "Individforum", color: "orange", section: "right" },
+            { name: "En frisk skolstart", color: "yellow", section: "left" }, // New item from user's list
             { name: "Särskild undervisningsgrupp", color: "yellow", section: "right" }
         ];
 
@@ -244,8 +248,8 @@
             
             const canvasContainer = document.getElementById('main-canvas-container');
             camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-            camera.position.set(0, 3, 6); // Adjusted camera for better overall view
-            camera.lookAt(0, 0.2, 0); // Adjusted lookAt for new layout
+            camera.position.set(0, 3, 6); // Adjusted based on user's latest code
+            camera.lookAt(0, 0.2, 0);    // Adjusted based on user's latest code
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
@@ -264,18 +268,18 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.minDistance = 3; // Min zoom adjusted
+            controls.minDistance = 3; 
             controls.maxDistance = 35;
             controls.maxPolarAngle = Math.PI / 1.5;
             controls.minPolarAngle = Math.PI / 12;
-            controls.target.set(0, 0.2, 0); // Adjusted target higher due to section labels
+            controls.target.set(0, 0.2, 0); // Adjusted based on user's latest code
 
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
 
             createFunnel();
             createFunnelSectionLabels();
-            // createAxisDescriptiveLabels(); // Removed
+            // createFootnoteLabel(); // Footnote creation is removed
             createBubblesAndLabels();
             setupToggles();
             updateVisibility();
@@ -291,7 +295,7 @@
             let currentX = -totalFunnelLength / 2 + SEGMENT_LENGTH / 2;
 
             for (let i = 0; i < SEGMENT_COUNT; i++) {
-                const radiusTop = 2.4 - (i * 0.6); // Made funnel more pronounced
+                const radiusTop = 2.4 - (i * 0.6); 
                 const radiusBottom = 1.8 - (i * 0.6);
                 const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, SEGMENT_LENGTH, 48, 1, false);
                 const material = new THREE.MeshStandardMaterial({
@@ -304,7 +308,8 @@
                 segment.rotation.z = Math.PI / 2;
                 segment.position.x = currentX;
                 segment.userData = {
-                    id: `segment-${i}`, name: SWEDISH_LABELS.SEGMENT_NAMES[i],
+                    id: `segment-${i}`, 
+                    name: SWEDISH_LABELS.SEGMENT_NAMES[i],
                     originalColor: new THREE.Color(COLORS.default),
                     hoverColor: new THREE.Color(COLORS.hover),
                     emissiveHoverColor: new THREE.Color(COLORS.emissiveHover),
@@ -317,36 +322,36 @@
             }
         }
         
-        // --- Create Labels for Funnel Sections ---
+        // --- Create Labels for Funnel Sections (with Subtitles) ---
         function createFunnelSectionLabels() {
             for (let i = 0; i < SEGMENT_COUNT; i++) {
-                // Use shorter names for the 3D labels for clarity, full names are in userData.
-                let shortLabelText = SWEDISH_LABELS.SEGMENT_NAMES[i].split(" (")[0].split(" best")[0]; // Basic shortening
-                if (i === 0) shortLabelText = "Främjande System";
-                if (i === 1) shortLabelText = "Förebyggande System";
-                if (i === 2) shortLabelText = "Åtgärdande System";
+                let shortTitleText = "";
+                if (i === 0) shortTitleText = "Främjande System";
+                else if (i === 1) shortTitleText = "Förebyggande System";
+                else if (i === 2) shortTitleText = "Åtgärdande System";
 
+                const fullDescriptionSubtitle = SWEDISH_LABELS.SEGMENT_NAMES[i];
+                const combinedLabelText = `${shortTitleText}\n${fullDescriptionSubtitle}`;
 
-                const labelSprite = createTextSprite(shortLabelText, {
-                    fontsize: SECTION_LABEL_FONT_SIZE,
+                const labelSprite = createTextSprite(combinedLabelText, {
+                    fontsize: SECTION_LABEL_FONT_SIZE, 
                     textColor: { r: 230, g: 230, b: 230, a: 1.0 },
-                    backgroundColor: { r: 10, g: 10, b: 10, a: 0.0 }, // Transparent background
-                    padding: 3 // Reduced padding for shorter labels
+                    backgroundColor: { r: 10, g: 10, b: 10, a: 0.0 }, 
+                    padding: 5 
                 });
                 
                 labelSprite.position.x = funnelSegments[i].position.x;
                 const topRadius = funnelSegments[i].userData.geometryParams.radiusTop;
-                labelSprite.position.y = topRadius + 1.0; // Adjusted Y offset
+                labelSprite.position.y = topRadius + 1.5; 
                 labelSprite.position.z = 0; 
 
                 scene.add(labelSprite);
                 sectionHeaderLabels.push(labelSprite);
             }
         }
+
+        // --- Create Footnote Label function removed ---
         
-        // --- createAxisDescriptiveLabels function removed ---
-
-
         // --- Bubble and Label Creation (Program Names & General Text Sprites) ---
         function createTextSprite(message, opts = {}) {
             const defaultFontSize = opts.fontsize !== undefined ? opts.fontsize : LABEL_FONT_SIZE;
@@ -354,16 +359,15 @@
             const {
                 fontface = 'Inter, Arial', fontsize = defaultFontSize,
                 textColor = { r:255, g:255, b:255, a:1.0 },
-                backgroundColor = { r:20, g:20, b:20, a:0.65 },
-                padding = (fontsize === LABEL_FONT_SIZE ? 10 : (fontsize === SECTION_LABEL_FONT_SIZE ? 3 : 3)),
-                borderRadius = (fontsize === LABEL_FONT_SIZE ? 8 : (fontsize === SECTION_LABEL_FONT_SIZE ? 4 : 2))
+                backgroundColor = { r:20, g:20, b:20, a:0.65 }, 
+                padding = (fontsize === LABEL_FONT_SIZE ? 10 : (fontsize === SECTION_LABEL_FONT_SIZE ? 5 : 5 ) ), // Simplified padding
+                borderRadius = (fontsize === LABEL_FONT_SIZE ? 8 : (fontsize === SECTION_LABEL_FONT_SIZE ? 4 : 4) ) // Simplified border radius
             } = opts;
 
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             context.font = `Bold ${fontsize}px ${fontface}`;
             
-            // Basic multi-line support for sprite text
             const lines = message.split('\n');
             let maxWidth = 0;
             lines.forEach(line => {
@@ -371,25 +375,37 @@
                 if (metrics.width > maxWidth) maxWidth = metrics.width;
             });
             const textWidth = maxWidth;
-            const lineHeight = fontsize * 1.2; // Approximate line height
+            const lineHeight = fontsize * 1.2; 
             canvas.width = textWidth + padding * 2;
             canvas.height = (lines.length * lineHeight) + padding * 2;
             
-            context.font = `Bold ${fontsize}px ${fontface}`; // Re-set font
+            context.font = `Bold ${fontsize}px ${fontface}`; 
             context.textAlign = "center";
-            context.textBaseline = "middle";
+            context.textBaseline = "middle"; 
             
             if (backgroundColor.a > 0) {
                 context.fillStyle = `rgba(${backgroundColor.r},${backgroundColor.g},${backgroundColor.b},${backgroundColor.a})`;
-                // Draw rounded rectangle background (simplified for brevity, use previous if issues)
-                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.beginPath();
+                context.moveTo(borderRadius, 0);
+                context.lineTo(canvas.width - borderRadius, 0);
+                context.quadraticCurveTo(canvas.width, 0, canvas.width, borderRadius);
+                context.lineTo(canvas.width, canvas.height - borderRadius);
+                context.quadraticCurveTo(canvas.width, canvas.height, canvas.width - borderRadius, canvas.height);
+                context.lineTo(borderRadius, canvas.height);
+                context.quadraticCurveTo(0, canvas.height, 0, canvas.height - borderRadius);
+                context.lineTo(0, borderRadius);
+                context.quadraticCurveTo(0, 0, borderRadius, 0);
+                context.closePath();
+                context.fill();
             }
 
             context.fillStyle = `rgba(${textColor.r},${textColor.g},${textColor.b},${textColor.a})`;
-            lines.forEach((line, index) => {
-                context.fillText(line, canvas.width / 2, (padding + lineHeight / 2) + (index * lineHeight) );
-            });
+            const totalTextHeight = lines.length * lineHeight;
+            let startY = (canvas.height - totalTextHeight) / 2 + (lineHeight / 2); 
 
+            lines.forEach((line, index) => {
+                context.fillText(line, canvas.width / 2, startY + (index * lineHeight) );
+            });
 
             const texture = new THREE.Texture(canvas);
             texture.needsUpdate = true;
@@ -452,35 +468,43 @@
             const topbar = document.getElementById('topbar-controls');
             topbar.innerHTML = ''; 
 
-            const funnelGroup = document.createElement('div');
-            funnelGroup.className = 'control-group';
-            const funnelTitle = document.createElement('span');
-            funnelTitle.className = 'group-title';
-            funnelTitle.innerHTML = `${SWEDISH_LABELS.CONTROL_GROUP_TITLES.FUNNEL_DISPLAY}<span class="subtitle">${SWEDISH_LABELS.CONTROL_GROUP_TITLES.FUNNEL_DISPLAY_SUBTITLE}</span>`;
-            funnelGroup.appendChild(funnelTitle);
-            createToggle(funnelGroup, 'toggle-promotion-preventive', SWEDISH_LABELS.TOGGLE_LABELS.PROMOTION_PREVENTIVE, true, updateVisibility);
-            topbar.appendChild(funnelGroup);
+            // --- Column 1 (System Toggles) ---
+            const column1 = document.createElement('div');
+            column1.className = 'topbar-column-left'; 
+
+            const systemGroup = document.createElement('div');
+            systemGroup.className = 'control-group';
+            const systemTitle = document.createElement('span');
+            systemTitle.className = 'group-title';
+            systemTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.SYSTEM;
+            systemGroup.appendChild(systemTitle);
+            // "Visa Backa barnet" toggle - Default: Inactive
+            createToggle(systemGroup, 'toggle-promotion-preventive', SWEDISH_LABELS.TOGGLE_LABELS.VISA_BACKA_BARNET, false, updateVisibility); 
+            // "Visa insatsnamn" toggle - Default: Active
+            createToggle(systemGroup, 'toggle-program-names', SWEDISH_LABELS.TOGGLE_LABELS.VISA_INSATSNAMN, true, updateVisibility); 
+            column1.appendChild(systemGroup);
+            topbar.appendChild(column1);
+
+            // --- Column 2 (Program Levels Toggles) ---
+            const column2 = document.createElement('div');
+            column2.className = 'topbar-column-right'; 
 
             const levelGroup = document.createElement('div');
             levelGroup.className = 'control-group';
             const levelTitle = document.createElement('span');
             levelTitle.className = 'group-title';
-            levelTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.PROGRAM_LEVELS;
+            levelTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.PROGRAM_LEVELS; // Title "Insatser"
             levelGroup.appendChild(levelTitle);
             Object.keys(SWEDISH_LABELS.LEVEL_DEFINITIONS).forEach(colorKey => {
                 const levelDef = SWEDISH_LABELS.LEVEL_DEFINITIONS[colorKey];
-                createLegendToggle(levelGroup, `toggle-level-${colorKey}`, levelDef.name, levelDef.hexColor, true, updateVisibility);
+                let initialState = false; // Default to inactive
+                if (colorKey === 'orange') { // "Indikerad" is active by default
+                    initialState = true;
+                }
+                createLegendToggle(levelGroup, `toggle-level-${colorKey}`, levelDef.name, levelDef.hexColor, initialState, updateVisibility);
             });
-            topbar.appendChild(levelGroup);
-            
-            const detailGroup = document.createElement('div');
-            detailGroup.className = 'control-group';
-            const detailTitle = document.createElement('span');
-            detailTitle.className = 'group-title';
-            detailTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.PROGRAM_DETAILS;
-            detailGroup.appendChild(detailTitle);
-            createToggle(detailGroup, 'toggle-program-names', SWEDISH_LABELS.TOGGLE_LABELS.SHOW_PROGRAM_NAMES, true, updateVisibility);
-            topbar.appendChild(detailGroup);
+            column2.appendChild(levelGroup);
+            topbar.appendChild(column2);
         }
 
         function createToggle(parent, id, labelText, initialState, callback) {
@@ -526,18 +550,19 @@
 
         // --- Visibility Update ---
         function updateVisibility() {
-            const showPromotionPreventive = document.getElementById('toggle-promotion-preventive')?.checked ?? true;
-            const showNames = document.getElementById('toggle-program-names')?.checked ?? true;
+            const showPromotionPreventive = document.getElementById('toggle-promotion-preventive')?.checked ?? false; 
+            const showNames = document.getElementById('toggle-program-names')?.checked ?? true; 
 
             if (funnelSegments[0]) funnelSegments[0].visible = showPromotionPreventive;
             if (funnelSegments[1]) funnelSegments[1].visible = showPromotionPreventive;
-            if (funnelSegments[2]) funnelSegments[2].visible = true;
+            if (funnelSegments[2]) funnelSegments[2].visible = true; 
 
             if (sectionHeaderLabels[0]) sectionHeaderLabels[0].visible = showPromotionPreventive;
             if (sectionHeaderLabels[1]) sectionHeaderLabels[1].visible = showPromotionPreventive;
             if (sectionHeaderLabels[2]) sectionHeaderLabels[2].visible = true;
             
-            // axisDescriptiveLabels removed
+            // Footnote visibility update removed as footnoteLabel is removed.
+            // if(footnoteLabel) footnoteLabel.visible = true; 
 
             if (intersectedObject) {
                 const segmentIndex = funnelSegments.indexOf(intersectedObject);
@@ -549,7 +574,15 @@
             
             allBubbles.forEach(bubble => {
                 const levelCheckbox = document.getElementById(`toggle-level-${bubble.userData.colorCategory}`);
-                const levelVisible = levelCheckbox ? levelCheckbox.checked : true;
+                let levelVisible = false; // Default to not visible unless checkbox says otherwise
+                if (levelCheckbox) {
+                    levelVisible = levelCheckbox.checked;
+                } else { 
+                    // Fallback if checkbox not found (should not happen with current setup)
+                    // but important for default states before full UI init or if logic changes
+                    if (bubble.userData.colorCategory === 'orange') levelVisible = true; // Default "Indikerad"
+                }
+                
                 bubble.visible = levelVisible;
                 if (bubble.userData.label) {
                     bubble.userData.label.visible = bubble.visible && showNames;
@@ -612,6 +645,7 @@
             renderer.render(scene, camera);
         }
 
+        // --- Start ---
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
