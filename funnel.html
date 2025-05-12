@@ -181,9 +181,9 @@
         // Swedish Translations
         const SWEDISH_LABELS = {
             SEGMENT_NAMES: [ 
-                "bestående av insatser för ökat välbefinnande",
-                "(”114 14”) bestående av upptäckter och insatser för förbättrade uppväxtvillkor",
-                "(”112”) bestående av orosanmälningar och myndighetsutövande insatser"
+                "Allmänna och främjande insatser",
+                "(”114 14”) Upptäckter och frivilliga insatser",
+                "(”112”) Orosanmälningar och myndighetsutövande insatser"
             ],
             LEVEL_DEFINITIONS: {
                 "green": { name: "Universell: Till hela populationen", hexColor: 0x5cb85c },
@@ -192,7 +192,7 @@
             },
             CONTROL_GROUP_TITLES: { 
                 SYSTEM: "System", 
-                PROGRAM_LEVELS: "Insatser" // Renamed from "Insatsnivåer" for consistency if desired, or keep as is
+                PROGRAM_LEVELS: "Insatser"
             },
             TOGGLE_LABELS: { 
                 VISA_BACKA_BARNET: "Visa Backa barnet", 
@@ -326,9 +326,9 @@
         function createFunnelSectionLabels() {
             for (let i = 0; i < SEGMENT_COUNT; i++) {
                 let shortTitleText = "";
-                if (i === 0) shortTitleText = "Främjande System";
-                else if (i === 1) shortTitleText = "Förebyggande System";
-                else if (i === 2) shortTitleText = "Åtgärdande System";
+                if (i === 0) shortTitleText = "Främjande system";
+                else if (i === 1) shortTitleText = "Förebyggande ("114 14") system";
+                else if (i === 2) shortTitleText = "Åtgärdande ("112") system";
 
                 const fullDescriptionSubtitle = SWEDISH_LABELS.SEGMENT_NAMES[i];
                 const combinedLabelText = `${shortTitleText}\n${fullDescriptionSubtitle}`;
