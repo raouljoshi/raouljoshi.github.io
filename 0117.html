@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backa Barnet Österåker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Basic Reset & Body Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            position: relative;
+            padding-top: 80px; /* Adjusted for fixed header */
+            padding-bottom: 50px; /* Space for footer */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        a {
+            color: #005bac;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .sr-only { /* Screen reader only text */
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        /* Chat Tab */
+        .chat-tab {
+            position: fixed;
+            top: 50%;
+            right: -65px;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: bottom right;
+            background-color: #005bac;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        /* Header Styling */
+        .site-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+        }
+
+        .header-main {
+            padding: 15px 0;
+        }
+
+        .main-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            text-decoration: none;
+        }
+        .logo:hover {
+            text-decoration: none;
+        }
+        .logo img {
+            height: 40px;
+            display: block;
+            onerror: "this.onerror=null; this.src='https://placehold.co/150x40/eeeeee/aaaaaa?text=Logo+Error';"
+        }
+
+        .main-navigation {
+            margin: 10px 0;
+        }
+
+        .main-navigation ul {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .main-navigation li {
+            margin-right: 20px;
+        }
+        .main-navigation li:last-child {
+            margin-right: 0;
+        }
+
+        .main-navigation a {
+            color: #333;
+            font-weight: bold;
+            padding: 5px 0;
+            display: block;
+        }
+        .main-navigation a:hover {
+            color: #005bac;
+            text-decoration: none;
+        }
+
+        /* Main Content Styling */
+        main section {
+            padding: 40px 0;
+            border-bottom: 1px solid #eee;
+        }
+        main section:last-child {
+            border-bottom: none;
+        }
+
+        main h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+         main h3 {
+            font-size: 1.4em;
+            color: #444;
+            margin-bottom: 15px;
+         }
+
+        main p {
+            margin-bottom: 15px;
+        }
+
+        main ul li {
+             margin-bottom: 10px;
+        }
+
+        /* Hero Section Styling */
+        .hero-placeholder {
+            background-image: url("https://www.osteraker.se/images/18.248d1fb1946ea5facd257c/1740046064063/893359-archipelago-view-in-osteraker%20(3).webp");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            padding: 100px 0;
+            color: #333;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-box {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px 40px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .hero-box h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: #005bac;
+            font-weight: bold;
+        }
+
+        /* Process Steps (Chevron) Visualization */
+        .process-steps-container {
+             position: relative; /* Needed for tooltip positioning */
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 5px;
+            position: relative; /* Ensure steps are above tooltip initially if needed */
+            z-index: 10;
+        }
+
+        .step {
+            flex: 1;
+            position: relative;
+            padding: 15px 20px 15px 35px;
+            background-color: #f0f0f0;
+            color: #666;
+            text-align: center;
+            cursor: pointer; /* Change cursor to pointer on hover */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%, 20px 50%);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step:first-child {
+            clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
+            padding-left: 20px;
+        }
+
+        .step.completed {
+            background-color: #d3e6f5;
+            color: #005bac;
+        }
+
+        .step.active {
+            background-color: #005bac;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .step:hover {
+            background-color: #ddd;
+            color: #333;
+        }
+        .step.active:hover {
+             background-color: #004080;
+             color: #fff;
+        }
+
+        /* Tooltip for Step Details */
+        #step-tooltip {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            z-index: 100; /* Ensure tooltip is above other elements */
+            width: 280px; /* Adjust width as needed */
+            font-size: 0.9em;
+            line-height: 1.5;
+            transition: opacity 0.2s ease-in-out;
+            opacity: 0; /* Start fully transparent */
+            pointer-events: none; /* Prevent tooltip from blocking hover on steps */
+        }
+        #step-tooltip.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        #step-tooltip h4 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #005bac;
+        }
+         #step-tooltip p {
+             font-size: 0.95em;
+             margin-bottom: 10px;
+         }
+         #step-tooltip strong { /* Milstolpe */
+             font-weight: bold;
+             color: #333;
+         }
+         #step-tooltip .fa-gem { /* Milestone icon */
+            margin-right: 5px;
+            color: #005bac;
+         }
+
+        /* Updates Section - Reusing FAQ styles */
+        .updates-section .update-item { /* Renamed class for clarity */
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .updates-section summary {
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            list-style: none;
+        }
+        .updates-section summary::-webkit-details-marker {
+            display: none;
+        }
+        .updates-section summary::after {
+            content: '+';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #005bac;
+        }
+        .updates-section details[open] summary::after {
+            content: '−';
+        }
+        .updates-section details[open] summary {
+             border-bottom: 1px solid #eee;
+             border-radius: 4px 4px 0 0;
+        }
+        .updates-section details .update-content { /* Class for content padding */
+            padding: 15px;
+        }
+
+
+        /* Links Section Styling */
+        .links-section ul li a {
+            font-weight: bold;
+            display: block;
+            padding: 5px 0;
+        }
+
+        /* Funnel Visualization Section */
+        #funnel-visualisering .iframe-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 60%; /* Aspect ratio (height/width * 100) - adjust as needed */
+            margin-top: 20px;
+            border: 1px solid #eee; /* Optional border */
+            border-radius: 4px;
+        }
+        #funnel-visualisering iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: 0; /* Remove default iframe border */
+        }
+
+
+        /* FAQ Section Styling */
+        .faq-section .faq-item {
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .faq-section summary {
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            list-style: none;
+        }
+        .faq-section summary::-webkit-details-marker {
+            display: none;
+        }
+        .faq-section summary::after {
+            content: '+';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #005bac;
+        }
+        .faq-section details[open] summary::after {
+            content: '−';
+        }
+        .faq-section details[open] summary {
+             border-bottom: 1px solid #eee;
+             border-radius: 4px 4px 0 0;
+        }
+        .faq-section details p {
+            padding: 15px;
+        }
+
+
+        /* Footer Styling */
+        .site-footer {
+            background-color: #f8f8f8;
+            color: #555;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+
+        .footer-quick-actions {
+            background-color: #fff;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
+        }
+
+        .action-links-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .action-link {
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .action-link i {
+            font-size: 1.5em;
+            color: #005bac;
+        }
+        .action-link:hover {
+            color: #005bac;
+            text-decoration: none;
+        }
+        .action-link:hover i {
+            color: #004080;
+        }
+
+        .footer-main {
+            padding: 40px 0;
+        }
+
+        .footer-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .footer-column p,
+        .footer-column ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-column a {
+            color: #005bac;
+        }
+        .footer-column a:hover {
+            text-decoration: underline;
+        }
+
+        .links-info ul {
+            padding-left: 0;
+        }
+        .links-info li a i {
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .social-icons a {
+            font-size: 1.5em;
+            margin-right: 15px;
+            color: #555;
+        }
+        .social-icons a:last-child {
+            margin-right: 0;
+        }
+        .social-icons a:hover {
+            color: #005bac;
+        }
+
+        .footer-bottom-graphic {
+            height: 30px;
+             background: linear-gradient(to right, #e0f2f7, #b3e0ff, #80cfff);
+        }
+
+
+        /* Responsiveness Adjustments */
+        @media (max-width: 992px) {
+            .main-navigation ul {
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+            .main-header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+             body {
+                padding-top: 130px;
+             }
+             .hero-box h1 {
+                 font-size: 2em;
+             }
+             .process-steps {
+                 flex-direction: column;
+                 align-items: stretch;
+             }
+             .step {
+                 clip-path: none;
+                 padding: 15px 20px;
+                 margin-bottom: 5px;
+                 cursor: default; /* Disable hover cursor on stacked view */
+             }
+             .step:first-child, .step:last-child {
+                 padding: 15px 20px;
+             }
+             /* Hide tooltip on smaller screens where steps stack (optional) */
+             #step-tooltip {
+                 display: none !important;
+             }
+        }
+
+        @media (max-width: 768px) {
+            .action-links-container {
+                justify-content: flex-start;
+                gap: 20px;
+            }
+             body {
+                 padding-top: 130px;
+             }
+             .main-navigation li {
+                 margin-right: 15px;
+             }
+             .footer-columns {
+                grid-template-columns: 1fr;
+             }
+             .hero-placeholder {
+                 padding: 60px 0;
+                 min-height: 250px;
+             }
+             .hero-box h1 {
+                 font-size: 1.8em;
+             }
+             .hero-box {
+                 padding: 20px 30px;
+                 max-width: 90%;
+             }
+             #funnel-visualisering .iframe-container {
+                padding-top: 75%; /* Adjust aspect ratio for smaller screens if needed */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-tab">
+        Chatta med servicecenter
+    </div>
+
+    <header class="site-header">
+        <div class="header-main">
+            <div class="container main-header-content">
+                <a href="/" class="logo">
+                    <img src="https://www.osteraker.se/images/18.592cfecd176fc0db87824be/1732699588409/logo.webp" alt="Österåker Logotyp" style="height: 40px; display: block;">
+                </a>
+                <nav class="main-navigation">
+                    <ul>
+                        <li><a href="#">Barn & utbildning</a></li>
+                        <li><a href="#">Omsorg & stöd</a></li>
+                        <li><a href="#">Bygga, bo & miljö</a></li>
+                        <li><a href="#">Trafik & infrastruktur</a></li>
+                        <li><a href="#">Uppleva & göra</a></li>
+                        <li><a href="#">Jobb & företagande</a></li>
+                        <li><a href="#">Kommun & politik</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-placeholder">
+            <div class="hero-box">
+                 <h1>Backa barnet Österåker</h1>
+            </div>
+        </section>
+
+        <section id="om-oss">
+            <div class="container">
+                <h2>Om Backa Barnet Österåker</h2>
+                <p>Backa Barnet Österåker är ett initiativ som syftar till att stärka det förebyggande arbetet för barn och unga inom Österåkers kommun. Genom att tidigt identifiera riskfaktorer och främja skyddande faktorer, arbetar vi för att skapa en tryggare och mer stödjande miljö för barn och ungdomar att växa upp i. Projektet bygger på nära samverkan mellan kommunala verksamheter, civilsamhället, familjer och andra aktörer, med målet att erbjuda rätt stöd i rätt tid.</p>
+                <p>Vårt uppdrag är att säkerställa att alla barn och ungdomar får en god start i livet, med lika möjligheter att utvecklas och nå sin fulla potential, oavsett bakgrund eller livssituation. Detta innebär att vi arbetar för att minska risken för utanförskap, psykisk ohälsa, missbruk och kriminalitet genom tidiga insatser och samordnade stödstrukturer.</p>
+            </div>
+        </section>
+
+        <section id="aktuellt">
+            <div class="container">
+                <h2>Aktuellt</h2>
+                <h3>Projektets faser och framsteg</h3>
+                <p>För att tydliggöra var vi befinner oss i processen har vi delat upp arbetet i fyra steg (håll muspekaren över ett steg för mer information):</p>
+
+                <div class="process-steps-container">
+                    <div class="process-steps">
+                        <div class="step completed"
+                             data-title="1. Utredning"
+                             data-description="I detta inledande skede kartlägger vi behoven, samlar in data och analyserar nuläget för att förstå vilka insatser som behövs. Här ingår också att lyssna på barn, unga och deras familjer samt samverka med experter och andra relevanta aktörer."
+                             data-milestone="Inriktningsbeslut – När utredningen är klar fattas ett inriktningsbeslut som fastställer de övergripande målen och prioriteringarna för det fortsatta arbetet.">
+                             1. Utredning
+                        </div>
+                        <div class="step active"
+                             data-title="2. Inriktning"
+                             data-description="Under denna fas utformas konkreta mål och strategier baserat på den information som samlats in. Det handlar om att skapa en tydlig plan för vilka insatser och stödstrukturer som ska implementeras, samt hur dessa ska finansieras och organiseras."
+                             data-milestone="Beslut – Här fattas det formella beslutet om att gå vidare med de planerade insatserna och resurser avsätts för genomförandet.">
+                             2. Inriktning
+                        </div>
+                        <div class="step"
+                             data-title="3. Beredning"
+                             data-description="I denna fas förbereds införandet genom att detaljerade planer och arbetsprocesser tas fram. Här ingår utbildning av personal, utveckling av digitala verktyg och förberedelser för att säkerställa en smidig implementering."
+                             data-milestone="Lansering – När allt är på plats genomförs lanseringen av insatserna, och vi går in i den sista fasen.">
+                             3. Beredning
+                        </div>
+                        <div class="step"
+                             data-title="4. Införande"
+                             data-description="Nu börjar själva genomförandet, där insatserna implementeras och följs upp för att säkerställa att de når sina mål. Här arbetar vi löpande med att utvärdera effekterna och justera insatserna för att optimera resultaten."
+                             data-milestone=""> 4. Införande
+                        </div>
+                    </div>
+                    <div id="step-tooltip"></div> </div>
+
+                <div class="updates-section">
+                    <h3 style="margin-top: 40px;">Uppdateringar och nyheter</h3>
+                    <details class="update-item">
+                        <summary>Maj 2025 - Projektet går in i Inriktningsfasen</summary>
+                        <div class="update-content">
+                            <p>Efter ett framgångsrikt inriktningsbeslut baserat på den omfattande utredningen, har Backa Barnet Österåker nu officiellt gått in i inriktningsfasen. Fokus ligger nu på att definiera konkreta mål och utveckla strategier för de kommande insatserna. Arbetsgrupper har bildats för att titta närmare på specifika områden som tidigt stöd i förskolan och samverkan med fritidssektorn.</p>
+                            <p>Vi håller workshops med berörda parter under månaden. Mer information kommer löpande.</p>
+                        </div>
+                    </details>
+                    <details class="update-item">
+                        <summary>April 2025 - Utredningen slutförd</summary>
+                         <div class="update-content">
+                            <p>Utredningsfasen är nu avslutad. Vi har samlat in värdefull data genom enkäter, intervjuer och workshops med barn, unga, föräldrar och personal inom olika verksamheter. Resultaten pekar på ett tydligt behov av ökad samordning och tidigare insatser för att förebygga utanförskap. Rapporten ligger nu till grund för det kommande inriktningsbeslutet.</p>
+                        </div>
+                    </details>
+                    <details class="update-item">
+                        <summary>Mars 2025 - Kick-off för Backa Barnet</summary>
+                         <div class="update-content">
+                            <p>Projektet Backa Barnet Österåker startade officiellt med en kick-off där representanter från kommunens olika förvaltningar, skolor, socialtjänst och fritidsverksamheter deltog. Målet är att gemensamt skapa bättre förutsättningar för våra barn och unga.</p>
+                        </div>
+                    </details>
+                    <p style="margin-top: 15px;"><a href="#">Visa äldre uppdateringar...</a></p> </div>
+            </div>
+        </section>
+
+        <section id="genvagar-kontakt" class="links-section">
+            <div class="container">
+                <h2>Genvägar och kontakt</h2>
+                <ul>
+                    <li><a href="#">Anmäl oro för barn och unga</a></li>
+                    <li><a href="#">Boka möte med våra familjestödjare</a></li>
+                    <li><a href="#">Stöd och råd för föräldrar</a></li>
+                    <li><a href="#">Hitta lokala aktiviteter och stödgrupper</a></li>
+                    <li><a href="#">Kontakta oss</a> – Har du frågor eller vill veta mer om vårt arbete? Kontakta oss via e-post eller telefon. <a href="#">[Länk till kontaktsida.]</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="funnel-visualisering">
+            <div class="container">
+                <h2>Visualisering av Stödprocessen</h2>
+                <p>Här kan du se en interaktiv visualisering av hur stödprocessen kan se ut:</p>
+                <div class="iframe-container">
+                    <iframe src="https://joshico.org/funnel.html"
+                            title="Interaktiv visualisering av stödprocessen"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="faq-section">
+            <div class="container">
+                <h2>FAQ – Vanliga frågor och svar</h2>
+                <details class="faq-item">
+                    <summary>Vad är Backa Barnet Österåker?</summary>
+                    <p>Backa Barnet Österåker är ett initiativ för att stärka det förebyggande arbetet för barn och unga i kommunen genom tidiga och samordnade insatser.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Hur kan jag som förälder få stöd?</summary>
+                    <p>Vi erbjuder en rad olika stödinsatser för föräldrar, inklusive familjestöd, rådgivning och information om lokala aktiviteter.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Vad kan jag göra om jag är orolig för ett barn?</summary>
+                    <p>Om du misstänker att ett barn far illa kan du göra en orosanmälan via vår webbplats eller kontakta socialtjänsten direkt.</p>
+                </details>
+                 <details class="faq-item">
+                    <summary>Hur kan jag engagera mig som volontär?</summary>
+                    <p>Det finns flera möjligheter att bidra som volontär i våra program och aktiviteter. Kontakta oss för mer information.</p>
+                </details>
+                 <details class="faq-item">
+                    <summary>Hur finansieras projektet?</summary>
+                    <p>Backa Barnet Österåker finansieras genom kommunala medel och stöd från externa partners och fonder.</p>
+                </details>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-quick-actions">
+             <div class="container action-links-container">
+                 <a href="#" class="action-link">
+                     <i class="fas fa-file-alt"></i> Självservice
+                 </a>
+                 <a href="#" class="action-link">
+                     <i class="fas fa-search-plus"></i> Hitta och jämför
+                 </a>
+                 <a href="#" class="action-link">
+                     <i class="fas fa-comment-dots"></i> Felanmälan
+                 </a>
+                 <a href="#" class="action-link">
+                     <i class="fas fa-exclamation-circle"></i> Din synpunkt
+                 </a>
+             </div>
+        </div>
+        <div class="footer-main">
+            <div class="container footer-columns">
+                <div class="footer-column contact-info">
+                    <h3>Kontakta servicecenter</h3>
+                    <p>Telefonnummer: <a href="tel:08-540-810-00">08-540 810 00</a></p>
+                    <p>E-postadress: <a href="mailto:servicecenter@osteraker.se">servicecenter@osteraker.se</a></p>
+                    <p>Postadress: Österåkers kommun, 184 86 Åkersberga</p>
+                    <p>Organisationsnummer: 212000-2890</p>
+                    <p><a href="#">Fler kontaktuppgifter och öppettider <i class="fas fa-arrow-right"></i></a></p>
+                </div>
+                <div class="footer-column visit-info">
+                    <h3>Besök kommunhuset</h3>
+                    <p>Besöksadress: Alceahuset, Hackstavägen 22, Åkersberga</p>
+                </div>
+                <div class="footer-column links-info">
+                    <h3>Länkar</h3>
+                    <ul>
+                        <li><a href="#">Information om webbplatsen <i class="fas fa-arrow-right"></i></a></li>
+                        <li><a href="#">Tillgänglighetsredogörelse <i class="fas fa-arrow-right"></i></a></li>
+                        <li><a href="#">Cookies <i class="fas fa-arrow-right"></i></a></li>
+                        <li><a href="#">A till Ö <i class="fas fa-arrow-right"></i></a></li>
+                        <li><a href="#">Nyheter <i class="fas fa-arrow-right"></i></a></li>
+                    </ul>
+                </div>
+                <div class="footer-column social-media">
+                    <h3>Följ oss på sociala medier</h3>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <div class="footer-bottom-graphic">
+             </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = document.querySelectorAll('.step');
+            const tooltip = document.getElementById('step-tooltip');
+            const stepsContainer = document.querySelector('.process-steps-container'); // Get container for positioning context
+
+            if (!tooltip || !stepsContainer) return; // Exit if elements not found
+
+            steps.forEach(step => {
+                step.addEventListener('mouseenter', (event) => {
+                    // Don't show tooltip on smaller screens where steps stack
+                    if (window.innerWidth <= 992) {
+                        return;
+                    }
+
+                    const title = step.dataset.title || '';
+                    const description = step.dataset.description || '';
+                    const milestone = step.dataset.milestone || '';
+
+                    // Build tooltip content
+                    let tooltipContent = `<h4>${title}</h4><p>${description}</p>`;
+                    if (milestone) {
+                        tooltipContent += `<p><strong><i class="fas fa-gem"></i> Milstolpe:</strong> ${milestone}</p>`;
+                    }
+                    tooltip.innerHTML = tooltipContent;
+
+                    // --- Positioning Logic ---
+                    const stepRect = step.getBoundingClientRect(); // Step position relative to viewport
+                    const containerRect = stepsContainer.getBoundingClientRect(); // Container position relative to viewport
+
+                    // Calculate tooltip position relative to the container
+                    // Position below the step, centered horizontally
+                    let top = stepRect.bottom - containerRect.top + 10; // 10px gap below step
+                    let left = stepRect.left - containerRect.left + (stepRect.width / 2) - (tooltip.offsetWidth / 2);
+
+                    // Adjust if tooltip goes off-screen horizontally
+                    if (left < 0) {
+                        left = 5; // Add small padding from left edge
+                    } else if (left + tooltip.offsetWidth > containerRect.width) {
+                        left = containerRect.width - tooltip.offsetWidth - 5; // Add small padding from right edge
+                    }
+                     // Adjust if tooltip goes off-screen vertically (below viewport)
+                     // This is a basic check, might need refinement based on footer etc.
+                    if (stepRect.bottom + tooltip.offsetHeight + 10 > window.innerHeight) {
+                         // Position above the step instead
+                         top = stepRect.top - containerRect.top - tooltip.offsetHeight - 10; // 10px gap above step
+                    }
+
+
+                    tooltip.style.top = `${top}px`;
+                    tooltip.style.left = `${left}px`;
+                    tooltip.classList.add('visible');
+                });
+
+                step.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+            });
+
+            // Optional: Hide tooltip if mouse moves outside the steps container entirely
+            stepsContainer.addEventListener('mouseleave', (event) => {
+                 // Check if the mouse is moving to the tooltip itself
+                 if (!tooltip.contains(event.relatedTarget)) {
+                    tooltip.classList.remove('visible');
+                 }
+            });
+             // Hide tooltip if mouse leaves the tooltip itself
+             tooltip.addEventListener('mouseleave', () => {
+                 tooltip.classList.remove('visible');
+             });
+        });
+    </script>
+
+</body>
+</html>
