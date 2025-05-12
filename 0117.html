@@ -43,6 +43,16 @@
             list-style: none;
             padding-left: 0;
         }
+        /* Add some margin to lists within text content */
+        #om-oss ul {
+            margin-left: 20px;
+            list-style: disc; /* Use standard list style for GIRFEC points */
+            margin-bottom: 15px;
+        }
+         #om-oss ul li {
+             margin-bottom: 5px;
+         }
+
 
         button {
             cursor: pointer;
@@ -161,6 +171,12 @@
             color: #444;
             margin-bottom: 15px;
          }
+         main h4 {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 15px;
+            margin-bottom: 10px;
+         }
 
         main p {
             margin-bottom: 15px;
@@ -200,6 +216,31 @@
             color: #005bac;
             font-weight: bold;
         }
+
+        /* Om Oss Section Layout */
+        #om-oss .container-flex {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 30px; /* Space between text and image */
+            align-items: flex-start; /* Align items to the top */
+        }
+        #om-oss .text-content {
+            flex: 2; /* Text takes more space */
+            min-width: 300px; /* Minimum width before wrapping */
+        }
+        #om-oss .image-content {
+            flex: 1; /* Image takes less space */
+            min-width: 250px; /* Minimum width before wrapping */
+            text-align: center; /* Center image within its container */
+        }
+        #om-oss .image-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px; /* Optional: adds rounded corners */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
+            margin-top: 10px; /* Add some space above image */
+        }
+
 
         /* Process Steps (Chevron) Visualization */
         .process-steps-container {
@@ -535,6 +576,14 @@
              #step-tooltip {
                  display: none !important;
              }
+             /* Stack text and image in Om Oss section */
+             #om-oss .container-flex {
+                 flex-direction: column;
+             }
+              #om-oss .image-content {
+                 order: -1; /* Move image above text on smaller screens */
+                 margin-bottom: 20px; /* Add space below image when stacked */
+             }
         }
 
         @media (max-width: 768px) {
@@ -603,20 +652,22 @@
         </section>
 
         <section id="om-oss">
-            <div class="container">
-                <h2>Om Backa Barnet Österåker</h2>
-                <p>Backa Barnet Österåker är ett initiativ som syftar till att stärka det förebyggande arbetet för barn och unga inom Österåkers kommun. Genom att tidigt identifiera riskfaktorer och främja skyddande faktorer, arbetar vi för att skapa en tryggare och mer stödjande miljö för barn och ungdomar att växa upp i. Projektet bygger på nära samverkan mellan kommunala verksamheter, vården, familjer och andra aktörer, med målet att erbjuda rätt stöd i rätt tid.</p>
-                <p>Vårt uppdrag är att säkerställa att alla barn och ungdomar får en god start i livet, med lika möjligheter att utvecklas och nå sin fulla potential, oavsett bakgrund eller livssituation. Detta innebär att vi arbetar för att minska risken för utanförskap, psykisk ohälsa, missbruk och kriminalitet genom tidiga insatser och samordnade stödstrukturer.</p>
-
-<p>Backa barnet bygger på Skottlands arbete med tidiga och samordnade insatser för barn och unga. Arbetet kallas ”Getting It Right For Every Child” (GIRFEC) och har blivit välkänt i många länder och är sedan 2010 ett lagstadgat nationellt förhållningssätt och arbetssätt. GIRFEC betonar vikten av täta samarbeten mellan olika myndigheter, ett gemensamt fokus på barnets bästa och tidig upptäckt av barn i behov av samhällets stöd.</p>
+            <div class="container container-flex">
+                <div class="text-content">
+                    <h2>Om Backa Barnet Österåker</h2>
+                    <p>Backa Barnet Österåker är ett initiativ som syftar till att stärka det förebyggande arbetet för barn och unga inom Österåkers kommun. Genom att tidigt identifiera riskfaktorer och främja skyddande faktorer, arbetar vi för att skapa en tryggare och mer stödjande miljö för barn och ungdomar att växa upp i. Projektet bygger på nära samverkan mellan kommunala verksamheter, vården, familjer och andra aktörer, med målet att erbjuda rätt stöd i rätt tid.</p>
+                    <p>Vårt uppdrag är att säkerställa att alla barn och ungdomar får en god start i livet, med lika möjligheter att utvecklas och nå sin fulla potential, oavsett bakgrund eller livssituation. Detta innebär att vi arbetar för att minska risken för utanförskap, psykisk ohälsa, missbruk och kriminalitet genom tidiga insatser och samordnade stödstrukturer.</p>
+                    <p>Backa barnet bygger på Skottlands arbete med tidiga och samordnade insatser för barn och unga. Arbetet kallas ”Getting It Right For Every Child” (GIRFEC) och har blivit välkänt i många länder och är sedan 2010 ett lagstadgat nationellt förhållningssätt och arbetssätt. GIRFEC betonar vikten av täta samarbeten mellan olika myndigheter, ett gemensamt fokus på barnets bästa och tidig upptäckt av barn i behov av samhällets stöd.</p>
 
     <h4>GIRFEC:s grundläggande principer handlar om att:</h4>
                 <ul>
-<li>1. Barns bästa ska beaktas i alla lägen och de ska komma till tals i alla frågor som berör dem.</li>
-<li>2. Myndigheter och verksamheter ska samverka och koordinera tidiga insatser.</li>
-<li>3. Tydliggöra vem som gör vad för att stödja enskilda barn och unga som har behov av det, och att alla professionella delar en gemensam plan och dokumentation för arbetet.</li></ul>
-
-                
+<li>Barns bästa ska beaktas i alla lägen och de ska komma till tals i alla frågor som berör dem.</li>
+<li>Myndigheter och verksamheter ska samverka och koordinera tidiga insatser.</li>
+<li>Tydliggöra vem som gör vad för att stödja enskilda barn och unga som har behov av det, och att alla professionella delar en gemensam plan och dokumentation för arbetet.</li></ul>
+                </div>
+                <div class="image-content">
+                    <img src="https://images.squarespace-cdn.com/content/v1/5df4be674b4fbe1087b6883c/8c9a84a4-40b7-4f59-a45f-e58bae88f65f/Behovskompassen+ny.png" alt="Behovskompassen för GIRFEC">
+                </div>
             </div>
         </section>
 
@@ -817,8 +868,7 @@
                     const stepRect = step.getBoundingClientRect(); // Step position relative to viewport
                     const containerRect = stepsContainer.getBoundingClientRect(); // Container position relative to viewport
 
-                    // Calculate tooltip position relative to the container
-                    // Position below the step, centered horizontally
+                    // Calculate tooltip initial position (below the step)
                     let top = stepRect.bottom - containerRect.top + 10; // 10px gap below step
                     let left = stepRect.left - containerRect.left + (stepRect.width / 2) - (tooltip.offsetWidth / 2);
 
@@ -828,11 +878,12 @@
                     } else if (left + tooltip.offsetWidth > containerRect.width) {
                         left = containerRect.width - tooltip.offsetWidth - 5; // Add small padding from right edge
                     }
+
                      // Adjust if tooltip goes off-screen vertically (below viewport)
-                     // This is a basic check, might need refinement based on footer etc.
-                    if (stepRect.bottom + tooltip.offsetHeight + 10 > window.innerHeight) {
+                    const tooltipHeight = tooltip.offsetHeight; // Get height after content is set
+                    if (stepRect.bottom + tooltipHeight + 10 > window.innerHeight) {
                          // Position above the step instead
-                         top = stepRect.top - containerRect.top - tooltip.offsetHeight - 10; // 10px gap above step
+                         top = stepRect.top - containerRect.top - tooltipHeight - 10; // 10px gap above step
                     }
 
 
