@@ -33,7 +33,6 @@
         
         .topbar-column-left, .topbar-column-right {
             display: flex;
-            /* flex-direction: row; Changed to column for right side to stack if needed */
             flex-direction: column; 
             gap: 15px; /* Gap between control groups within a column */
             align-items: flex-start;
@@ -156,7 +155,6 @@
         let scene, camera, renderer, controls;
         let funnelSegments = [];
         let sectionHeaderLabels = [];
-        // let footnoteLabel = null; // Footnote label is removed
         let allBubbles = [];
         let allLabels = [];
         let raycaster, mouse;
@@ -171,12 +169,12 @@
             hover: 0xaaaaaa,
             emissiveHover: 0x333333
         };
-        const ANIMATION_DURATION = 300;
+        const ANIMATION_DURATION = 300; // Duration for segment highlight and label scale
         const SEGMENT_OPACITY = 0.15;
         const BUBBLE_RADIUS = 0.08;
         const LABEL_FONT_SIZE = 32;
         const SECTION_LABEL_FONT_SIZE = 30; 
-        // const FOOTNOTE_FONT_SIZE = 24; // Footnote font size not needed
+        const LABEL_HOVER_SCALE = 1.25; // Scale factor for header labels on hover
 
         // Swedish Translations
         const SWEDISH_LABELS = {
@@ -198,7 +196,6 @@
                 VISA_BACKA_BARNET: "Visa Backa barnet", 
                 VISA_INSATSNAMN: "Visa insatsnamn"
             },
-            // FOOTNOTE_TEXT: "Trattens bredd representerar andelen barn som omfattas." // Footnote text removed
         };
 
         const SECTION_MAPPING = { "left": 0, "middle": 1, "right": 2 };
@@ -208,7 +205,7 @@
             { name: "Elevhälsans medicinska insats", color: "green", section: "middle" },
             { name: "Ferierarbeten", color: "yellow", section: "middle" },
             { name: "Familjerådgivning", color: "yellow", section: "middle" },
-            { name: "Extra anpassningar", color: "yellow", section: "middle" }, // Data was orange, changed to yellow based on user's list
+            { name: "Extra anpassningar", color: "yellow", section: "middle" }, 
             { name: "Fältgruppen", color: "yellow", section: "middle" },
             { name: "Orossamtal", color: "orange", section: "middle" },
             { name: "ABC-kurser", color: "green", section: "left" },
@@ -216,7 +213,7 @@
             { name: "Tvärprofessionell screening", color: "green", section: "middle" },
             { name: "Vårdens samverkansteam", color: "orange", section: "middle" },
             { name: "Skolsociala team", color: "orange", section: "middle" },
-            { name: "SSPF", color: "yellow", section: "middle" }, // Data was orange, changed to yellow based on user's list
+            { name: "SSPF", color: "yellow", section: "middle" }, 
             { name: "Familjecentralen", color: "green", section: "left" },
             { name: "Växthuset", color: "green", section: "left" },
             { name: "Fritidsgårdar", color: "yellow", section: "left" },
@@ -230,7 +227,7 @@
             { name: "Särskilt stöd", color: "orange", section: "right" },
             { name: "Familjebehandling", color: "orange", section: "right" },
             { name: "Individforum", color: "orange", section: "right" },
-            { name: "En frisk skolstart", color: "yellow", section: "left" }, // New item from user's list
+            { name: "En frisk skolstart", color: "yellow", section: "left" }, 
             { name: "Särskild undervisningsgrupp", color: "yellow", section: "right" }
         ];
 
@@ -248,8 +245,8 @@
             
             const canvasContainer = document.getElementById('main-canvas-container');
             camera = new THREE.PerspectiveCamera(75, canvasContainer.clientWidth / canvasContainer.clientHeight, 0.1, 1000);
-            camera.position.set(0, 3, 6); // Adjusted based on user's latest code
-            camera.lookAt(0, 0.2, 0);    // Adjusted based on user's latest code
+            camera.position.set(0, 3, 6); 
+            camera.lookAt(0, 0.2, 0);    
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
@@ -272,14 +269,13 @@
             controls.maxDistance = 35;
             controls.maxPolarAngle = Math.PI / 1.5;
             controls.minPolarAngle = Math.PI / 12;
-            controls.target.set(0, 0.2, 0); // Adjusted based on user's latest code
+            controls.target.set(0, 0.2, 0); 
 
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
 
             createFunnel();
             createFunnelSectionLabels();
-            // createFootnoteLabel(); // Footnote creation is removed
             createBubblesAndLabels();
             setupToggles();
             updateVisibility();
@@ -314,7 +310,8 @@
                     hoverColor: new THREE.Color(COLORS.hover),
                     emissiveHoverColor: new THREE.Color(COLORS.emissiveHover),
                     originalOpacity: SEGMENT_OPACITY,
-                    geometryParams: { radiusTop, radiusBottom, length: SEGMENT_LENGTH }
+                    geometryParams: { radiusTop, radiusBottom, length: SEGMENT_LENGTH },
+                    headerLabel: null // Will be assigned later
                 };
                 scene.add(segment);
                 funnelSegments.push(segment);
@@ -344,13 +341,17 @@
                 const topRadius = funnelSegments[i].userData.geometryParams.radiusTop;
                 labelSprite.position.y = topRadius + 1.5; 
                 labelSprite.position.z = 0; 
+                
+                // Store original scale for hover animation
+                labelSprite.userData.originalScale = labelSprite.scale.clone(); 
+                // Link label to segment and vice-versa
+                labelSprite.userData.segmentIndex = i;
+                funnelSegments[i].userData.headerLabel = labelSprite; 
 
                 scene.add(labelSprite);
                 sectionHeaderLabels.push(labelSprite);
             }
         }
-
-        // --- Create Footnote Label function removed ---
         
         // --- Bubble and Label Creation (Program Names & General Text Sprites) ---
         function createTextSprite(message, opts = {}) {
@@ -360,8 +361,8 @@
                 fontface = 'Inter, Arial', fontsize = defaultFontSize,
                 textColor = { r:255, g:255, b:255, a:1.0 },
                 backgroundColor = { r:20, g:20, b:20, a:0.65 }, 
-                padding = (fontsize === LABEL_FONT_SIZE ? 10 : (fontsize === SECTION_LABEL_FONT_SIZE ? 5 : 5 ) ), // Simplified padding
-                borderRadius = (fontsize === LABEL_FONT_SIZE ? 8 : (fontsize === SECTION_LABEL_FONT_SIZE ? 4 : 4) ) // Simplified border radius
+                padding = (fontsize === LABEL_FONT_SIZE ? 10 : 5 ), // Simplified padding
+                borderRadius = (fontsize === LABEL_FONT_SIZE ? 8 : 4) // Simplified border radius
             } = opts;
 
             const canvas = document.createElement('canvas');
@@ -478,9 +479,7 @@
             systemTitle.className = 'group-title';
             systemTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.SYSTEM;
             systemGroup.appendChild(systemTitle);
-            // "Visa Backa barnet" toggle - Default: Inactive
             createToggle(systemGroup, 'toggle-promotion-preventive', SWEDISH_LABELS.TOGGLE_LABELS.VISA_BACKA_BARNET, false, updateVisibility); 
-            // "Visa insatsnamn" toggle - Default: Active
             createToggle(systemGroup, 'toggle-program-names', SWEDISH_LABELS.TOGGLE_LABELS.VISA_INSATSNAMN, true, updateVisibility); 
             column1.appendChild(systemGroup);
             topbar.appendChild(column1);
@@ -493,12 +492,12 @@
             levelGroup.className = 'control-group';
             const levelTitle = document.createElement('span');
             levelTitle.className = 'group-title';
-            levelTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.PROGRAM_LEVELS; // Title "Insatser"
+            levelTitle.textContent = SWEDISH_LABELS.CONTROL_GROUP_TITLES.PROGRAM_LEVELS; 
             levelGroup.appendChild(levelTitle);
             Object.keys(SWEDISH_LABELS.LEVEL_DEFINITIONS).forEach(colorKey => {
                 const levelDef = SWEDISH_LABELS.LEVEL_DEFINITIONS[colorKey];
-                let initialState = false; // Default to inactive
-                if (colorKey === 'orange') { // "Indikerad" is active by default
+                let initialState = false; 
+                if (colorKey === 'orange') { 
                     initialState = true;
                 }
                 createLegendToggle(levelGroup, `toggle-level-${colorKey}`, levelDef.name, levelDef.hexColor, initialState, updateVisibility);
@@ -561,26 +560,32 @@
             if (sectionHeaderLabels[1]) sectionHeaderLabels[1].visible = showPromotionPreventive;
             if (sectionHeaderLabels[2]) sectionHeaderLabels[2].visible = true;
             
-            // Footnote visibility update removed as footnoteLabel is removed.
-            // if(footnoteLabel) footnoteLabel.visible = true; 
+            // Reset label scale if its segment becomes hidden
+            sectionHeaderLabels.forEach(label => {
+                if (!label.visible && label.userData.originalScale) {
+                    label.scale.copy(label.userData.originalScale);
+                }
+            });
 
             if (intersectedObject) {
                 const segmentIndex = funnelSegments.indexOf(intersectedObject);
                 if ((segmentIndex === 0 || segmentIndex === 1) && !showPromotionPreventive) {
                      animateHighlight(intersectedObject, false);
+                     // Also reset label scale if the hovered segment becomes hidden
+                     if(intersectedObject.userData.headerLabel) {
+                         animateLabelScale(intersectedObject.userData.headerLabel, false);
+                     }
                      intersectedObject = null;
                 }
             }
             
             allBubbles.forEach(bubble => {
                 const levelCheckbox = document.getElementById(`toggle-level-${bubble.userData.colorCategory}`);
-                let levelVisible = false; // Default to not visible unless checkbox says otherwise
+                let levelVisible = false; 
                 if (levelCheckbox) {
                     levelVisible = levelCheckbox.checked;
                 } else { 
-                    // Fallback if checkbox not found (should not happen with current setup)
-                    // but important for default states before full UI init or if logic changes
-                    if (bubble.userData.colorCategory === 'orange') levelVisible = true; // Default "Indikerad"
+                    if (bubble.userData.colorCategory === 'orange') levelVisible = true; 
                 }
                 
                 bubble.visible = levelVisible;
@@ -606,28 +611,45 @@
             mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         }
 
-        // --- Interaction and Animation (for Funnel Segments) ---
+        // --- Interaction and Animation ---
         function checkIntersections() {
             raycaster.setFromCamera(mouse, camera);
             const visibleSegments = funnelSegments.filter(seg => seg.visible);
             const intersects = raycaster.intersectObjects(visibleSegments, false);
 
+            const previouslyIntersected = intersectedObject; // Store previous before changing
+
             if (intersects.length > 0) {
                 const firstIntersected = intersects[0].object;
                 if (intersectedObject !== firstIntersected) {
-                    if (intersectedObject) animateHighlight(intersectedObject, false);
-                    intersectedObject = firstIntersected;
+                    // Moved to a new segment or entered a segment
+                    if (intersectedObject) { // Leaving a segment
+                        animateHighlight(intersectedObject, false);
+                        if (intersectedObject.userData.headerLabel) {
+                            animateLabelScale(intersectedObject.userData.headerLabel, false);
+                        }
+                    }
+                    intersectedObject = firstIntersected; // Entering a new segment
                     animateHighlight(intersectedObject, true);
+                    if (intersectedObject.userData.headerLabel) {
+                         animateLabelScale(intersectedObject.userData.headerLabel, true);
+                    }
                 }
+                // else: Still hovering over the same segment, do nothing extra
             } else {
-                if (intersectedObject) {
+                 // Not hovering over any segment
+                if (intersectedObject) { // Was hovering, now leaving
                     animateHighlight(intersectedObject, false);
+                     if (intersectedObject.userData.headerLabel) {
+                        animateLabelScale(intersectedObject.userData.headerLabel, false);
+                    }
                     intersectedObject = null;
                 }
             }
         }
 
         function animateHighlight(object, isHovering) {
+            // Animates the funnel segment's color and opacity
             const targetColor = isHovering ? object.userData.hoverColor : object.userData.originalColor;
             const targetEmissive = isHovering ? object.userData.emissiveHoverColor : new THREE.Color(0x000000);
             const targetOpacity = isHovering ? Math.min(1, object.userData.originalOpacity + 0.35) : object.userData.originalOpacity;
@@ -637,11 +659,28 @@
             anime({ targets: object.material, opacity: targetOpacity, duration: ANIMATION_DURATION, easing: 'easeOutQuad' });
         }
 
+        function animateLabelScale(label, isHovering) {
+            // Animates the scale of the section header label
+            if (!label || !label.userData.originalScale || !label.visible) return; // Don't animate if label doesn't exist, has no scale stored, or is hidden
+
+            const targetScaleX = isHovering ? label.userData.originalScale.x * LABEL_HOVER_SCALE : label.userData.originalScale.x;
+            const targetScaleY = isHovering ? label.userData.originalScale.y * LABEL_HOVER_SCALE : label.userData.originalScale.y;
+
+            anime({
+                targets: label.scale,
+                x: targetScaleX,
+                y: targetScaleY,
+                duration: ANIMATION_DURATION,
+                easing: 'easeOutQuad' 
+            });
+        }
+
+
         // --- Render Loop ---
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
-            checkIntersections();
+            checkIntersections(); // Handles hover checks and triggers animations
             renderer.render(scene, camera);
         }
 
