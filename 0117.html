@@ -1,921 +1,687 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backa Barnet Österåker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Basic Reset & Body Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            background-color: #fff;
-            position: relative;
-            padding-top: 80px; /* Adjusted for fixed header */
-            padding-bottom: 50px; /* Space for footer */
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-        a {
-            color: #005bac;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        /* Add some margin to lists within text content */
-        #om-oss ul {
-            margin-left: 20px;
-            list-style: disc; /* Use standard list style for GIRFEC points */
-            margin-bottom: 15px;
-        }
-         #om-oss ul li {
-             margin-bottom: 5px;
-         }
-
-
-        button {
-            cursor: pointer;
-            border: none;
-            background-color: transparent;
-            font-family: inherit;
-            font-size: inherit;
-        }
-
-        .sr-only { /* Screen reader only text */
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          padding: 0;
-          margin: -1px;
-          overflow: hidden;
-          clip: rect(0, 0, 0, 0);
-          white-space: nowrap;
-          border-width: 0;
-        }
-
-        /* Chat Tab */
-        .chat-tab {
-            position: fixed;
-            top: 50%;
-            right: -65px;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: bottom right;
-            background-color: #005bac;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 5px 5px 0 0;
-            cursor: pointer;
-            z-index: 1000;
-            font-size: 0.9em;
-            white-space: nowrap;
-        }
-
-        /* Header Styling */
-        .site-header {
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 999;
-        }
-
-        .header-main {
-            padding: 15px 0;
-        }
-
-        .main-header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .logo {
-            text-decoration: none;
-        }
-        .logo:hover {
-            text-decoration: none;
-        }
-        .logo img {
-            height: 40px;
-            display: block;
-            onerror: "this.onerror=null; this.src='https://placehold.co/150x40/eeeeee/aaaaaa?text=Logo+Error';"
-        }
-
-        .main-navigation {
-            margin: 10px 0;
-        }
-
-        .main-navigation ul {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .main-navigation li {
-            margin-right: 20px;
-        }
-        .main-navigation li:last-child {
-            margin-right: 0;
-        }
-
-        .main-navigation a {
-            color: #333;
-            font-weight: bold;
-            padding: 5px 0;
-            display: block;
-        }
-        .main-navigation a:hover {
-            color: #005bac;
-            text-decoration: none;
-        }
-
-        /* Main Content Styling */
-        main section {
-            padding: 40px 0;
-            border-bottom: 1px solid #eee;
-        }
-        main section:last-child {
-            border-bottom: none;
-        }
-
-        main h2 {
-            font-size: 1.8em;
-            color: #333;
-            margin-bottom: 20px;
-        }
-         main h3 {
-            font-size: 1.4em;
-            color: #444;
-            margin-bottom: 15px;
-         }
-         main h4 {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 15px;
-            margin-bottom: 10px;
-         }
-
-        main p {
-            margin-bottom: 15px;
-        }
-
-        main ul li {
-             margin-bottom: 10px;
-        }
-
-        /* Hero Section Styling */
-        .hero-placeholder {
-            background-image: url("https://www.osteraker.se/images/18.248d1fb1946ea5facd257c/1740046064063/893359-archipelago-view-in-osteraker%20(3).webp");
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            padding: 100px 0;
-            color: #333;
-            position: relative;
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-box {
-            background-color: rgba(255, 255, 255, 0.85);
-            padding: 30px 40px;
-            border-radius: 8px;
-            text-align: center;
-            max-width: 80%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .hero-box h1 {
-            font-size: 2.5em;
-            margin: 0;
-            color: #005bac;
-            font-weight: bold;
-        }
-
-        /* Om Oss Section Layout */
-        #om-oss .container-flex {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            gap: 30px; /* Space between text and image */
-            align-items: flex-start; /* Align items to the top */
-        }
-        #om-oss .text-content {
-            flex: 2; /* Text takes more space */
-            min-width: 300px; /* Minimum width before wrapping */
-        }
-        #om-oss .image-content {
-            flex: 1; /* Image takes less space */
-            min-width: 250px; /* Minimum width before wrapping */
-            text-align: center; /* Center image within its container */
-        }
-        #om-oss .image-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px; /* Optional: adds rounded corners */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
-            margin-top: 10px; /* Add some space above image */
-        }
-
-
-        /* Process Steps (Chevron) Visualization */
-        .process-steps-container {
-             position: relative; /* Needed for tooltip positioning */
-        }
-
-        .process-steps {
-            display: flex;
-            justify-content: space-between;
-            margin: 30px 0;
-            flex-wrap: wrap;
-            gap: 5px;
-            position: relative; /* Ensure steps are above tooltip initially if needed */
-            z-index: 10;
-        }
-
-        .step {
-            flex: 1;
-            position: relative;
-            padding: 15px 20px 15px 35px;
-            background-color: #f0f0f0;
-            color: #666;
-            text-align: center;
-            cursor: pointer; /* Change cursor to pointer on hover */
-            transition: background-color 0.3s ease, color 0.3s ease;
-            clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%, 20px 50%);
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .step:first-child {
-            clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 50%, calc(100% - 20px) 100%, 0% 100%);
-            padding-left: 20px;
-        }
-
-        .step.completed {
-            background-color: #d3e6f5;
-            color: #005bac;
-        }
-
-        .step.active {
-            background-color: #005bac;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .step:hover {
-            background-color: #ddd;
-            color: #333;
-        }
-        .step.active:hover {
-             background-color: #004080;
-             color: #fff;
-        }
-
-        /* Tooltip for Step Details */
-        #step-tooltip {
-            display: none; /* Hidden by default */
-            position: absolute;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            z-index: 100; /* Ensure tooltip is above other elements */
-            width: 280px; /* Adjust width as needed */
-            font-size: 0.9em;
-            line-height: 1.5;
-            transition: opacity 0.2s ease-in-out;
-            opacity: 0; /* Start fully transparent */
-            pointer-events: none; /* Prevent tooltip from blocking hover on steps */
-        }
-        #step-tooltip.visible {
-            display: block;
-            opacity: 1;
-        }
-
-        #step-tooltip h4 {
-            font-size: 1.1em;
-            margin-bottom: 8px;
-            color: #005bac;
-        }
-         #step-tooltip p {
-             font-size: 0.95em;
-             margin-bottom: 10px;
-         }
-         #step-tooltip strong { /* Milstolpe */
-             font-weight: bold;
-             color: #333;
-         }
-         #step-tooltip .fa-gem { /* Milestone icon */
-            margin-right: 5px;
-            color: #005bac;
-         }
-
-        /* Updates Section - Reusing FAQ styles */
-        .updates-section .update-item { /* Renamed class for clarity */
-            border: 1px solid #eee;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .updates-section summary {
-            padding: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #f9f9f9;
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            list-style: none;
-        }
-        .updates-section summary::-webkit-details-marker {
-            display: none;
-        }
-        .updates-section summary::after {
-            content: '+';
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-            color: #005bac;
-        }
-        .updates-section details[open] summary::after {
-            content: '−';
-        }
-        .updates-section details[open] summary {
-             border-bottom: 1px solid #eee;
-             border-radius: 4px 4px 0 0;
-        }
-        .updates-section details .update-content { /* Class for content padding */
-            padding: 15px;
-        }
-
-
-        /* Links Section Styling */
-        .links-section ul li a {
-            font-weight: bold;
-            display: block;
-            padding: 5px 0;
-        }
-
-        /* Funnel Visualization Section */
-        #funnel-visualisering .iframe-container {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding-top: 60%; /* Aspect ratio (height/width * 100) - adjust as needed */
-            margin-top: 20px;
-            border: 1px solid #eee; /* Optional border */
-            border-radius: 4px;
-        }
-        #funnel-visualisering iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            border: 0; /* Remove default iframe border */
-        }
-
-
-        /* FAQ Section Styling */
-        .faq-section .faq-item {
-            border: 1px solid #eee;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .faq-section summary {
-            padding: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #f9f9f9;
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            list-style: none;
-        }
-        .faq-section summary::-webkit-details-marker {
-            display: none;
-        }
-        .faq-section summary::after {
-            content: '+';
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-            color: #005bac;
-        }
-        .faq-section details[open] summary::after {
-            content: '−';
-        }
-        .faq-section details[open] summary {
-             border-bottom: 1px solid #eee;
-             border-radius: 4px 4px 0 0;
-        }
-        .faq-section details p {
-            padding: 15px;
-        }
-
-
-        /* Footer Styling */
-        .site-footer {
-            background-color: #f8f8f8;
-            color: #555;
-            font-size: 0.9em;
-            margin-top: 40px;
-        }
-
-        .footer-quick-actions {
-            background-color: #fff;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-            border-top: 1px solid #eee;
-        }
-
-        .action-links-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .action-link {
-            color: #333;
-            font-weight: bold;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        .action-link i {
-            font-size: 1.5em;
-            color: #005bac;
-        }
-        .action-link:hover {
-            color: #005bac;
-            text-decoration: none;
-        }
-        .action-link:hover i {
-            color: #004080;
-        }
-
-        .footer-main {
-            padding: 40px 0;
-        }
-
-        .footer-columns {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-        }
-
-        .footer-column h3 {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .footer-column p,
-        .footer-column ul li {
-            margin-bottom: 8px;
-        }
-
-        .footer-column a {
-            color: #005bac;
-        }
-        .footer-column a:hover {
-            text-decoration: underline;
-        }
-
-        .links-info ul {
-            padding-left: 0;
-        }
-        .links-info li a i {
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-
-        .social-icons a {
-            font-size: 1.5em;
-            margin-right: 15px;
-            color: #555;
-        }
-        .social-icons a:last-child {
-            margin-right: 0;
-        }
-        .social-icons a:hover {
-            color: #005bac;
-        }
-
-        .footer-bottom-graphic {
-            height: 30px;
-             background: linear-gradient(to right, #e0f2f7, #b3e0ff, #80cfff);
-        }
-
-
-        /* Responsiveness Adjustments */
-        @media (max-width: 992px) {
-            .main-navigation ul {
-                justify-content: flex-start;
-                margin-top: 10px;
-            }
-            .main-header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-             body {
-                padding-top: 130px;
-             }
-             .hero-box h1 {
-                 font-size: 2em;
-             }
-             .process-steps {
-                 flex-direction: column;
-                 align-items: stretch;
-             }
-             .step {
-                 clip-path: none;
-                 padding: 15px 20px;
-                 margin-bottom: 5px;
-                 cursor: default; /* Disable hover cursor on stacked view */
-             }
-             .step:first-child, .step:last-child {
-                 padding: 15px 20px;
-             }
-             /* Hide tooltip on smaller screens where steps stack (optional) */
-             #step-tooltip {
-                 display: none !important;
-             }
-             /* Stack text and image in Om Oss section */
-             #om-oss .container-flex {
-                 flex-direction: column;
-             }
-              #om-oss .image-content {
-                 order: -1; /* Move image above text on smaller screens */
-                 margin-bottom: 20px; /* Add space below image when stacked */
-             }
-        }
-
-        @media (max-width: 768px) {
-            .action-links-container {
-                justify-content: flex-start;
-                gap: 20px;
-            }
-             body {
-                 padding-top: 130px;
-             }
-             .main-navigation li {
-                 margin-right: 15px;
-             }
-             .footer-columns {
-                grid-template-columns: 1fr;
-             }
-             .hero-placeholder {
-                 padding: 60px 0;
-                 min-height: 250px;
-             }
-             .hero-box h1 {
-                 font-size: 1.8em;
-             }
-             .hero-box {
-                 padding: 20px 30px;
-                 max-width: 90%;
-             }
-             #funnel-visualisering .iframe-container {
-                padding-top: 75%; /* Adjust aspect ratio for smaller screens if needed */
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EALF Estonia Visit • Sept 16–20, 2025</title>
+<meta name="theme-color" content="#0f172a" />
+<style>
+  :root{
+    --bg:#0b1222;
+    --card:#121a2e;
+    --muted:#8ea0c2;
+    --text:#e6ecff;
+    --accent:#65d1ff;
+    --accent-2:#aef39d;
+    --warning:#ffd166;
+    --danger:#ff758f;
+    --ok:#7ef0c1;
+    --chip:#1b2743;
+    --border:#223055;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:860px;margin:0 auto;padding:12px 12px 80px}
+  header{
+    position:sticky;top:0;z-index:10;
+    background:linear-gradient(180deg,#0b1222 70%,#0b122200);
+    padding:10px 0 8px
+  }
+  .title{display:flex;gap:8px;align-items:center}
+  .title h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
+  .subtitle{color:var(--muted);font-size:12px;margin-top:2px}
+  .tabs{display:flex;gap:6px;overflow:auto;padding:10px 2px 2px}
+  .chip{
+    white-space:nowrap;border:1px solid var(--border);
+    background:var(--chip);color:var(--text);
+    padding:8px 10px;border-radius:999px;font-size:13px
+  }
+  .chip[aria-selected="true"]{background:var(--accent);color:#04121a;border-color:transparent;font-weight:700}
+  .controls{display:flex;gap:8px;margin:8px 0 2px}
+  .btn{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:#102041;border:1px solid var(--border);color:var(--text);
+    padding:10px 12px;border-radius:10px;font-size:14px
+  }
+  .btn.secondary{background:#0f1a35}
+  .btn:active{transform:translateY(1px)}
+  .search{position:relative; margin:10px 0 0}
+  .search input{
+    width:100%;padding:12px 14px 12px 38px;border-radius:10px;border:1px solid var(--border);
+    background:#0f1a35;color:var(--text);font-size:14px
+  }
+  .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.7}
+  .day{margin-top:10px}
+  .date-label{
+    position:sticky;top:66px;z-index:5;
+    font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;
+    padding:6px 2px;background:#0b1222d9;backdrop-filter:saturate(150%) blur(6px)
+  }
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:12px;margin:10px 0
+  }
+  .row{display:flex;gap:12px}
+  .time{
+    flex:0 0 78px;font-weight:700;color:#e9f4ff;font-size:13px;letter-spacing:.2px
+  }
+  .body{flex:1;min-width:0}
+  .h{margin:0 0 3px;font-size:15px;font-weight:750}
+  .loc, .speakers, .note{font-size:13px;color:var(--muted);margin:2px 0}
+  .badge{display:inline-flex;gap:6px;align-items:center;background:#0e2441;border:1px solid var(--border);color:#cfe3ff;border-radius:999px;padding:4px 8px;font-size:12px}
+  .when-now{border-color:transparent;background:linear-gradient(90deg,#65d1ff33,#aef39d33);}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .tool{
+    display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;
+    border:1px solid var(--border);background:#0f1a35;color:var(--text);font-size:13px
+  }
+  .tool:active{transform:translateY(1px)}
+  .empty{color:var(--muted);text-align:center;padding:22px 8px}
+  .divider{height:1px;background:var(--border);margin:14px 0}
+  /* bottom nav */
+  .nav{
+    position:fixed;inset:auto 0 0 0;background:#0b1222f2;border-top:1px solid var(--border);
+    display:flex;gap:8px;justify-content:space-around;padding:10px 8px;backdrop-filter:blur(6px)
+  }
+  .nav button{
+    flex:1;background:#0f1a35;border:1px solid var(--border);color:var(--text);padding:10px;border-radius:12px;font-size:12px
+  }
+  .nav button[aria-current="page"]{background:var(--accent);color:#03141b;border-color:transparent;font-weight:800}
+  /* sections */
+  section{display:none}
+  section.active{display:block}
+  ul.clean{list-style:none;margin:0;padding:0}
+  li.item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0e2441;border:1px solid var(--border);font-size:12px;color:#cfe3ff}
+  .links a{display:inline-flex;align-items:center;gap:8px;margin-right:12px;margin-top:8px}
+  @media (min-width:720px){
+    .row{gap:16px}
+    .time{flex-basis:100px}
+    .wrap{padding-bottom:100px}
+    .grid{grid-template-columns:1fr 1fr}
+  }
+</style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 19c3-1 6-1 8-6 2 5 5 5 8 6-2 2-5 3-8 3s-6-1-8-3Z" stroke="#65d1ff" stroke-width="1.5" />
+          <circle cx="12" cy="7" r="3.2" stroke="#aef39d" stroke-width="1.5"/>
+        </svg>
+        <h1>EALF Learning Trip • Estonia</h1>
+      </div>
+      <div class="subtitle">Tallinn • Sept 16–20, 2025</div>
 
-    <div class="chat-tab">
-        Chatta med servicecenter
-    </div>
+      <div class="tabs" id="dayTabs" role="tablist" aria-label="Days"></div>
 
-    <header class="site-header">
-        <div class="header-main">
-            <div class="container main-header-content">
-                <a href="/" class="logo">
-                    <img src="https://www.osteraker.se/images/18.592cfecd176fc0db87824be/1732699588409/logo.webp" alt="Österåker Logotyp" style="height: 40px; display: block;">
-                </a>
-                <nav class="main-navigation">
-                    <ul>
-                        <li><a href="#">Barn & utbildning</a></li>
-                        <li><a href="#">Omsorg & stöd</a></li>
-                        <li><a href="#">Bygga, bo & miljö</a></li>
-                        <li><a href="#">Trafik & infrastruktur</a></li>
-                        <li><a href="#">Uppleva & göra</a></li>
-                        <li><a href="#">Jobb & företagande</a></li>
-                        <li><a href="#">Kommun & politik</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
+      <div class="controls">
+        <button class="btn" id="btnNow" title="Jump to current/next item">What's on now</button>
+        <button class="btn secondary" id="btnMyPlan" title="See items you starred">My plan (★)</button>
+      </div>
+
+      <label class="search" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7.5" stroke="#8ea0c2" stroke-width="1.6"/>
+          <path d="M20 20l-3.5-3.5" stroke="#8ea0c2" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <input id="search" type="search" placeholder="Search title, location, speaker…" />
+      </label>
     </header>
 
-    <main>
-        <section class="hero-placeholder">
-            <div class="hero-box">
-                 <h1>Backa barnet Österåker</h1>
-            </div>
-        </section>
+    <!-- Schedule -->
+    <section id="scheduleSection" class="active" aria-labelledby="schedule-tab">
+      <div id="schedule"></div>
+    </section>
 
-        <section id="om-oss">
-            <div class="container container-flex">
-                <div class="text-content">
-                    <h2>Om Backa Barnet Österåker</h2>
-                    <p>Backa Barnet Österåker är ett initiativ som syftar till att stärka det förebyggande arbetet för barn och unga inom Österåkers kommun. Genom att tidigt identifiera riskfaktorer och främja skyddande faktorer, arbetar vi för att skapa en tryggare och mer stödjande miljö för barn och ungdomar att växa upp i. Projektet bygger på nära samverkan mellan kommunala verksamheter, vården, familjer och andra aktörer, med målet att erbjuda rätt stöd i rätt tid.</p>
-                    <p>Vårt uppdrag är att säkerställa att alla barn och ungdomar får en god start i livet, med lika möjligheter att utvecklas och nå sin fulla potential, oavsett bakgrund eller livssituation. Detta innebär att vi arbetar för att minska risken för utanförskap, psykisk ohälsa, missbruk och kriminalitet genom tidiga insatser och samordnade stödstrukturer.</p>
-                    <p>Backa barnet bygger på Skottlands arbete med tidiga och samordnade insatser för barn och unga. Arbetet kallas ”Getting It Right For Every Child” (GIRFEC) och har blivit välkänt i många länder och är sedan 2010 ett lagstadgat nationellt förhållningssätt och arbetssätt. GIRFEC betonar vikten av täta samarbeten mellan olika myndigheter, ett gemensamt fokus på barnets bästa och tidig upptäckt av barn i behov av samhällets stöd.</p>
-
-    <h4>GIRFEC:s grundläggande principer handlar om att:</h4>
-                <ul>
-<li>Barns bästa ska beaktas i alla lägen och de ska komma till tals i alla frågor som berör dem.</li>
-<li>Myndigheter och verksamheter ska samverka och koordinera tidiga insatser.</li>
-<li>Tydliggöra vem som gör vad för att stödja enskilda barn och unga som har behov av det, och att alla professionella delar en gemensam plan och dokumentation för arbetet.</li></ul>
-                </div>
-                <div class="image-content">
-                    <img src="https://images.squarespace-cdn.com/content/v1/5df4be674b4fbe1087b6883c/8c9a84a4-40b7-4f59-a45f-e58bae88f65f/Behovskompassen+ny.png" alt="Behovskompassen för GIRFEC">
-                </div>
-            </div>
-        </section>
-
-        <section id="aktuellt">
-            <div class="container">
-                <h2>Aktuellt</h2>
-                <h3>Projektets faser och framsteg</h3>
-                <p>För att tydliggöra var vi befinner oss i processen har vi delat upp det inledande arbetet i fyra steg (håll muspekaren över ett steg för mer information):</p>
-
-                <div class="process-steps-container">
-                    <div class="process-steps">
-                        <div class="step completed"
-                             data-title="1. Utredning"
-                             data-description="I detta inledande skede kartlägger vi behoven av tidiga insatser, samlar in data och intervjuer interna och externa kring förutsättningar för ett eventuellt införande."
-                             data-milestone="Inriktningsbeslut – När utredningen är klar fattas ett inriktningsbeslut om kommunen bedömer att det är relevant att gå in i bredare och riktade diskussioner med interna och externa intressenter.">
-                             1. Utredning
-                        </div>
-                        <div class="step active"
-                             data-title="2. Inriktning"
-                             data-description="Under denna fas förs aktiva dialoger med relevanta parter och övergripande strategier utformas baserat på den information som samlats in. Det handlar om att skapa en tydlig plan i samverkan för hur nya stödstrukturer ska implementeras, samt hur dessa ska finansieras och organiseras."
-                             data-milestone="Beslut – Här fattas det formella beslutet tillsammans med externa aktörer om att ingå i ett partnerskap kring den gemensamma arbetsmodellen.">
-                             2. Inriktning
-                        </div>
-                        <div class="step"
-                             data-title="3. Beredning"
-                             data-description="I denna fas förbereds införandet genom att varje förvaltning får i uppdrag att förbereda sina respektive verksamheter för ett kommande införande enligt föregående fas. Här ingår även småskaliga tester av arbetsmodellen i kontrollerade former."
-                             data-milestone="Lansering – När allt är på plats operationaliseras förändrings- och utvecklingsarbetet, och vi går in i den sista fasen.">
-                             3. Beredning
-                        </div>
-                        <div class="step"
-                             data-title="4. Införande"
-                             data-description="Nu börjar själva genomförandet, där stödstrukturer implementeras stegvist och följs upp successivt för att säkerställa att de når sina mål. Här arbetar vi löpande med att utvärdera effekterna och justera arbetsmodellen för att optimera resultaten."
-                             data-milestone=""> 4. Införande
-                        </div>
-                    </div>
-                    <div id="step-tooltip"></div> </div>
-
-                <div class="updates-section">
-                    <h3 style="margin-top: 40px;">Uppdateringar och nyheter</h3>
-<details class="update-item">
-                        <summary>Juni 2025 - Arbetet går in i inriktningsfasen</summary>
-                        <div class="update-content">
-                            <p>TBD</p>
-                    </details>
-                    <details class="update-item">
-                        <summary>Maj 2025 - Utredningsfasen avslutas</summary>
-                        <div class="update-content">
-                            <p>Rapportsammanställning avslutas och kommunikationsplan upprättas. Ett inriktningsbeslut fattas av styrgrupp för att möjliggöra en bredare och öppnare dialog med interna och externa intressenter. Inriktningsbeslutet får stöd med hjälp av öronmärkta medel för ett eventuellt införande genom ett budgetdirektiv.</p>
-                            <p>Nu planeras bredare dialoger med olika intressenter. Ett studiebesök till Ystad, där Backa barnet kommit längst i sitt införande, planeras till juni tillsammans med vården och polisen.</p>
-                        </div>
-                    </details>
-                    <details class="update-item">
-                        <summary>April 2025 - Förstudien slutförd</summary>
-                         <div class="update-content">
-                            <p>Datainsamling och intervjuer avslutas. Rapportsammanställning påbörjas. Preliminära resultat visar på att behoven och förutsättningar för tidiga och samordnade insatser är goda i Österåker. Styrgrupp och arbetsgrupp påbörjar diskussioner på hur arbetet bör tas vidare och hur utstående frågor kring Backa barnet-modellen bör addresseras.</p>
-                        </div>
-                    </details>
-                    <details class="update-item">
-                        <summary>Mars 2025 - Styrning etableras</summary>
-                         <div class="update-content">
-                            <p>Förstudie genomförs genom ett 40-tal intervjuer och dataanalyser. Både interna och externa intressenter ingår i förstudien för att bilda en helhetsbild kring förutsättningar för nya arbetssätt mellan kommunala och andra aktörer. En styrgrupp och arbetsgrupp tillsätts för att styra arbetet löpande.</p>
-                        </div>
-                    </details>
-                    <details class="update-item">
-                        <summary>Februari 2025 - Förstudie påbörjas</summary>
-                         <div class="update-content">
-                            <p>Förstudie påbörjas. En kick-off där representanter från kommunens olika förvaltningar, skolor, socialtjänst och fritidsverksamheter deltog. Målet är att gemensamt skapa bättre förutsättningar för våra barn och unga och att tidigt involvera andra samverkansaktörer såsom vården.</p>
-                        </div>
-                    </details>
-                 </div>
-            </div>
-        </section>
-
-        <section id="genvagar-kontakt" class="links-section">
-            <div class="container">
-                <h2>Genvägar och kontakt</h2>
-                <ul>
-                    <li><a href="#">Österåkers förstudie</a>Läs om kommunens förutsättningar för tidiga och samordnade insatser genom Backa barnet.</li>
-                    <li><a href="https://www.backabarnet.se">Backa barnets hemsida</a>Läs mer om Backa barnet.</li>
-                    <li><a href="https://www.skolverket.se/skolutveckling/leda-och-organisera-skolan/ge-extra-stod-till-elever/tidiga-och-samordnade-insatser-for-barn-och-unga">TSI-handboken</a>Skolverkets och Socialstyrelsens arbete om tidiga och samordnade insatser.</li>
-                    <li><a href="https://www.osteraker.se/omsorgstod/familjbarnochunga/oroforbarn.4.367d658917909e8fc2b23c4.html">Orosanmälan</a>Gå direkt till Socialtjänsten om du misstänker att ett barn far illa.</li>
-                    <li>Har du frågor eller vill veta mer om vårt arbete? Kontakta oss via <a href="mailto:backabarnet@osteraker.se">backabarnet@osteraker.se</a></li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="funnel-visualisering">
-            <div class="container">
-                <h2>Visualisering av Stödprocessen</h2>
-                <p>Här kan du se en interaktiv visualisering av hur stödprocessen kan se ut:</p>
-                <div class="iframe-container">
-                    <iframe src="https://joshico.org/funnel.html"
-                            title="Interaktiv visualisering av stödprocessen"
-                            allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        </section>
-
-        <section id="faq" class="faq-section">
-    <div class="container">
-        <h2>FAQ – Vanliga frågor och svar</h2>
-        
-        <details class="faq-item">
-            <summary>Vad är Backa Barnet Österåker?</summary>
-            <p>Backa Barnet Österåker är ett initiativ för att stärka det förebyggande arbetet för barn och unga i kommunen genom tidiga och samordnade insatser.</p>
-        </details>
-
-        <details class="faq-item">
-            <summary>Varför har kommunen aktualiserat arbete med tidiga och samordnade insatser (TSI)?</summary>
-            <p>Behoven har uppmärksammats under de senaste åren, särskilt med ökad press på skolor och andra verksamheter att ge bättre stöd till barn och unga. En förstudie har visat att det nuvarande förebyggande systemet behöver stärkas och bättre samordnas för att möta dessa utmaningar.</p>
-        </details>
-
-        <details class="faq-item">
-            <summary>Finns det alternativ till Backa Barnet-modellen som har övervägts?</summary>
-            <p>Ja, flera modeller, inklusive den så kallade Skottlandsmodellen, har övervägts. Backa Barnet representerar en ambitiös och långsiktig riktning, medan andra modeller kan fungera som milstolpar längs vägen mot ett mer samordnat och proaktivt arbetssätt.</p>
-        </details>
-
-        <details class="faq-item">
-            <summary>Jag arbetar inom skola och ser behov varje dag men har inte hört något om Backa Barnet - varför det?</summary>
-            <p>Projektet befinner sig fortfarande i en tidig fas, där vi lägger grunden för långsiktig samverkan mellan olika yrkesgrupper och verksamheter. Beredningsarbetet kräver noggrann planering för att säkerställa att rätt resurser och processer finns på plats vid lanseringen.</p>
-        </details>
-
-        <details class="faq-item">
-            <summary>Är det inte bättre att bygga något skräddarsytt för våra invånare än att kopiera något från andra kommuner?</summary>
-            <p>Backa Barnet är utformat för att vara flexibelt och anpassningsbart efter lokala behov. Modellen erbjuder gemensamma processer som förenklar samarbetet mellan kommun, region och stat, men ger också stort utrymme för lokala justeringar och förbättringar baserat på lokala förutsättningar.</p>
-        </details>
-
-        <details class="faq-item">
-            <summary>Hur ska vi hinna med detta under 2025?</summary>
-            <p>Utredningsarbetet startade 2025 och kommer att kräva bred samverkan över flera förvaltningar och externa aktörer. En fullskalig övergång till mer proaktiva arbetsmodeller förväntas påbörjas först efter ett beslut om införande, vilket tidigast kan ske 2026.</p>
-        </details>
-        
-    </div>
-</section>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-main">
-            <div class="container footer-columns">
-                <div class="footer-column contact-info">
-                    <h3>Kontakta servicecenter</h3>
-                    <p>Telefonnummer: <a href="tel:08-540-810-00">08-540 810 00</a></p>
-                    <p>E-postadress: <a href="mailto:servicecenter@osteraker.se">servicecenter@osteraker.se</a></p>
-                    <p>Postadress: Österåkers kommun, 184 86 Åkersberga</p>
-                    <p>Organisationsnummer: 212000-2890</p>
-                    <p><a href="#">Fler kontaktuppgifter och öppettider <i class="fas fa-arrow-right"></i></a></p>
-                </div>
-                <div class="footer-column visit-info">
-                    <h3>Besök kommunhuset</h3>
-                    <p>Besöksadress: Alceahuset, Hackstavägen 22, Åkersberga</p>
-                </div>
-                <div class="footer-column links-info">
-                    <h3>Länkar</h3>
-                    <ul>
-                        <li><a href="#">Information om webbplatsen <i class="fas fa-arrow-right"></i></a></li>
-                        <li><a href="#">Tillgänglighetsredogörelse <i class="fas fa-arrow-right"></i></a></li>
-                        <li><a href="#">Cookies <i class="fas fa-arrow-right"></i></a></li>
-                        <li><a href="#">A till Ö <i class="fas fa-arrow-right"></i></a></li>
-                        <li><a href="#">Nyheter <i class="fas fa-arrow-right"></i></a></li>
-                    </ul>
-                </div>
-                <div class="footer-column social-media">
-                    <h3>Följ oss på sociala medier</h3>
-                    <div class="social-icons">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-            </div>
+    <!-- Logistics -->
+    <section id="logisticsSection" aria-labelledby="logistics-tab">
+      <h2>Logistics & Practical Info</h2>
+      <div class="grid">
+        <div class="card">
+          <h3 class="h">Objectives</h3>
+          <ul class="clean">
+            <li>• Strengthen group cohesion among EALF alumni.</li>
+            <li>• Learn from Estonian education stakeholders and systems.</li>
+            <li>• Reflect to improve impact back home.</li>
+          </ul>
         </div>
-         <div class="footer-bottom-graphic">
-             </div>
-    </footer>
+        <div class="card">
+          <h3 class="h">Transport</h3>
+          <p class="note">Tallinn is walkable. Public transport tickets cost €2 and are valid for 1 hour (buy with contactless on board — enter at the first door). We'll use cars for visits outside Tallinn.</p>
+          <div class="links">
+            <a href="https://maps.app.goo.gl/sUiXkVguAwUCG3Eo7" target="_blank" rel="noopener">Tallinn Airport (TLL)</a>
+          </div>
+        </div>
+        <div class="card">
+          <h3 class="h">Accommodation</h3>
+          <p class="note">Airbnbs ~€40–50 pp/night; hotels: Citybox, Hampton by Hilton, Nordic Hotel Forum. Look for a place with a sauna for a cultural bonus.</p>
+        </div>
+        <div class="card">
+          <h3 class="h">Meals & Budget</h3>
+          <p class="note">Participants cover meals except Friday dinner (Teach For All). School lunch &lt; €5. Mid-range meals: soup €7–9, salad €9–11, mains €10–20, beer €6–7.</p>
+        </div>
+        <div class="card">
+          <h3 class="h">Weather & Dress</h3>
+          <p class="note">Expect 10–15°C and possible rain. Dress business-casual for Wed/Thu meetings. For school visits, bring indoor shoes/slippers.</p>
+        </div>
+        <div class="card">
+          <h3 class="h">Good to Know</h3>
+          <ul class="clean">
+            <li>• Currency: Euro; cards widely accepted.</li>
+            <li>• Tap water is safe.</li>
+            <li>• Tallinn is generally safe — use normal precautions.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const steps = document.querySelectorAll('.step');
-            const tooltip = document.getElementById('step-tooltip');
-            const stepsContainer = document.querySelector('.process-steps-container'); // Get container for positioning context
+    <!-- Contacts -->
+    <section id="contactsSection" aria-labelledby="contacts-tab">
+      <h2>Contacts</h2>
+      <div class="card">
+        <div class="row">
+          <div class="body">
+            <div class="h">Sandra Fomotškin <span class="pill">Main organizer</span></div>
+            <div class="loc">📧 <a href="mailto:sandra.fomotskin@gmail.com">sandra.fomotskin@gmail.com</a></div>
+            <div class="loc">📱 <a href="tel:+37256246806">+372 5624 6806</a></div>
+            <p class="note">If you need an invitation letter, official program, or certificate for your employer/visa, contact Sandra.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            if (!tooltip || !stepsContainer) return; // Exit if elements not found
+    <!-- Pre-reads -->
+    <section id="prereadsSection" aria-labelledby="prereads-tab">
+      <h2>Pre-readings & Videos</h2>
+      <ul class="clean">
+        <li class="item">
+          <div class="h">About Estonia</div>
+          <div class="links">
+            <a href="https://estonia.ee/" target="_blank" rel="noopener">estonia.ee</a>
+          </div>
+        </li>
+        <li class="item">
+          <div class="h">Estonian education system</div>
+          <div class="links">
+            <a href="https://www.youtube.com/@EducationEstonia" target="_blank" rel="noopener">EducationEstonia (YouTube)</a>
+            <a href="https://www.educationestonia.org/wp-content/uploads/2023/12/AimHighEstoniaCaseStudy.pdf" target="_blank" rel="noopener">Estonia Case Study (PDF)</a>
+          </div>
+        </li>
+        <li class="item">
+          <div class="h">Tallinn guide</div>
+          <div class="links">
+            <a href="https://www.lonelyplanet.com/articles/guide-to-tallinn" target="_blank" rel="noopener">Lonely Planet: First-time Tallinn</a>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
 
-            steps.forEach(step => {
-                step.addEventListener('mouseenter', (event) => {
-                    // Don't show tooltip on smaller screens where steps stack
-                    if (window.innerWidth <= 992) {
-                        return;
-                    }
+  <nav class="nav" role="navigation" aria-label="Primary">
+    <button id="navSchedule" aria-current="page">Schedule</button>
+    <button id="navLogistics">Logistics</button>
+    <button id="navContacts">Contacts</button>
+    <button id="navPrereads">Pre-reads</button>
+  </nav>
 
-                    const title = step.dataset.title || '';
-                    const description = step.dataset.description || '';
-                    const milestone = step.dataset.milestone || '';
+<script>
+/* ===========
+   DATA
+   =========== */
+const tz = "Europe/Tallinn"; // local timezone for events
+// Helper to make map links
+const gmap = (addr) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
 
-                    // Build tooltip content
-                    let tooltipContent = `<h4>${title}</h4><p>${description}</p>`;
-                    if (milestone) {
-                        tooltipContent += `<p><strong><i class="fas fa-gem"></i> Milstolpe:</strong> ${milestone}</p>`;
-                    }
-                    tooltip.innerHTML = tooltipContent;
+// Event schema:
+// { id, day: "2025-09-16", start:"19:00", end:"", title, location, address, speakers:[], notes:"", tags:[] }
+const EVENTS = [
+  // Tue 16 Sep
+  {
+    id: "arrive",
+    day: "2025-09-16", start: "15:00", end: "", title: "Arrivals & check-in",
+    location: "Tallinn Airport / City",
+    address: "Tallinn Airport (TLL)",
+    notes: "Airport ~15–30 min from city; Bus €2; Bolt €10–15",
+    tags:["travel"]
+  },
+  {
+    id: "tue-dinner",
+    day: "2025-09-16", start: "19:00", end: "", title: "Welcome dinner",
+    location: "Apartment or nearby",
+    address: "Tallinn Old Town",
+    notes: "Optional short old town tour afterwards",
+    tags:["social","food"]
+  },
 
-                    // --- Positioning Logic ---
-                    const stepRect = step.getBoundingClientRect(); // Step position relative to viewport
-                    const containerRect = stepsContainer.getBoundingClientRect(); // Container position relative to viewport
+  // Wed 17 Sep — Big Picture
+  {
+    id: "wed-breakfast",
+    day: "2025-09-17", start: "08:00", end: "08:45", title: "Optional breakfast meeting",
+    location: "Dot Cafe", address: "Dot Cafe, Tallinn", notes:"Wear comfortable shoes; be ready to buy a tram/bus ticket",
+    tags:["meet"]
+  },
+  {
+    id: "wed-ministry",
+    day: "2025-09-17", start: "09:00", end: "10:30",
+    title: "Structure of Estonian Education, ‘Recipe’ for Success & AI Leap",
+    location: "Ministry of Education", address: "Tõnismägi 11, Tallinn",
+    speakers:[
+      "Riin Saadjärv (Head of EdTech Area)",
+      "Sandra Fomotškin (Advisor on Inclusive Education; former Chief Analyst)"
+    ],
+    notes:"Arrive a few minutes early for security.",
+    tags:["session","policy"]
+  },
+  {
+    id: "wed-tlu",
+    day: "2025-09-17", start: "11:00", end: "12:30",
+    title: "Teacher training & policy; Research-based decision-making",
+    location: "Tallinn University", address: "Narva mnt 25, Tallinn",
+    speakers:[
+      "Kristi Klaasmägi (Vice-Rector for Educational Innovation; ex-CEO Noored Kooli)",
+      "Joosep Norma (Tallinn University; Noored Kooli alumnus & trainer)"
+    ],
+    tags:["session","university"]
+  },
+  {
+    id: "wed-lunch",
+    day: "2025-09-17", start: "12:30", end: "13:15",
+    title: "Lunch",
+    location: "University cafeteria / Ülemiste City", address: "Narva mnt 25, Tallinn / Ülemiste City",
+    tags:["food"]
+  },
+  {
+    id: "wed-nk",
+    day: "2025-09-17", start: "13:45", end: "14:45",
+    title: "Meeting with Triin Noorkõiv + Reflection",
+    location: "Noored Kooli office", address: "Lõõtsa 8, Tallinn",
+    speakers:["Triin Noorkõiv (Back to School; School for New Teachers; Clanbeat)"],
+    tags:["session","alumni"]
+  },
+  {
+    id: "wed-eestonia",
+    day: "2025-09-17", start: "15:00", end: "16:30",
+    title: "e-Estonia Briefing Centre — e-services & why they matter",
+    location: "e-Estonia Briefing Centre", address: "Valukoja 8, Tallinn",
+    tags:["visit","digital"]
+  },
+  { id:"wed-free", day:"2025-09-17", start:"17:00", end:"", title:"Free time & dinner", location:"—", address:"Tallinn", tags:["free","food"] },
 
-                    // Calculate tooltip initial position (below the step)
-                    let top = stepRect.bottom - containerRect.top + 10; // 10px gap below step
-                    let left = stepRect.left - containerRect.left + (stepRect.width / 2) - (tooltip.offsetWidth / 2);
+  // Thu 18 Sep — Grassroots
+  {
+    id:"thu-drive-saku", day:"2025-09-18", start:"08:30", end:"", title:"Drive to Saku", location:"Meeting spot TBC", address:"Saku, Harju County", notes:"Municipality next to Tallinn (Sandra lives here).", tags:["travel"]
+  },
+  {
+    id:"thu-kinder", day:"2025-09-18", start:"09:00", end:"10:00",
+    title:"Visit: Kindergarten Päikesekild", location:"Päikesekild Kindergarten", address:"Teaduse 14, Saku",
+    tags:["school","visit","early-years"]
+  },
+  {
+    id:"thu-saku-gym", day:"2025-09-18", start:"10:30", end:"12:30",
+    title:"Visit: Saku Gymnasium", location:"Saku Gymnasium", address:"Traani tee 1, Saku",
+    tags:["school","visit"]
+  },
+  {
+    id:"thu-lunch", day:"2025-09-18", start:"12:30", end:"13:15",
+    title:"School lunch", location:"At school cafeteria", address:"Traani tee 1, Saku", tags:["food"]
+  },
+  {
+    id:"thu-lgov", day:"2025-09-18", start:"13:30", end:"14:30",
+    title:"Local government: driving change via collective leadership",
+    location:"Municipality / school", address:"Juubelitammede tee 15, Saku (or at school)",
+    tags:["policy","session"]
+  },
+  {
+    id:"thu-drive-back", day:"2025-09-18", start:"14:45", end:"15:30",
+    title:"Drive back to Tallinn / to Laulasmaa", location:"—", address:"Tallinn or Laulasmaa", tags:["travel"]
+  },
+  {
+    id:"thu-ail", day:"2025-09-18", start:"15:30", end:"",
+    title:"AI Leap: meeting with COO Laura Kalda",
+    location:"Telliskivi Creative City", address:"Telliskivi 60-5, Tallinn", tags:["session","AI"]
+  },
+  {
+    id:"thu-or-laulasmaa", day:"2025-09-18", start:"15:30", end:"",
+    title:"OR: Join EALF 3rd cohort session (Laulasmaa)",
+    location:"Arvo Pärt Centre (Laulasmaa)", address:"Arvo Pärdi keskus, Kellasalu tee 3, Laulasmaa",
+    tags:["session","music","optional"]
+  },
+  {
+    id:"thu-free", day:"2025-09-18", start:"18:00", end:"",
+    title:"Free time & dinner", location:"Tallinn / Laulasmaa", address:"—", notes:"There’s a spa in Laulasmaa…", tags:["free","food"]
+  },
 
-                    // Adjust if tooltip goes off-screen horizontally
-                    if (left < 0) {
-                        left = 5; // Add small padding from left edge
-                    } else if (left + tooltip.offsetWidth > containerRect.width) {
-                        left = containerRect.width - tooltip.offsetWidth - 5; // Add small padding from right edge
-                    }
+  // Fri 19 Sep — Narva & reform
+  {
+    id:"fri-start", day:"2025-09-19", start:"07:30", end:"",
+    title:"Start to Narva", location:"Meet spot TBC", address:"Narva (Russian border town)", notes:"Learn how politics ties into Estonian education; Estonian-language instruction in a mostly Russian-speaking town.", tags:["travel"]
+  },
+  {
+    id:"fri-school", day:"2025-09-19", start:"10:00", end:"12:00",
+    title:"Visit: Narva Eesti Gymnasium", location:"Hariduse 3, Narva", address:"Hariduse 3, Narva",
+    notes:"Fellow Liina Punamäe (EALF 3rd cohort) works here.",
+    tags:["school","visit"]
+  },
+  {
+    id:"fri-lunch", day:"2025-09-19", start:"12:00", end:"12:30",
+    title:"School lunch", location:"On site", address:"Hariduse 3, Narva", tags:["food"]
+  },
+  {
+    id:"fri-tour", day:"2025-09-19", start:"12:30", end:"13:30",
+    title:"Narva tour", location:"Narva", address:"Narva Town", tags:["tour"]
+  },
+  { id:"fri-drive-johvi", day:"2025-09-19", start:"13:45", end:"15:00", title:"Drive to Jõhvi", location:"—", address:"Jõhvi", tags:["travel"] },
+  {
+    id:"fri-kood", day:"2025-09-19", start:"15:00", end:"16:00",
+    title:"Visit: kood/Jõhvi (TBC)", location:"kood/Jõhvi", address:"Tartu põik 5, Jõhvi", tags:["visit","tech"]
+  },
+  { id:"fri-drive-back", day:"2025-09-19", start:"16:00", end:"18:00", title:"Drive back to Tallinn", location:"—", address:"Tallinn", tags:["travel"] },
+  {
+    id:"fri-dinner", day:"2025-09-19", start:"18:00", end:"", title:"Community gathering & dinner (with EALF 3rd cohort & Noored Kooli alumni)",
+    location:"Mona’s place", address:"Tatari 21b, Tallinn", notes:"Dinner covered by Teach For All", tags:["social","food"]
+  },
 
-                     // Adjust if tooltip goes off-screen vertically (below viewport)
-                    const tooltipHeight = tooltip.offsetHeight; // Get height after content is set
-                    if (stepRect.bottom + tooltipHeight + 10 > window.innerHeight) {
-                         // Position above the step instead
-                         top = stepRect.top - containerRect.top - tooltipHeight - 10; // 10px gap above step
-                    }
+  // Sat 20 Sep — Explore
+  {
+    id:"sat-explore", day:"2025-09-20", start:"10:00", end:"",
+    title:"Explore Tallinn (free tour & ideas)", location:"Tallinn", address:"Old Town, Telliskivi, Kadriorg…", tags:["free","tour"]
+  },
+  {
+    id:"sat-depart", day:"2025-09-20", start:"16:00", end:"",
+    title:"Departures from Tallinn", location:"Tallinn Airport (TLL)", address:"Tallinn Airport (TLL)", tags:["travel"]
+  }
+];
 
+/* ===========
+   RENDER
+   =========== */
+const $ = (s, r=document)=>r.querySelector(s);
+const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
 
-                    tooltip.style.top = `${top}px`;
-                    tooltip.style.left = `${left}px`;
-                    tooltip.classList.add('visible');
-                });
+const scheduleEl = $('#schedule');
+const tabsEl = $('#dayTabs');
+const searchEl = $('#search');
 
-                step.addEventListener('mouseleave', () => {
-                    tooltip.classList.remove('visible');
-                });
-            });
+const DAYS = Array.from(new Set(EVENTS.map(ev=>ev.day))).sort();
+let activeDay = DAYS[0];
+let showOnlyStarred = false;
 
-            // Optional: Hide tooltip if mouse moves outside the steps container entirely
-            stepsContainer.addEventListener('mouseleave', (event) => {
-                 // Check if the mouse is moving to the tooltip itself
-                 if (!tooltip.contains(event.relatedTarget)) {
-                    tooltip.classList.remove('visible');
-                 }
-            });
-             // Hide tooltip if mouse leaves the tooltip itself
-             tooltip.addEventListener('mouseleave', () => {
-                 tooltip.classList.remove('visible');
-             });
-        });
-    </script>
+function formatDateLabel(iso){
+  const d = new Date(iso+'T00:00:00');
+  return d.toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'});
+}
+function toDateTime(day, timeStr){
+  // timeStr may be "" (open-ended)
+  const [h,m] = (timeStr||"00:00").split(":").map(Number);
+  const dt = new Date(`${day}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00`);
+  return dt;
+}
+function nowInTZ(tz){
+  // Using Intl to get local-equivalent time in TZ
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat('en-US',{timeZone:tz, hour12:false,
+    year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map(p=>[p.type,p.value]));
+  return new Date(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`);
+}
+const stars = new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  DAYS.forEach(day=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.type = 'button';
+    btn.setAttribute('role','tab');
+    btn.setAttribute('aria-selected', day===activeDay ? 'true':'false');
+    btn.textContent = new Date(day).toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'});
+    btn.addEventListener('click', ()=>{activeDay=day; renderSchedule(); scrollToTop();});
+    tabsEl.appendChild(btn);
+  });
+}
+
+function matchesQuery(ev, q){
+  if(!q) return true;
+  q = q.toLowerCase();
+  const texts = [
+    ev.title, ev.location, ev.address, ev.notes || '',
+    ...(ev.speakers||[])
+  ].join(' ').toLowerCase();
+  return texts.includes(q);
+}
+
+function renderSchedule(){
+  renderTabs();
+  const q = searchEl.value.trim();
+  const dayEvents = EVENTS
+    .filter(ev=>ev.day===activeDay)
+    .filter(ev=>matchesQuery(ev,q))
+    .filter(ev=>!showOnlyStarred || stars.has(ev.id))
+    .sort((a,b)=> (a.start||'') < (b.start||'') ? -1 : 1);
+
+  scheduleEl.innerHTML = '';
+  const dateLabel = document.createElement('div');
+  dateLabel.className = 'date-label';
+  dateLabel.textContent = new Date(activeDay).toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  scheduleEl.appendChild(dateLabel);
+
+  if(!dayEvents.length){
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = showOnlyStarred ? 'No starred items this day.' : 'No items match your search.';
+    scheduleEl.appendChild(empty);
+    return;
+  }
+
+  const now = nowInTZ(tz);
+
+  for(const ev of dayEvents){
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const time = document.createElement('div');
+    time.className = 'time';
+    time.textContent = ev.start ? (ev.end ? `${ev.start}–${ev.end}` : ev.start) : '—';
+
+    const body = document.createElement('div'); body.className='body';
+
+    const h = document.createElement('div'); h.className='h'; h.textContent = ev.title;
+
+    const line2 = document.createElement('div'); line2.className='loc';
+    line2.innerHTML = `📍 ${ev.location}${ev.address && ev.address!=='—' ? ` — <a href="${gmap(ev.address)}" target="_blank" rel="noopener">Maps</a>`:''}`;
+
+    const speakers = (ev.speakers && ev.speakers.length) ? (()=> {
+      const el = document.createElement('div'); el.className='speakers';
+      el.textContent = `👥 ${ev.speakers.join(' · ')}`;
+      return el;
+    })() : null;
+
+    const note = ev.notes ? (()=> {
+      const el = document.createElement('div'); el.className='note'; el.textContent = ev.notes;
+      return el;
+    })() : null;
+
+    // timing badge (now/next)
+    const badge = document.createElement('span'); badge.className='badge';
+    const start = ev.start ? toDateTime(ev.day, ev.start) : null;
+    const end = ev.end ? toDateTime(ev.day, ev.end) : null;
+    let state = '';
+    if(start && now < start){ state = 'Upcoming'; }
+    if(start && end && now >= start && now <= end){ state = 'Happening now'; badge.classList.add('when-now'); }
+    if(start && end && now > end){ state = 'Ended'; }
+    if(!start){ state = 'Anytime'; }
+    badge.textContent = state || '—';
+
+    // tools
+    const tools = document.createElement('div'); tools.className='tools';
+
+    const btnMap = document.createElement('button'); btnMap.className='tool';
+    btnMap.innerHTML = '🗺️ Open map';
+    btnMap.addEventListener('click',()=> window.open(gmap(ev.address || ev.location), '_blank','noopener'));
+
+    const btnCopy = document.createElement('button'); btnCopy.className='tool';
+    btnCopy.textContent = '📋 Copy address';
+    btnCopy.addEventListener('click', async ()=>{
+      const text = `${ev.location}${ev.address && ev.address!=='—' ? ', '+ev.address : ''}`;
+      try{ await navigator.clipboard.writeText(text); btnCopy.textContent='✅ Copied'; setTimeout(()=>btnCopy.textContent='📋 Copy address',1200);}catch(e){ alert(text); }
+    });
+
+    const btnICS = document.createElement('button'); btnICS.className='tool';
+    btnICS.textContent = '📅 Add to calendar';
+    btnICS.addEventListener('click', ()=>downloadICS(ev));
+
+    const btnStar = document.createElement('button'); btnStar.className='tool';
+    function setStarText(){ btnStar.textContent = stars.has(ev.id) ? '★ Starred' : '☆ Star'; }
+    setStarText();
+    btnStar.addEventListener('click', ()=>{
+      if(stars.has(ev.id)) stars.delete(ev.id); else stars.add(ev.id);
+      localStorage.setItem('stars', JSON.stringify(Array.from(stars)));
+      setStarText();
+    });
+
+    // assemble
+    body.appendChild(h);
+    body.appendChild(badge);
+    body.appendChild(line2);
+    if(speakers) body.appendChild(speakers);
+    if(note) body.appendChild(note);
+
+    tools.appendChild(btnMap);
+    tools.appendChild(btnCopy);
+    tools.appendChild(btnICS);
+    tools.appendChild(btnStar);
+
+    row.appendChild(time);
+    row.appendChild(body);
+    card.appendChild(row);
+    card.appendChild(tools);
+    scheduleEl.appendChild(card);
+  }
+}
+
+function scrollToTop(){ window.scrollTo({top:0, behavior:'smooth'}); }
+
+// ICS download
+function pad(n){ return String(n).padStart(2,'0'); }
+function toICSDate(dt){
+  // returns YYYYMMDDTHHMMSSZ in UTC
+  const u = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+  return u.getUTCFullYear()
+  + pad(u.getUTCMonth()+1)
+  + pad(u.getUTCDate()) + 'T'
+  + pad(u.getUTCHours())
+  + pad(u.getUTCMinutes())
+  + pad(u.getUTCSeconds()) + 'Z';
+}
+function downloadICS(ev){
+  const start = ev.start ? toDateTime(ev.day, ev.start) : toDateTime(ev.day,"09:00");
+  const end = ev.end ? toDateTime(ev.day, ev.end) : toDateTime(ev.day,"10:00");
+  const uid = `${ev.id}@ealf-estonia`;
+  const summary = ev.title;
+  const location = `${ev.location}${ev.address && ev.address!=='—' ? ', '+ev.address : ''}`;
+  const desc = (ev.notes || '') + (ev.speakers?.length ? `\nSpeakers: ${ev.speakers.join('; ')}` : '');
+  const ics =
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//EALF//EstoniaTrip//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${toICSDate(new Date())}
+DTSTART:${toICSDate(start)}
+DTEND:${toICSDate(end)}
+SUMMARY:${summary.replace(/\n/g,' ')}
+LOCATION:${location.replace(/\n/g,' ')}
+DESCRIPTION:${desc.replace(/\n/g,' ')}
+END:VEVENT
+END:VCALENDAR`;
+  const blob = new Blob([ics], {type:'text/calendar'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${ev.day}-${ev.id}.ics`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Search & filters
+searchEl.addEventListener('input', ()=>renderSchedule());
+$('#btnMyPlan').addEventListener('click', ()=>{
+  showOnlyStarred = !showOnlyStarred;
+  $('#btnMyPlan').setAttribute('aria-pressed', showOnlyStarred ? 'true' : 'false');
+  $('#btnMyPlan').textContent = showOnlyStarred ? 'My plan (showing ★)' : 'My plan (★)';
+  renderSchedule();
+});
+
+// What's on now
+$('#btnNow').addEventListener('click', ()=>{
+  // Find the first event that's ongoing or next today (in Tallinn time). If none today, switch to closest day with future events.
+  const now = nowInTZ(tz);
+  // search same day first
+  const candidates = EVENTS.filter(e=>e.day===activeDay)
+    .map(e=>({e, s: e.start?toDateTime(e.day,e.start):null, en: e.end?toDateTime(e.day,e.end):null}))
+    .sort((a,b)=>(a.s||Infinity)-(b.s||Infinity));
+  let targetId = null;
+  for(const c of candidates){
+    if(c.s && c.en && now>=c.s && now<=c.en){ targetId=c.e.id; break; }
+    if(c.s && now<c.s && !targetId){ targetId=c.e.id; }
+  }
+  if(!targetId){
+    // fallback: next day with future item
+    const after = EVENTS
+      .map(e=>({e, s: e.start?toDateTime(e.day,e.start):toDateTime(e.day,"23:59")}))
+      .filter(o=>o.s>now)
+      .sort((a,b)=>a.s-b.s)[0];
+    if(after){ activeDay = after.e.day; renderSchedule(); targetId = after.e.id; }
+  }
+  if(targetId){
+    const el = scheduleEl.querySelector(`[data-id="${targetId}"]`) || Array.from(scheduleEl.querySelectorAll('.card'))[0];
+    el?.scrollIntoView({behavior:'smooth', block:'center'});
+  } else {
+    // nothing upcoming — jump to last day
+    activeDay = DAYS[DAYS.length-1]; renderSchedule();
+  }
+});
+
+// Bottom nav
+const sections = {
+  schedule: $('#scheduleSection'),
+  logistics: $('#logisticsSection'),
+  contacts: $('#contactsSection'),
+  prereads: $('#prereadsSection')
+};
+function setPage(page){
+  for(const [key,sec] of Object.entries(sections)){ sec.classList.toggle('active', key===page); }
+  $('#navSchedule').setAttribute('aria-current', page==='schedule'?'page':null);
+  $('#navLogistics').setAttribute('aria-current', page==='logistics'?'page':null);
+  $('#navContacts').setAttribute('aria-current', page==='contacts'?'page':null);
+  $('#navPrereads').setAttribute('aria-current', page==='prereads'?'page':null);
+  if(page==='schedule'){ scrollToTop(); }
+}
+$('#navSchedule').addEventListener('click',()=>setPage('schedule'));
+$('#navLogistics').addEventListener('click',()=>setPage('logistics'));
+$('#navContacts').addEventListener('click',()=>setPage('contacts'));
+$('#navPrereads').addEventListener('click',()=>setPage('prereads'));
+
+// Initial render
+(function init(){
+  // add data-id hooks after render
+  const _render = renderSchedule;
+  renderSchedule = function(){
+    _render();
+    // add data-id to cards in order
+    const dayEvents = EVENTS.filter(e=>e.day===activeDay).sort((a,b)=> (a.start||'') < (b.start||'') ? -1 : 1);
+    const cards = $$('.card', scheduleEl);
+    cards.forEach((c,i)=> c.setAttribute('data-id', dayEvents[i]?.id || ''));
+  }
+  renderSchedule();
+})();
+</script>
 </body>
 </html>
