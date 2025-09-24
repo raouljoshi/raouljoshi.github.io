@@ -67,6 +67,41 @@
     }
     header h1{font-size:18px}
     .menu-btn{display:inline-flex}
+    
+    /* Enable horizontal scrolling for charts on mobile */
+    .svg-wrap{
+      overflow-x:auto;
+      overflow-y:hidden;
+    }
+  }
+  
+  /* Mobile portrait: hide charts, show rotation message */
+  @media (max-width: 768px) and (orientation: portrait) {
+    .svg-wrap{display:none}
+    .rotate-message{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:60vh;
+      text-align:center;
+      padding:20px;
+      background:var(--panel);
+      border:1px solid var(--grid);
+      border-radius:12px;
+      margin:12px;
+    }
+    .rotate-icon{
+      font-size:48px;
+      margin-bottom:16px;
+      opacity:0.7;
+    }
+  }
+  
+  /* Mobile landscape: show charts with scrolling */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .svg-wrap{display:block}
+    .rotate-message{display:none}
   }
   
   @media (max-width: 480px) {
@@ -286,6 +321,16 @@
     </aside>
 
     <main>
+      <!-- Rotation message for mobile portrait -->
+      <div class="rotate-message" style="display:none">
+        <div class="rotate-icon">📱</div>
+        <h2 style="margin:0 0 8px 0;color:var(--ink)">Rotate Your Device</h2>
+        <p style="margin:0;color:var(--muted);line-height:1.4">
+          Please rotate your phone to landscape mode<br>
+          for the best viewing experience of the charts.
+        </p>
+      </div>
+      
       <div class="panel svg-wrap">
         <svg id="chart" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-label="Quintile bubble chart"></svg>
       </div>
@@ -486,14 +531,23 @@ function updateChartDimensions() {
   let chartWidth = 1400, chartHeight = 560;
   let spendWidth = 1400, spendHeight = 320;
   
+  // Calculate minimum width needed for countries on mobile
+  const countries = [...new Set([ ...ALWAYS_VISIBLE, ...activeCountries.filter(c=>!ALWAYS_VISIBLE.includes(c)) ])];
+  const minMobileWidth = Math.max(600, countries.length * 120); // 120px per country minimum
+  
   switch(screenSize) {
     case 'mobile':
-      chartWidth = 350; chartHeight = 300;
-      spendWidth = 350; spendHeight = 180;
+      // Use wider width for horizontal scrolling if needed
+      chartWidth = window.innerWidth <= 768 ? minMobileWidth : 350;
+      chartHeight = 300;
+      spendWidth = window.innerWidth <= 768 ? minMobileWidth : 350;
+      spendHeight = 180;
       break;
     case 'tablet':
-      chartWidth = 700; chartHeight = 400;
-      spendWidth = 700; spendHeight = 250;
+      chartWidth = Math.max(700, minMobileWidth);
+      chartHeight = 400;
+      spendWidth = Math.max(700, minMobileWidth);
+      spendHeight = 250;
       break;
     case 'desktop-small':
       chartWidth = 900; chartHeight = 450;
@@ -506,7 +560,11 @@ function updateChartDimensions() {
   }
   
   svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
+  svg.setAttribute('width', chartWidth);
+  svg.setAttribute('height', chartHeight);
   spendSvg.setAttribute('viewBox', `0 0 ${spendWidth} ${spendHeight}`);
+  spendSvg.setAttribute('width', spendWidth);
+  spendSvg.setAttribute('height', spendHeight);
 }
 
 // ---------------- Drawer controls (mobile)
