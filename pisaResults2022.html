@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quintile Bubble Comparator</title>
+<style>
+  :root{
+    --bg:#0b0c10; --panel:#14161a; --ink:#e6ebf2; --muted:#9aa3af; --accent:#7cc4ff;
+    --grid:#23262c; --chip:#1f232a; --good:#7bdcb5; --warn:#ffd166;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  header{padding:18px 20px;border-bottom:1px solid var(--grid);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:18px;margin:0;font-weight:650}
+  .container{display:grid;grid-template-columns:320px 1fr;gap:16px;min-height:calc(100vh - 65px)}
+  aside{border-right:1px solid var(--grid);padding:16px;background:var(--panel)}
+  main{padding:16px}
+  
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .container{grid-template-columns:280px 1fr;gap:12px}
+    aside{padding:12px}
+    main{padding:12px}
+  }
+  
+  @media (max-width: 1024px) {
+    .container{grid-template-columns:260px 1fr;gap:8px}
+    header{padding:12px 16px}
+    header h1{font-size:16px}
+  }
+  
+  @media (max-width: 768px) {
+    .container{
+      grid-template-columns:1fr;
+      gap:0;
+      min-height:auto;
+    }
+    aside{
+      border-right:none;
+      border-bottom:1px solid var(--grid);
+      padding:12px;
+      order:2;
+    }
+    main{
+      padding:12px;
+      order:1;
+    }
+    header{
+      padding:12px 16px;
+      text-align:center;
+    }
+    header h1{font-size:18px}
+  }
+  
+  @media (max-width: 480px) {
+    header{padding:8px 12px}
+    header h1{font-size:16px}
+    .container{gap:0}
+    aside, main{padding:8px}
+    .controls{padding:8px}
+  }
+  .panel{background:var(--panel);border:1px solid var(--grid);border-radius:12px}
+  .svg-wrap{padding:16px;overflow:hidden}
+  svg{display:block;width:100%;height:auto}
+  
+  /* Responsive SVG sizing */
+  @media (max-width: 1200px) {
+    .svg-wrap{padding:12px}
+  }
+  
+  @media (max-width: 768px) {
+    .svg-wrap{padding:8px}
+    #chart{height:400px !important}
+    #spendChart{height:250px !important}
+  }
+  
+  @media (max-width: 480px) {
+    .svg-wrap{padding:6px}
+    #chart{height:350px !important}
+    #spendChart{height:200px !important}
+  }
+  .controls{padding:12px;border-radius:12px}
+  label{display:block;margin:6px 0 6px 2px;color:var(--muted);font-size:12px}
+  .country-list{margin-top:10px;border:1px solid var(--grid);border-radius:10px;background:#0f1115;list-style:none;padding:0}
+  .country-list button{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px}
+  .country-list button:hover{color:var(--ink)}
+  .country-list li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px}
+  .country-list li:hover{background:var(--chip)}
+  .country-list li:not(:last-child){border-bottom:1px solid var(--grid)}
+  .country-list li .add-btn{opacity:0;background:var(--accent);color:white;border:none;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s ease}
+  .country-list li:hover .add-btn{opacity:1}
+  .country-list li .add-btn:hover{background:#5ba3e0}
+  .country-list li.added{background:var(--chip);border-left:3px solid var(--good)}
+  .country-list li.added .country-name{color:var(--ink);font-weight:600}
+  
+  /* Responsive country list and controls */
+  @media (max-width: 768px) {
+    .country-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:4px;
+      padding:8px;
+    }
+    .country-list li{
+      padding:8px 10px;
+      border-bottom:none !important;
+      border:1px solid var(--grid);
+      border-radius:6px;
+    }
+    .country-list li .add-btn{opacity:1}
+  }
+  
+  @media (max-width: 480px) {
+    .country-list{
+      grid-template-columns:1fr;
+      gap:2px;
+    }
+    .country-list li{
+      padding:6px 8px;
+      font-size:14px;
+    }
+    .country-list li .add-btn{
+      padding:3px 6px;
+      font-size:11px;
+    }
+  }
+  .country-list li .remove-btn{opacity:0;background:#e74c3c;color:white;border:none;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s ease}
+  .country-list li:hover .remove-btn{opacity:1}
+  .country-list li .remove-btn:hover{background:#c0392b}
+  .country-list li.pinned{background:#6aa6ff22;border-left:3px solid var(--accent)}
+  .country-list li.pinned .country-name{color:var(--accent);font-weight:700}
+  .country-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .status-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;border:1px solid rgba(255,255,255,0.25)}
+  .country-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .btn{cursor:pointer;user-select:none;background:#1a73e8;color:white;border:none;border-radius:10px;padding:10px 12px;font-weight:600}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .toggle-section{margin-top:16px;padding:12px;background:var(--chip);border-radius:10px;border:1px solid var(--grid)}
+  .toggle-item{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .toggle-item:last-child{margin-bottom:0}
+  .toggle-switch{position:relative;display:inline-block;width:44px;height:24px}
+  .toggle-switch input{opacity:0;width:0;height:0}
+  .toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#39424e;transition:.3s;border-radius:24px}
+  .toggle-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;transition:.3s;border-radius:50%}
+  input:checked + .toggle-slider{background:#7c3aed}
+  input:checked + .toggle-slider:before{transform:translateX(20px)}
+  input:disabled + .toggle-slider{opacity:0.5;cursor:not-allowed}
+  .toggle-label{color:var(--ink);font-size:14px;font-weight:500}
+  .toggle-label em{color:var(--muted);font-size:12px}
+  .legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 12px;border-top:1px dashed var(--grid)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .svg-wrap{position:relative;overflow:auto;background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));border-radius:12px}
+  .axis path,.axis line{stroke:var(--grid)}
+  .axis text{fill:var(--muted);font-size:12px}
+  .country-label{fill:var(--muted);font-size:14px;text-anchor:middle;font-weight:600}
+  .quartile-label{fill:var(--muted);font-size:11px;text-anchor:middle}
+  .grid line{stroke:var(--grid)}
+  .bubble{transition:opacity .15s ease, transform .15s ease}
+  .bubble.highlight{opacity:1; filter:brightness(1.1)}
+  .bubble.faded{opacity:.18}
+  .q-active{font-weight:700; fill:#dfe7f3}
+  .equity-arrow{stroke:#7c3aed;stroke-width:2.5;fill:none;marker-end:url(#arrowhead);filter:drop-shadow(0 0 2px rgba(124,58,237,0.3))}
+  .equity-bar{stroke:#e74c3c;stroke-width:4;fill:none;filter:drop-shadow(0 0 2px rgba(231,76,60,0.3))}
+  .resilience-label{fill:#7c3aed;font-size:14px;font-weight:700;text-shadow:0 0 3px rgba(0,0,0,0.8)}
+  .gap-label{fill:#e74c3c;font-size:14px;font-weight:700;text-shadow:0 0 3px rgba(0,0,0,0.8)}
+  .social-inclusion-btn{fill:transparent;stroke:#f59e0b;stroke-width:2;rx:6;cursor:pointer}
+  .social-inclusion-btn:hover{fill:rgba(245,158,11,0.12)}
+  .social-inclusion-text{fill:#f59e0b;font-size:14px;font-weight:800;cursor:pointer;text-anchor:middle}
+  .social-details{fill:var(--ink);font-size:12px;font-weight:600}
+  .social-details-box{fill:rgba(245,158,11,0.12);stroke:#f59e0b;stroke-width:1.5;rx:6}
+  /* Spend (fixed chart) */
+  .spend-wrap{margin-top:8px}
+  .spend-bar-primary{fill:#4f8df7;cursor:pointer;transition:opacity .15s ease}
+  .spend-bar-secondary{fill:#2bbdaf;cursor:pointer;transition:opacity .15s ease}
+  .spend-bar-primary:hover{opacity:0.8}
+  .spend-bar-secondary:hover{opacity:0.8}
+  .spend-bar-primary.highlight{filter:brightness(1.1)}
+  .spend-bar-secondary.highlight{filter:brightness(1.1)}
+  .spend-bar-primary.faded{opacity:0.3}
+  .spend-bar-secondary.faded{opacity:0.3}
+  .spend-axis-label{fill:var(--ink);font-size:14px;font-weight:600;text-anchor:middle}
+  .spend-value{fill:white;font-size:12px;font-weight:700;text-anchor:middle;text-shadow:0 0 2px rgba(0,0,0,0.5)}
+  .spend-pct{fill:var(--muted);font-size:12px;text-anchor:middle;font-weight:600}
+  .spend-comparison-line{stroke:#6aa6ff;stroke-width:2;stroke-dasharray:4 4;opacity:0.8}
+  /* Chart titles */
+  .chart-title{fill:var(--ink);font-size:18px;font-weight:700;text-anchor:middle}
+  .chart-subtitle{fill:var(--muted);font-size:14px;font-weight:500;text-anchor:middle}
+  .spend-delta{fill:var(--ink);font-size:11px;font-weight:600;text-anchor:middle}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Quintile Bubble Comparator</h1>
+    <div style="color:var(--muted)">Add/remove countries to compare math performance across socio‑economic quintiles. PISA 2022 data.</div>
+  </header>
+
+  <div class="container">
+    <aside class="panel">
+      <div class="controls">
+        <div class="toggle-section">
+          <div class="toggle-item">
+            <label class="toggle-switch">
+              <input type="checkbox" id="equityToggle">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Equity View</span>
+          </div>
+          <!-- Spend view toggle removed: spend chart is now always shown below -->
+        </div>
+        
+        <!-- Always visible Bubble explanation -->
+        <div style="padding:12px;background:var(--chip);border-radius:10px;border-left:3px solid var(--good);margin-top:16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--good);display:flex;align-items:center;justify-content:center;color:#0b0c10;font-weight:700;font-size:12px">×</div>
+            <span style="font-weight:600;color:var(--good)">Bubble Size & Share</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4">
+            The size of each bubble represents the share of students in that quintile. The × shows the percentage.
+          </div>
+        </div>
+
+        <div id="equityExplanations" style="display:none;margin-top:12px;">
+          <!-- Student Resilience -->
+          <div style="padding:12px;background:var(--chip);border-radius:10px;border-left:3px solid #7c3aed;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#7c3aed"></div>
+              <span style="font-weight:600;color:#7c3aed">Student Resilience</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.4">
+              Percentage of disadvantaged students (bottom quintile) who perform in the top quartiles. Higher is better.
+            </div>
+          </div>
+          
+          <!-- Performance Gap -->
+          <div style="padding:12px;background:var(--chip);border-radius:10px;border-left:3px solid #e74c3c;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#e74c3c"></div>
+              <span style="font-weight:600;color:#e74c3c">Performance Gap</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.4">
+              Score difference between highest and lowest performing quintiles. Lower is better for equity.
+            </div>
+          </div>
+          
+          <!-- Social Inclusion Index -->
+          <div style="padding:12px;background:var(--chip);border-radius:10px;border-left:3px solid #f59e0b">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b"></div>
+              <span style="font-weight:600;color:#f59e0b">Index of Social Inclusion</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.4">
+              Measure of socio-economic diversity within schools. Click ISI button to see within/between school variance breakdown.
+            </div>
+          </div>
+        </div>
+
+        <!-- Countries section moved below explanations -->
+        <div style="margin-top:16px">
+          <label>Countries</label>
+          <div style="display:flex;gap:8px;margin:8px 0">
+            <button id="removeAllBtn" class="btn" style="background:#39424e">Clear All</button>
+          </div>
+          <ul class="country-list" id="countryList" aria-label="Available countries">
+            <!-- Countries will be populated by JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="panel svg-wrap">
+        <svg id="chart" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-label="Quintile bubble chart"></svg>
+      </div>
+      <div class="panel svg-wrap spend-wrap" id="spendWrap">
+        <svg id="spendChart" width="1400" height="320" viewBox="0 0 1400 320" role="img" aria-label="Per-student spending chart"></svg>
+      </div>
+    </main>
+  </div>
+
+<script>
+// ---------------- PISA 2022 Data ----------------
+const QUINTILES = ["1st quintile","2nd quintile","3rd quintile","4th quintile","5th quintile"]; // labels only
+// Each record: {q:0..4, score: number, share:number (0..1)}
+const DATA = {
+  "Australia": [
+    {q:0, score:407, share:0.012},{q:1, score:421, share:0.057},{q:2, score:447, share:0.156},{q:3, score:468, share:0.255},{q:4, score:521, share:0.519}
+  ],
+  "Austria": [
+    {q:0, score:411, share:0.029},{q:1, score:423, share:0.104},{q:2, score:457, share:0.219},{q:3, score:491, share:0.286},{q:4, score:535, share:0.362}
+  ],
+  "Belgium": [
+    {q:0, score:404, share:0.031},{q:1, score:428, share:0.106},{q:2, score:451, share:0.200},{q:3, score:487, share:0.272},{q:4, score:539, share:0.391}
+  ],
+  "Canada": [
+    {q:0, score:399, share:0.004},{q:1, score:437, share:0.043},{q:2, score:465, share:0.169},{q:3, score:485, share:0.284},{q:4, score:524, share:0.500}
+  ],
+  "Chile": [
+    {q:0, score:366, share:0.082},{q:1, score:393, share:0.236},{q:2, score:407, share:0.278},{q:3, score:422, share:0.242},{q:4, score:467, share:0.161}
+  ],
+  "Colombia": [
+    {q:0, score:352, share:0.275},{q:1, score:371, share:0.254},{q:2, score:385, share:0.203},{q:3, score:409, share:0.152},{q:4, score:452, share:0.116}
+  ],
+  "Czech Republic": [
+    {q:0, score:360, share:0.014},{q:1, score:419, share:0.152},{q:2, score:469, share:0.299},{q:3, score:497, share:0.251},{q:4, score:542, share:0.284}
+  ],
+  "Denmark": [
+    {q:0, score:410, share:0.009},{q:1, score:428, share:0.036},{q:2, score:451, share:0.125},{q:3, score:475, share:0.245},{q:4, score:511, share:0.586}
+  ],
+  "Estonia": [
+    {q:0, score:427, share:0.008},{q:1, score:462, share:0.084},{q:2, score:482, share:0.222},{q:3, score:503, share:0.291},{q:4, score:544, share:0.396}
+  ],
+  "Finland": [
+    {q:0, score:393, share:0.008},{q:1, score:437, share:0.065},{q:2, score:453, share:0.196},{q:3, score:473, share:0.282},{q:4, score:517, share:0.449}
+  ],
+  "France": [
+    {q:0, score:395, share:0.032},{q:1, score:421, share:0.117},{q:2, score:441, share:0.225},{q:3, score:474, share:0.285},{q:4, score:526, share:0.342}
+  ],
+  "Germany": [
+    {q:0, score:406, share:0.060},{q:1, score:435, share:0.152},{q:2, score:458, share:0.217},{q:3, score:482, share:0.262},{q:4, score:534, share:0.309}
+  ],
+  "Greece": [
+    {q:0, score:376, share:0.044},{q:1, score:401, share:0.162},{q:2, score:413, share:0.234},{q:3, score:431, share:0.271},{q:4, score:470, share:0.288}
+  ],
+  "Hungary": [
+    {q:0, score:353, share:0.035},{q:1, score:414, share:0.134},{q:2, score:446, share:0.224},{q:3, score:472, share:0.243},{q:4, score:525, share:0.363}
+  ],
+  "Ireland": [
+    {q:0, score:403, share:0.007},{q:1, score:443, share:0.064},{q:2, score:463, share:0.173},{q:3, score:480, share:0.266},{q:4, score:518, share:0.490}
+  ],
+  "Israel": [
+    {q:0, score:353, share:0.021},{q:1, score:386, share:0.085},{q:2, score:411, share:0.157},{q:3, score:442, share:0.249},{q:4, score:504, share:0.488}
+  ],
+  "Italy": [
+    {q:0, score:400, share:0.042},{q:1, score:432, share:0.136},{q:2, score:454, share:0.249},{q:3, score:476, share:0.278},{q:4, score:512, share:0.295}
+  ],
+  "Japan": [
+    {q:0, score:450, share:0.008},{q:1, score:479, share:0.093},{q:2, score:509, share:0.252},{q:3, score:543, share:0.379},{q:4, score:574, share:0.269}
+  ],
+  "Korea": [
+    {q:0, score:415, share:0.008},{q:1, score:460, share:0.077},{q:2, score:490, share:0.192},{q:3, score:524, share:0.313},{q:4, score:564, share:0.410}
+  ],
+  "Latvia": [
+    {q:0, score:408, share:0.015},{q:1, score:445, share:0.122},{q:2, score:460, share:0.242},{q:3, score:485, share:0.300},{q:4, score:518, share:0.321}
+  ],
+  "Lithuania": [
+    {q:0, score:391, share:0.016},{q:1, score:427, share:0.143},{q:2, score:447, share:0.198},{q:3, score:474, share:0.261},{q:4, score:515, share:0.382}
+  ],
+  "Mexico": [
+    {q:0, score:370, share:0.271},{q:1, score:387, share:0.235},{q:2, score:396, share:0.190},{q:3, score:409, share:0.168},{q:4, score:441, share:0.137}
+  ],
+  "Netherlands": [
+    {q:0, score:396, share:0.026},{q:1, score:441, share:0.060},{q:2, score:456, share:0.167},{q:3, score:475, share:0.286},{q:4, score:537, share:0.461}
+  ],
+  "New Zealand": [
+    {q:0, score:392, share:0.024},{q:1, score:423, share:0.092},{q:2, score:447, share:0.169},{q:3, score:477, share:0.267},{q:4, score:519, share:0.448}
+  ],
+  "Norway": [
+    {q:0, score:379, share:0.011},{q:1, score:405, share:0.036},{q:2, score:435, share:0.125},{q:3, score:454, share:0.240},{q:4, score:492, share:0.587}
+  ],
+  "Poland": [
+    {q:0, score:414, share:0.012},{q:1, score:439, share:0.177},{q:2, score:473, share:0.274},{q:3, score:495, share:0.232},{q:4, score:536, share:0.305}
+  ],
+  "Portugal": [
+    {q:0, score:415, share:0.105},{q:1, score:439, share:0.164},{q:2, score:452, share:0.203},{q:3, score:473, share:0.203},{q:4, score:522, share:0.324}
+  ],
+  "Slovak Republic": [
+    {q:0, score:335, share:0.052},{q:1, score:410, share:0.199},{q:2, score:456, share:0.281},{q:3, score:485, share:0.224},{q:4, score:528, share:0.244}
+  ],
+  "Slovenia": [
+    {q:0, score:377, share:0.008},{q:1, score:427, share:0.086},{q:2, score:452, share:0.200},{q:3, score:475, share:0.265},{q:4, score:520, share:0.440}
+  ],
+  "Spain": [
+    {q:0, score:412, share:0.063},{q:1, score:440, share:0.107},{q:2, score:448, share:0.202},{q:3, score:473, share:0.265},{q:4, score:511, share:0.362}
+  ],
+  "Sweden": [
+    {q:0, score:400, share:0.015},{q:1, score:423, share:0.058},{q:2, score:444, share:0.170},{q:3, score:466, share:0.257},{q:4, score:518, share:0.500}
+  ],
+  "Switzerland": [
+    {q:0, score:422, share:0.032},{q:1, score:448, share:0.081},{q:2, score:466, share:0.191},{q:3, score:503, share:0.268},{q:4, score:553, share:0.427}
+  ],
+  "Türkiye": [
+    {q:0, score:424, share:0.332},{q:1, score:444, share:0.267},{q:2, score:454, share:0.168},{q:3, score:488, share:0.122},{q:4, score:523, share:0.111}
+  ],
+  "United Kingdom": [
+    {q:0, score:422, share:0.019},{q:1, score:452, share:0.097},{q:2, score:469, share:0.217},{q:3, score:484, share:0.267},{q:4, score:529, share:0.400}
+  ],
+  "United States": [
+    {q:0, score:413, share:0.039},{q:1, score:423, share:0.115},{q:2, score:430, share:0.207},{q:3, score:456, share:0.248},{q:4, score:507, share:0.390}
+  ],
+  "OECD Average": [
+    {q:0, score:396, share:0.049},{q:1, score:427, share:0.118},{q:2, score:449, share:0.204},{q:3, score:474, share:0.257},{q:4, score:517, share:0.371}
+  ]
+};
+
+// ---------------- Equity Data from PISA 2022 ----------------
+const EQUITY_DATA = {
+  "Australia": {resilience: 9.863488315662252, performanceGap: 100.57445215163762, socialInclusion: 75.32295227050781, withinSchool: 52.80893442304534, betweenSchool: 17.30108361273905},
+  "Austria": {resilience: 8.224214742822678, performanceGap: 106.48992872768027, socialInclusion: 73.55677795410156, withinSchool: 61.05070533116965, betweenSchool: 21.94735998232074},
+  "Belgium": {resilience: 8.229317586204726, performanceGap: 116.90898647251925, socialInclusion: 75.78075408935547, withinSchool: 62.52553604988728, betweenSchool: 19.982928317405158},
+  "Canada": {resilience: 12.691826478567659, performanceGap: 76.47448705189696, socialInclusion: 86.20114135742188, withinSchool: 48.86165634003406, betweenSchool: 7.821651468386169},
+  "Chile": {resilience: 12.757906845779402, performanceGap: 69.10285607147219, socialInclusion: 62.954566955566406, withinSchool: 54.93427091490424, betweenSchool: 32.32591167925015},
+  "Colombia": {resilience: 9.760585873936103, performanceGap: 78.53883263804101, socialInclusion: 57.71493148803711, withinSchool: 81.93221059251675, betweenSchool: 60.0279524143002},
+  "Czech Republic": {resilience: 7.282080654280475, performanceGap: 115.60664532816793, socialInclusion: 69.71662139892578, withinSchool: 52.40693870366374, betweenSchool: 22.764428569097558},
+  "Denmark": {resilience: 10.238423448466436, performanceGap: 73.91359849569048, socialInclusion: 86.47254943847656, withinSchool: 48.87633412384149, betweenSchool: 7.646037916865744},
+  "Estonia": {resilience: 10.339607913790037, performanceGap: 81.07870249970443, socialInclusion: 78.14237213134766, withinSchool: 47.40028486569379, betweenSchool: 13.258590415763585},
+  "Finland": {resilience: 11.892142637658095, performanceGap: 83.15334251331379, socialInclusion: 88.89425659179688, withinSchool: 59.33833834745926, betweenSchool: 7.413259483200822},
+  "France": {resilience: 7.398334177766791, performanceGap: 112.57187123216704, socialInclusion: 75.13395690917969, withinSchool: 59.39878360695665, betweenSchool: 19.658389489752523},
+  "Germany": {resilience: 9.523769631519457, performanceGap: 111.49562895210039, socialInclusion: 75.0967025756836, withinSchool: 80.92538786984451, betweenSchool: 26.83618303476142},
+  "Greece": {resilience: 12.00593358828662, performanceGap: 75.57219149757724, socialInclusion: 79.5850830078125, withinSchool: 66.18289997690161, betweenSchool: 16.977027863708272},
+  "Hungary": {resilience: 8.238781896209312, performanceGap: 121.07250516765134, socialInclusion: 59.63902282714844, withinSchool: 51.32188680100267, betweenSchool: 34.732315348620274},
+  "Ireland": {resilience: 11.890970280207853, performanceGap: 73.73538159475561, socialInclusion: 83.464599609375, withinSchool: 53.3956737759166, betweenSchool: 10.578364602462478},
+  "Israel": {resilience: 7.720537831853543, performanceGap: 124.34378357771817, socialInclusion: 70.6510009765625, withinSchool: 59.85808232318757, betweenSchool: 24.86552979933992},
+  "Italy": {resilience: 11.25832534249532, performanceGap: 85.17950529437074, socialInclusion: 77.442626953125, withinSchool: 65.96768444524269, betweenSchool: 19.214969452280245},
+  "Japan": {resilience: 11.523213938410745, performanceGap: 80.87346090346655, socialInclusion: 74.70096588134766, withinSchool: 37.79149172975834, betweenSchool: 12.798871506180362},
+  "Korea": {resilience: 10.870774944688385, performanceGap: 97.43388333179118, socialInclusion: 79.28494262695312, withinSchool: 53.10910736661455, betweenSchool: 13.876007525777864},
+  "Latvia": {resilience: 11.73995480082703, performanceGap: 74.7098648771872, socialInclusion: 78.37289428710938, withinSchool: 52.1973321947953, betweenSchool: 14.403921700947905},
+  "Lithuania": {resilience: 9.835883467826765, performanceGap: 92.14202154214881, socialInclusion: 73.09677124023438, withinSchool: 55.71939138608777, betweenSchool: 20.507496967349287},
+  "Mexico": {resilience: 11.787146992142922, performanceGap: 58.46591384882274, socialInclusion: 71.63905334472656, withinSchool: 94.1166431578988, betweenSchool: 37.25953002842921},
+  "Netherlands": {resilience: 10.637880409018878, performanceGap: 105.99922859609352, socialInclusion: 77.6772689819336, withinSchool: 58.83488253729563, betweenSchool: 16.90784694600081},
+  "New Zealand": {resilience: 8.567994255702573, performanceGap: 101.74859866093436, socialInclusion: 81.53534698486328, withinSchool: 67.47142699539043, betweenSchool: 15.279711914973942},
+  "Norway": {resilience: 12.56742771532395, performanceGap: 80.6137301634737, socialInclusion: 89.91749572753906, withinSchool: 63.15930532952058, betweenSchool: 7.082090550245587},
+  "Poland": {resilience: 8.585348392343404, performanceGap: 96.4255881745234, socialInclusion: 68.79842376708984, withinSchool: 53.33962855203238, betweenSchool: 24.19068166369288},
+  "Portugal": {resilience: 9.385549669047402, performanceGap: 100.50891139106494, socialInclusion: 81.01630401611328, withinSchool: 102.7501592660089, betweenSchool: 24.07635908609236},
+  "Slovak Republic": {resilience: 6.1370213953079, performanceGap: 133.2851276414479, socialInclusion: 59.777587890625, withinSchool: 53.91318145302962, betweenSchool: 36.27644353289285},
+  "Slovenia": {resilience: 9.398464440509656, performanceGap: 91.47725522264993, socialInclusion: 76.13679504394531, withinSchool: 49.9553896596206, betweenSchool: 15.657284645154984},
+  "Spain": {resilience: 11.66901198523091, performanceGap: 86.29903993815958, socialInclusion: 79.1019515991211, withinSchool: 79.7666208232869, betweenSchool: 21.073649537912997},
+  "Sweden": {resilience: 9.892141364183551, performanceGap: 99.49877872578574, socialInclusion: 85.11980438232422, withinSchool: 61.01236701161291, betweenSchool: 10.665862429201436},
+  "Switzerland": {resilience: 8.22671459309028, performanceGap: 117.03909998585743, socialInclusion: 80.04438018798828, withinSchool: 68.92714778434464, betweenSchool: 17.184016748514253},
+  "Türkiye": {resilience: 11.74883033554589, performanceGap: 81.60098045214761, socialInclusion: 65.3677978515625, withinSchool: 89.8908689585346, betweenSchool: 47.62465100249131},
+  "United Kingdom": {resilience: 15.192815686464611, performanceGap: 86.29368092032972, socialInclusion: 78.5188980102539, withinSchool: 62.35037628633813, betweenSchool: 17.057734566462773},
+  "United States": {resilience: 10.5941944644756, performanceGap: 102.01016862325474, socialInclusion: 75.38835144042969, withinSchool: 72.61584917644477, betweenSchool: 23.706524952345415},
+  "OECD Average": {resilience: 10.24942292503136, performanceGap: 93.45712571695896, socialInclusion: 76.11714172363281, withinSchool: 62.02960782559543, betweenSchool: 20.69615112252125}
+};
+
+// ---------------- State ----------------
+const ALWAYS_VISIBLE = ["OECD Average"]; // pinned on the left
+let activeCountries = ["Sweden", "Finland", "United Kingdom", "Estonia"]; // initial demo order
+let activeQuintile = null; // 0..4 or null
+let activeY = null; // y-position of the clicked bubble (for centering banner)
+let equityMode = false; // equity visualization toggle
+// Spend chart state
+let activeSpendBar = null; // {country, type} or null
+let activeSpendValue = null; // value for comparison line
+
+// ---------------- DOM refs ----------------
+const svg = document.getElementById('chart');
+const countryList = document.getElementById('countryList');
+const clearBtn = document.getElementById('removeAllBtn');
+const equityToggle = document.getElementById('equityToggle');
+const equityExplanations = document.getElementById('equityExplanations');
+const spendSvg = document.getElementById('spendChart');
+
+// ---------------- Responsive utilities ----------------
+function getScreenSize() {
+  const width = window.innerWidth;
+  if (width <= 480) return 'mobile';
+  if (width <= 768) return 'tablet';
+  if (width <= 1024) return 'desktop-small';
+  if (width <= 1200) return 'desktop-medium';
+  return 'desktop-large';
+}
+
+function updateChartDimensions() {
+  const screenSize = getScreenSize();
+  let chartWidth = 1400, chartHeight = 560;
+  let spendWidth = 1400, spendHeight = 320;
+  
+  switch(screenSize) {
+    case 'mobile':
+      chartWidth = 350; chartHeight = 300;
+      spendWidth = 350; spendHeight = 180;
+      break;
+    case 'tablet':
+      chartWidth = 700; chartHeight = 400;
+      spendWidth = 700; spendHeight = 250;
+      break;
+    case 'desktop-small':
+      chartWidth = 900; chartHeight = 450;
+      spendWidth = 900; spendHeight = 280;
+      break;
+    case 'desktop-medium':
+      chartWidth = 1100; chartHeight = 500;
+      spendWidth = 1100; spendHeight = 300;
+      break;
+  }
+  
+  svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
+  spendSvg.setAttribute('viewBox', `0 0 ${spendWidth} ${spendHeight}`);
+}
+
+// ---------------- Scales & layout ----------------
+const M = {t:100,r:20,b:74,l:56}; // more top margin for titles
+const Ymin = 350; // fixed axis range
+const Ymax = 600;
+
+function yScale(val){
+  const h = svg.height.baseVal.value - M.t - M.b;
+  return M.t + (1 - (val - Ymin)/(Ymax - Ymin)) * h;
+}
+
+// ---------------- Education Spending Data ----------------
+// PPP-adjusted USD per student from PISA 2022
+const SPEND_DATA = {
+  'Australia': { primary: 11340, secondary: 14120 },
+  'Austria': { primary: 13299, secondary: 16883 },
+  'Belgium': { primary: 11720, secondary: 15007 },
+  'Canada': { primary: 10570, secondary: 14564 },
+  'Chile': { primary: 6018, secondary: 5997 },
+  'Colombia': { primary: 3729, secondary: 3744 },
+  'Czech Republic': { primary: 7520, secondary: 12357 },
+  'Denmark': { primary: 12273, secondary: 12594 },
+  'Estonia': { primary: 9384, secondary: 8462 },
+  'Finland': { primary: 10576, secondary: 11894 },
+  'France': { primary: 9312, secondary: 13475 },
+  'Germany': { primary: 10622, secondary: 14390 },
+  'Greece': { primary: 7279, secondary: 6728 },
+  'Hungary': { primary: 8262, secondary: 7827 },
+  'Ireland': { primary: 8687, secondary: 10383 },
+  'Israel': { primary: 9452, secondary: 9410 },
+  'Italy': { primary: 10570, secondary: 10558 },
+  'Japan': { primary: 9379, secondary: 11493 },
+  'Korea': { primary: 13341, secondary: 17078 },
+  'Latvia': { primary: 6865, secondary: 7889 },
+  'Lithuania': { primary: 7095, secondary: 7227 },
+  'Mexico': { primary: 2977, secondary: 2890 },
+  'Netherlands': { primary: 10150, secondary: 14902 },
+  'New Zealand': { primary: 7578, secondary: 9336 },
+  'Norway': { primary: 15334, secondary: 16192 },
+  'Poland': { primary: 8949, secondary: 8689 },
+  'Portugal': { primary: 8992, secondary: 11162 },
+  'Slovak Republic': { primary: 7972, secondary: 7458 },
+  'Slovenia': { primary: 9562, secondary: 10160 },
+  'Spain': { primary: 8580, secondary: 10706 },
+  'Sweden': { primary: 13234, secondary: 13311 },
+  'Türkiye': { primary: 4400, secondary: 5110 },
+  'United Kingdom': { primary: 11936, secondary: 13041 },
+  'United States': { primary: 13780, secondary: 15538 },
+  'OECD Average': { primary: 9433, secondary: 10899 }
+};
+
+function renderSpend(){
+  if(!spendSvg) return;
+  while(spendSvg.firstChild) spendSvg.removeChild(spendSvg.firstChild);
+  const width = spendSvg.width.baseVal.value;
+  const height = spendSvg.height.baseVal.value;
+  const g = el('g'); spendSvg.appendChild(g);
+
+  // Chart title and subtitle
+  const title = el('text', {x:width/2, y:20, class:'chart-title'});
+  title.textContent = 'Per-Student Education Spending';
+  g.appendChild(title);
+  const subtitle = el('text', {x:width/2, y:38, class:'chart-subtitle'});
+  subtitle.textContent = 'PPP-adjusted USD spending per student on primary and secondary education';
+  g.appendChild(subtitle);
+
+  const countries = [...new Set([ ...ALWAYS_VISIBLE, ...activeCountries.filter(c=>!ALWAYS_VISIBLE.includes(c)) ])];
+  const rows = countries.map(c=>({c, d:SPEND_DATA[c]})).filter(x=>x.d);
+  if(rows.length===0){
+    const t = el('text',{x:width/2,y:height/2,'text-anchor':'middle',fill:'var(--muted)'});
+    t.textContent = 'No spend data available for current selection';
+    g.appendChild(t); return;
+  }
+
+  const maxVal = Math.max(...rows.flatMap(x=>[x.d.primary, x.d.secondary]));
+  const padTop = 100, padBottom = 50; // more space for titles and axis labels
+  const baselineY = height - padBottom;
+  const chartH = height - padTop - padBottom;
+  const y = (v)=> baselineY - (v/maxVal)*chartH;
+  
+  // Axis
+  g.appendChild(el('line',{x1:M.l,y1:baselineY,x2:width-M.r,y2:baselineY,stroke:'var(--grid)'}));
+
+  // Comparison line (if active) – no side labels
+  if(activeSpendValue !== null){
+    const lineY = y(activeSpendValue);
+    g.appendChild(el('line',{x1:M.l,y1:lineY,x2:width-M.r,y2:lineY,class:'spend-comparison-line'}));
+  }
+
+  const oecd = SPEND_DATA['OECD Average'] || null;
+  
+  countries.forEach((c,i)=>{
+    const cx = columnX(i, countries.length);
+    const rec = SPEND_DATA[c]; if(!rec) return;
+    // Calculate bar width to span the full column width like the bubbles above
+    const columnWidth = (width - M.l - M.r) / countries.length;
+    const bw = ((columnWidth - 20) / 2) * 0.8; // divide column width by 2 bars, reduce by 20% for spacing
+    const gap = 8; // small gap between primary and secondary bars
+    
+    // Primary bar
+    const pTop = y(rec.primary);
+    const pBar = el('rect',{x:cx - bw - gap/2, y:pTop, width:bw, height:baselineY - pTop, class:'spend-bar-primary'});
+    pBar.dataset.country = c;
+    pBar.dataset.type = 'primary';
+    pBar.dataset.value = rec.primary;
+    pBar.addEventListener('click', ()=> toggleSpendBar(c, 'primary', rec.primary));
+    g.appendChild(pBar);
+    
+    // Primary value inside bar (centered)
+    const pMid = pTop + (baselineY - pTop) / 2;
+    const pVal = el('text',{x:cx - bw/2 - gap/2, y:pMid + 4, class:'spend-value'});
+    pVal.textContent = Math.round(rec.primary).toLocaleString();
+    g.appendChild(pVal);
+    // Delta label above primary bars when a primary bar is selected
+    if(activeSpendBar && activeSpendBar.type === 'primary' && typeof activeSpendValue === 'number' && activeSpendValue > 0){
+      const diff = rec.primary - activeSpendValue;
+      const pct = Math.round((diff / activeSpendValue) * 100);
+      if(pct !== 0){
+        const deltaText = `${Math.abs(pct)}% ${pct > 0 ? 'higher' : 'lower'}`;
+        const delta = el('text',{x:cx - bw/2 - gap/2, y:Math.min(pTop, y(activeSpendValue)) - 10, class:'spend-delta'});
+        delta.textContent = deltaText;
+        g.appendChild(delta);
+      }
+    }
+    
+    // Secondary bar
+    const sTop = y(rec.secondary);
+    const sBar = el('rect',{x:cx + gap/2, y:sTop, width:bw, height:baselineY - sTop, class:'spend-bar-secondary'});
+    sBar.dataset.country = c;
+    sBar.dataset.type = 'secondary';
+    sBar.dataset.value = rec.secondary;
+    sBar.addEventListener('click', ()=> toggleSpendBar(c, 'secondary', rec.secondary));
+    g.appendChild(sBar);
+    
+    // Secondary value inside bar
+    const sMid = sTop + (baselineY - sTop) / 2;
+    const sVal = el('text',{x:cx + gap/2 + bw/2, y:sMid + 4, class:'spend-value'});
+    sVal.textContent = Math.round(rec.secondary).toLocaleString();
+    g.appendChild(sVal);
+    // Delta label above secondary bars when a secondary bar is selected
+    if(activeSpendBar && activeSpendBar.type === 'secondary' && typeof activeSpendValue === 'number' && activeSpendValue > 0){
+      const diff = rec.secondary - activeSpendValue;
+      const pct = Math.round((diff / activeSpendValue) * 100);
+      if(pct !== 0){
+        const deltaText = `${Math.abs(pct)}% ${pct > 0 ? 'higher' : 'lower'}`;
+        const delta = el('text',{x:cx + gap/2 + bw/2, y:Math.min(sTop, y(activeSpendValue)) - 10, class:'spend-delta'});
+        delta.textContent = deltaText;
+        g.appendChild(delta);
+      }
+    }
+
+    // Remove the percentage labels below bars since they're now on the comparison line
+  });
+  
+  // Axis labels
+  const labelY = baselineY + 35;
+  countries.forEach((c,i)=>{
+    const cx = columnX(i, countries.length);
+    if(!SPEND_DATA[c]) return;
+    const columnWidth = (width - M.l - M.r) / countries.length;
+    const bw = ((columnWidth - 20) / 2) * 0.8;
+    const gap = 8;
+
+    // Primary label (centered under bar)
+    const pLabel = el('text',{x:cx - bw/2 - gap/2, y:labelY, class:'spend-axis-label'});
+    pLabel.textContent = 'Primary';
+    g.appendChild(pLabel);
+
+    // Secondary label (centered under bar)
+    const sLabel = el('text',{x:cx + gap/2 + bw/2, y:labelY, class:'spend-axis-label'});
+    sLabel.textContent = 'Secondary';
+    g.appendChild(sLabel);
+  });
+  
+  // Apply highlighting
+  applySpendHighlight();
+}
+
+function radiusScale(share){
+  // share 0.15..0.25 -> radius 10..30
+  const s = Math.min(0.27, Math.max(0.12, share));
+  return 10 + (s - 0.12) / (0.27 - 0.12) * 20;
+}
+
+function columnX(idx, total){
+  const w = svg.width.baseVal.value - M.l - M.r;
+  const step = w / Math.max(1,total);
+  return M.l + step*idx + step/2;
+}
+
+// ---------------- Render ----------------
+function render(){
+  // clear svg
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+  // containers for interactive references
+  window.__BUBBLES__ = []; // {node,q}
+  window.__QLABELS__ = []; // {node,q}
+
+  // Grid/axes
+  const width = svg.width.baseVal.value, height = svg.height.baseVal.value;
+  // Add a band (selection banner) *behind* the main graphics
+  const band = el('rect', {x:0,y:0,width:0,height:0,opacity:0,fill:'#6aa6ff22', stroke:'#6aa6ff55','stroke-dasharray':'4 4', rx:6, ry:6});
+  svg.appendChild(band);
+  const g = el('g'); svg.appendChild(g);
+  window.__BAND__ = band;
+
+  // Chart title and subtitle
+  const title = el('text', {x:width/2, y:20, class:'chart-title'});
+  title.textContent = 'Mathematics Performance by Socio-Economic Quintile';
+  g.appendChild(title);
+  const subtitle = el('text', {x:width/2, y:38, class:'chart-subtitle'});
+  subtitle.textContent = 'ESCS quintile';
+  g.appendChild(subtitle);
+
+  // horizontal grid lines + y labels
+  const ticks = niceTicks(Ymin, Ymax, 6);
+  ticks.forEach(t => {
+    const y = yScale(t);
+    const line = el('line', {x1:M.l, y1:y, x2:width-M.r, y2:y, stroke:'var(--grid)'});
+    const tx = el('text', {x:M.l-6, y:y+4, 'text-anchor':'end', fill:'var(--muted)'}); tx.textContent = t;
+    g.appendChild(line); g.appendChild(tx);
+  });
+  // (removed vertical y-axis label per latest requirements)
+
+  // country columns (pinned first)
+  const countries = [...new Set([ ...ALWAYS_VISIBLE, ...activeCountries.filter(c=>!ALWAYS_VISIBLE.includes(c)) ])];
+
+  countries.forEach((c,i)=>{
+    const x = columnX(i, countries.length);
+
+    // country label at top
+    const label = el('text',{x, y:M.t-14, class:'country-label'});
+    label.textContent = c; g.appendChild(label);
+
+    // quintile bubbles
+    const series = DATA[c] || [];
+    series.forEach(d=>{
+      const cx = x + (d.q-2)*28; // spread within column
+      const cy = yScale(d.score);
+      const r  = radiusScale(d.share);
+      const circle = el('circle', {cx, cy, r, class:'bubble', fill: c==="OECD Average"? 'var(--accent)':'#7bdcb580', stroke: c==="OECD Average"? 'var(--accent)':'#7bdcb5', 'stroke-width':1.2});
+      circle.dataset.quintile = d.q;
+      circle.addEventListener('click', ()=> toggleQuintile(d.q, cy));
+      g.appendChild(circle);
+      __BUBBLES__.push({node:circle, q:d.q});
+      const pct = el('text', {x:cx, y:cy+4, 'text-anchor':'middle', fill:'#0b0c10', 'font-size': Math.max(10, Math.min(14, r*0.6)), 'pointer-events':'none'});
+      pct.textContent = Math.round(d.share*100) + '%';
+      g.appendChild(pct);
+    });
+
+    // standardized x-labels under each column
+    const ords = ['1st','2nd','3rd','4th','5th'];
+    ords.forEach((ord, qi)=>{
+      const qx = x + (qi-2)*28;
+      const qt = el('text', {x: qx, y: height-26, class:'quartile-label'});
+      qt.textContent = ord; g.appendChild(qt);
+      __QLABELS__.push({node:qt, q:qi});
+    });
+    // descriptor line under the quintile labels
+    const desc = el('text', {x, y: height-10, class:'quartile-label'});
+    desc.setAttribute('text-anchor','middle');
+    desc.textContent = 'ESCS quintile';
+    g.appendChild(desc);
+
+    // Add equity indicators if in equity mode
+    if (equityMode && EQUITY_DATA[c]) {
+      renderEquityIndicators(g, c, i, x, countries.length);
+    }
+  });
+
+  // Add arrow marker definition for equity arrows
+  if (equityMode) {
+    const defs = el('defs');
+    const marker = el('marker', {id:'arrowhead', markerWidth:10, markerHeight:7, refX:9, refY:3.5, orient:'auto'});
+    const polygon = el('polygon', {points:'0 0, 10 3.5, 0 7', fill:'#7c3aed'});
+    marker.appendChild(polygon);
+    defs.appendChild(marker);
+    g.appendChild(defs);
+  }
+
+  applyHighlight();
+  // Also draw spend chart in sync with the current country order
+  renderSpend();
+}
+
+function toggleSpendBar(country, type, value){
+  // If clicking same bar again, clear selection
+  if(activeSpendBar && activeSpendBar.country === country && activeSpendBar.type === type){
+    activeSpendBar = null;
+    activeSpendValue = null;
+  } else {
+    activeSpendBar = {country, type};
+    activeSpendValue = value;
+  }
+  applySpendHighlight();
+  renderSpend(); // re-render to show/hide comparison line
+}
+
+function applySpendHighlight(){
+  if(!spendSvg) return;
+  const bars = spendSvg.querySelectorAll('.spend-bar-primary, .spend-bar-secondary');
+  const hasActive = activeSpendBar !== null;
+  
+  bars.forEach(bar => {
+    bar.classList.remove('highlight', 'faded');
+    if(hasActive){
+      // Highlight all bars of the same type (primary or secondary)
+      const isSameType = bar.dataset.type === activeSpendBar.type;
+      const isExactMatch = bar.dataset.country === activeSpendBar.country && 
+                          bar.dataset.type === activeSpendBar.type;
+      
+      if(isExactMatch){
+        bar.classList.add('highlight');
+      } else if(isSameType){
+        // Same type but different country - lighter highlight
+        bar.style.opacity = '0.7';
+        bar.style.filter = 'brightness(1.05)';
+      } else {
+        bar.classList.add('faded');
+      }
+    } else {
+      // Reset any inline styles
+      bar.style.opacity = '';
+      bar.style.filter = '';
+    }
+  });
+}
+
+function toggleQuintile(q, y=null){
+  // If clicking same quintile again with no explicit y, treat as toggle off
+  if(activeQuintile===q && (y===null || y===activeY)){
+    activeQuintile = null; activeY = null;
+  } else {
+    activeQuintile = q;
+    if(y!==null) activeY = y; // center banner on the clicked bubble
+  }
+  applyHighlight();
+}
+
+function renderEquityIndicators(g, country, countryIndex, x, totalCountries) {
+  const equity = EQUITY_DATA[country];
+  const series = DATA[country] || [];
+  
+  // Calculate positions for arrows (between quintiles) - moved to left of bubbles
+  const q1_5x = x + (0.5-2)*28 - 40; // between 1st and 2nd quintile, shifted left
+  const q4_5x = x + (3.5-2)*28 - 40; // between 4th and 5th quintile, shifted left
+  
+  // Get average y positions for the arrow endpoints
+  const q1_5y = (yScale(series[0]?.score || 400) + yScale(series[1]?.score || 430)) / 2;
+  const q4_5y = (yScale(series[3]?.score || 500) + yScale(series[4]?.score || 530)) / 2;
+  
+  // 1. Student Resilience Arrow (moved to left)
+  const resArrow = el('line', {
+    x1: q1_5x, y1: q1_5y,
+    x2: q4_5x, y2: q4_5y,
+    class: 'equity-arrow'
+  });
+  g.appendChild(resArrow);
+  
+  // Resilience label (percentage only, moved left to avoid arrow overlap)
+  const resLabel = el('text', {
+    x: (q1_5x + q4_5x) / 2 - 15,
+    y: (q1_5y + q4_5y) / 2,
+    class: 'resilience-label',
+    'text-anchor': 'middle'
+  });
+  resLabel.textContent = `${Math.round(equity.resilience)}%`;
+  g.appendChild(resLabel);
+  
+  // 2. Performance Gap Bar (vertical, on right side)
+  const gapBar = el('line', {
+    x1: x + 90, y1: q1_5y,
+    x2: x + 90, y2: q4_5y,
+    class: 'equity-bar'
+  });
+  g.appendChild(gapBar);
+  
+  // Performance gap label (points only)
+  const gapLabel = el('text', {
+    x: x + 95,
+    y: (q1_5y + q4_5y) / 2,
+    class: 'gap-label',
+    'text-anchor': 'start'
+  });
+  gapLabel.textContent = `${Math.round(equity.performanceGap)}pt`;
+  g.appendChild(gapLabel);
+  
+  // 3. Social Inclusion Index (outlined badge placed between 350–400 gridlines)
+  const isiMidY = (yScale(350) + yScale(400)) / 2;
+  const isiGroup = el('g', {id: `isi-group-${countryIndex}`, class: 'isi-group'});
+  const socialBtn = el('rect', {
+    x: x - 30,
+    y: isiMidY - 12,
+    width: 60,
+    height: 24,
+    class: 'social-inclusion-btn',
+    id: `social-btn-${countryIndex}`
+  });
+  isiGroup.appendChild(socialBtn);
+  const socialText = el('text', {
+    x: x,
+    y: isiMidY + 6,
+    class: 'social-inclusion-text',
+    id: `social-${countryIndex}`
+  });
+  socialText.textContent = `ISI: ${Math.round(equity.socialInclusion)}`;
+  isiGroup.appendChild(socialText);
+  isiGroup.addEventListener('click', () => toggleSocialDetails(countryIndex, x, isiMidY));
+  g.appendChild(isiGroup);
+}
+
+function toggleSocialDetails(countryIndex, x, isiY) {
+  const existingDetails = document.getElementById(`social-details-${countryIndex}`);
+  if (existingDetails) {
+    existingDetails.remove();
+    return;
+  }
+  
+  const country = [...new Set([ ...ALWAYS_VISIBLE, ...activeCountries.filter(c=>!ALWAYS_VISIBLE.includes(c)) ])][countryIndex];
+  const equity = EQUITY_DATA[country];
+  
+  const g = svg.querySelector('g');
+  
+  // Create a group for the details (standardized card shown below ISI badge)
+  const midY = isiY ?? (yScale(350) + yScale(400)) / 2;
+  const boxWidth = 220;
+  const boxHeight = 54;
+  const boxX = x - boxWidth/2;
+  const boxY = midY + 14;
+  const detailsGroup = el('g', {id: `social-details-${countryIndex}`});
+  const detailsBox = el('rect', {x: boxX, y: boxY, width: boxWidth, height: boxHeight, class: 'social-details-box'});
+  detailsGroup.appendChild(detailsBox);
+  // Title/value rows
+  const row1 = el('text', {x: boxX + 12, y: boxY + 20, class: 'social-details', 'text-anchor':'start'}); row1.textContent = `Within-school variance: ${Math.round(equity.withinSchool)}%`;
+  const row2 = el('text', {x: boxX + 12, y: boxY + 40, class: 'social-details', 'text-anchor':'start'}); row2.textContent = `Between-schools variance: ${Math.round(equity.betweenSchool)}%`;
+  // Divider
+  const divider = el('line', {x1: boxX + 10, x2: boxX + boxWidth - 10, y1: boxY + 26, y2: boxY + 26, stroke: '#f59e0b', 'stroke-opacity':'0.6'});
+  detailsGroup.appendChild(row1); detailsGroup.appendChild(divider); detailsGroup.appendChild(row2);
+  g.appendChild(detailsGroup);
+}
+
+function applyHighlight(){
+  const has = Number.isInteger(activeQuintile);
+  // bubble state
+  (window.__BUBBLES__||[]).forEach(({node,q})=>{
+    node.classList.remove('highlight','faded');
+    if(equityMode) {
+      node.classList.add('faded');
+    } else if(has) {
+      if(q===activeQuintile){ node.classList.add('highlight'); }
+      else { node.classList.add('faded'); }
+    }
+  });
+  // x-axis labels bolding
+  (window.__QLABELS__||[]).forEach(({node,q})=>{
+    node.classList.toggle('q-active', has && q===activeQuintile);
+  });
+  // banner
+  if(window.__BAND__){
+    if(!has){ window.__BAND__.setAttribute('opacity','0'); return; }
+    // If we have a clicked bubble position, use that; otherwise fallback to median across countries
+    let mid;
+    if(typeof activeY === 'number'){
+      mid = activeY;
+    } else {
+      const ys = (window.__BUBBLES__||[]).filter(b=>b.q===activeQuintile).map(b=> +b.node.getAttribute('cy')).sort((a,b)=>a-b);
+      mid = ys.length ? ys[Math.floor(ys.length/2)] : (M.t + (svg.height.baseVal.value - M.b))/2;
+    }
+    const h = 38; // thickness of banner
+    const y = Math.max(M.t, Math.min(mid - h/2, svg.height.baseVal.value - M.b - h));
+    const w = svg.width.baseVal.value - M.l - M.r;
+    window.__BAND__.setAttribute('x', M.l);
+    window.__BAND__.setAttribute('y', y);
+    window.__BAND__.setAttribute('width', w);
+    window.__BAND__.setAttribute('height', h);
+    window.__BAND__.setAttribute('opacity', '1');
+  }
+}
+
+function niceTicks(min, max, count){
+  const span = max-min; const step = Math.pow(10, Math.floor(Math.log10(span/count)));
+  const err = count*step/span; const steps = err<=.15? 10 : err<=.35? 5 : err<=.75? 2 : 1;
+  const niceStep = step*steps; const niceMin = Math.floor(min/niceStep)*niceStep; const niceMax = Math.ceil(max/niceStep)*niceStep;
+  const out=[]; for(let v=niceMin; v<=niceMax+1e-6; v+=niceStep) out.push(v); return out;
+}
+
+function el(name, attrs={}){ const n=document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs) n.setAttribute(k, attrs[k]); return n; }
+
+// ---------------- Country picker ----------------
+function refreshPicker(){
+  countryList.innerHTML = '';
+  Object.keys(DATA)
+    .sort()
+    .forEach(name=>{
+      const li = document.createElement('li');
+      const isActive = activeCountries.includes(name);
+      const isPinned = ALWAYS_VISIBLE.includes(name);
+      
+      // Add appropriate classes
+      if (isPinned) {
+        li.className = 'pinned';
+      } else if (isActive) {
+        li.className = 'added';
+      }
+      // Left content (status dot + name)
+      const left = document.createElement('div');
+      left.className = 'country-item-left';
+      const dot = document.createElement('span');
+      dot.className = 'status-dot';
+      // Match chart colors: accent for OECD Average, good for added countries, muted grid for available
+      if (isPinned) {
+        dot.style.background = 'var(--accent)';
+        dot.style.borderColor = 'var(--accent)';
+      } else if (isActive) {
+        dot.style.background = 'var(--good)';
+        dot.style.borderColor = 'var(--good)';
+      } else {
+        dot.style.background = 'var(--grid)';
+      }
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'country-name';
+      nameSpan.textContent = name;
+      left.appendChild(dot);
+      left.appendChild(nameSpan);
+      li.appendChild(left);
+      
+      // Create appropriate button
+      if (isPinned) {
+        const pinnedLabel = document.createElement('span');
+        pinnedLabel.textContent = '(pinned)';
+        pinnedLabel.style.fontSize = '11px';
+        pinnedLabel.style.fontStyle = 'italic';
+        li.appendChild(pinnedLabel);
+      } else if (isActive) {
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.title = `Remove ${name}`;
+        removeBtn.onclick = () => removeCountry(name);
+        li.appendChild(removeBtn);
+      } else {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-btn';
+        addBtn.textContent = 'Add';
+        addBtn.title = `Add ${name}`;
+        addBtn.onclick = () => addCountry(name);
+        li.appendChild(addBtn);
+      }
+      
+      countryList.appendChild(li);
+    });
+}
+
+function addCountry(name){
+  if(!activeCountries.includes(name)) activeCountries.push(name);
+  render(); refreshPicker();
+}
+function removeCountry(name){
+  if(ALWAYS_VISIBLE.includes(name)) return;
+  activeCountries = activeCountries.filter(c=>c!==name);
+  render(); refreshPicker();
+}
+function clearAll(){
+  activeCountries = [...ALWAYS_VISIBLE];
+  render(); refreshPicker();
+}
+
+function toggleEquityMode(){
+  equityMode = equityToggle.checked;
+  equityExplanations.style.display = equityMode ? 'block' : 'none';
+  
+  // Clear any active quintile selection when entering equity mode
+  if (equityMode) {
+    activeQuintile = null;
+    activeY = null;
+  }
+  
+  render();
+}
+
+// ---------------- Events ----------------
+clearBtn.addEventListener('click', clearAll);
+equityToggle.addEventListener('change', toggleEquityMode);
+window.addEventListener('resize', ()=>{ 
+  updateChartDimensions(); 
+  render(); 
+  renderSpend(); 
+});
+window.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ activeQuintile=null; activeY=null; applyHighlight(); } });
+// Clear highlight when clicking background (attached once)
+svg.addEventListener('click', (e)=>{ if(e.target.tagName.toLowerCase()!== 'circle'){ activeQuintile=null; activeY=null; applyHighlight(); } });
+
+// ---------------- Simple tests (console) ----------------
+function runTests(){
+  console.log('%cRunning smoke tests…','color:#7cc4ff');
+  console.assert(QUINTILES.length===5, 'QUINTILES should have five labels');
+  console.assert(ALWAYS_VISIBLE.includes('OECD Average'), 'OECD Average should be pinned');
+  console.assert(yScale(350) > yScale(600), 'yScale should be descending (higher score -> lower y pixel)');
+  console.assert(typeof DATA['Sweden'] !== 'undefined', 'Sweden dummy data present');
+
+  // Derived counts
+  const countries = [...new Set([ ...ALWAYS_VISIBLE, ...activeCountries.filter(c=>!ALWAYS_VISIBLE.includes(c)) ])];
+  const bubbleCount = document.querySelectorAll('#chart circle.bubble').length;
+  console.assert(bubbleCount === countries.length*5, `Expected ${countries.length*5} bubbles, found ${bubbleCount}`);
+
+  // Highlight logic + banner (median fallback)
+  toggleQuintile(2);
+  let hi = document.querySelectorAll('#chart circle.bubble.highlight').length;
+  let fa = document.querySelectorAll('#chart circle.bubble.faded').length;
+  console.assert(hi === countries.length && fa === countries.length*4, 'Highlight/fade counts should match countries');
+  console.assert(window.__BAND__ && +window.__BAND__.getAttribute('opacity') > 0, 'Banner should be visible when a quintile is highlighted');
+
+  // Explicit centering on clicked bubble
+  const swY = yScale(DATA['Sweden'][2].score);
+  toggleQuintile(2, swY);
+  const bandY = +window.__BAND__.getAttribute('y');
+  console.assert(Math.abs(bandY + 19 - swY) < 3, 'Banner should center on clicked bubble (±3px)');
+
+  // Toggle same quintile to clear
+  toggleQuintile(2, swY);
+  const noneFaded = document.querySelectorAll('#chart circle.bubble.faded').length;
+  console.assert(noneFaded === 0, 'No bubbles should be faded after clearing highlight');
+  console.assert(window.__BAND__ && +window.__BAND__.getAttribute('opacity') === 0, 'Banner should be hidden when no quintile is highlighted');
+}
+
+// init
+refreshPicker(); 
+updateChartDimensions();
+render(); 
+renderSpend();
+runTests();
+</script>
+</body>
+</html>
