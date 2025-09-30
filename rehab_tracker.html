@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rehab Tracker - Rygg och Ben</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #667eea;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .feeling-scale {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .feeling-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+        }
+
+        .feeling-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            transform: scale(1.1);
+        }
+
+        .feeling-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .activity-name {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .activity-date {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .activity-details {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .intensity-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .intensity-low {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+
+        .intensity-medium {
+            background: #fdcb6e;
+            color: #e17055;
+        }
+
+        .intensity-high {
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 180px;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 0 10px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            max-width: 30px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 5px 5px 0 0;
+            margin: 0 3px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Rehab Tracker</h1>
+            <p>Rygg och Ben - Region Stockholm</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('log')">Registrera</button>
+            <button class="tab" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('history')">Historik</button>
+        </div>
+
+        <!-- Log Activity Tab -->
+        <div id="logTab" class="card">
+            <h2 style="margin-bottom: 20px; color: #667eea;">Registrera aktivitet</h2>
+            
+            <div class="form-group">
+                <label>Välj övning</label>
+                <select id="activitySelect">
+                    <option value="">-- Välj övning --</option>
+                    <option value="Musslan med miniband">Musslan med miniband (10 ggr)</option>
+                    <option value="Sidliggande benlyft">Sidliggande benlyft (10 ggr)</option>
+                    <option value="Liggande benlyft">Liggande benlyft (10 ggr)</option>
+                    <option value="Raka marklyft">Raka marklyft (10x3)</option>
+                    <option value="Marklyft med ett ben">Marklyft med ett ben (10 ggr x3)</option>
+                    <option value="Enkel benpress">Enkel benpress (10x3)</option>
+                    <option value="Quadriceps knäextension">Quadriceps knäextension (10x3)</option>
+                    <option value="Steg-ups">Steg-ups (10 ggr, 3 serier)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Varaktighet (minuter)</label>
+                <input type="number" id="duration" min="1" max="120" value="10" placeholder="Ex: 10">
+            </div>
+
+            <div class="form-group">
+                <label>Hur kändes det?</label>
+                <div class="feeling-scale">
+                    <button class="feeling-btn" data-feeling="1" onclick="selectFeeling(1)">😫</button>
+                    <button class="feeling-btn" data-feeling="2" onclick="selectFeeling(2)">😰</button>
+                    <button class="feeling-btn" data-feeling="3" onclick="selectFeeling(3)">😐</button>
+                    <button class="feeling-btn" data-feeling="4" onclick="selectFeeling(4)">🙂</button>
+                    <button class="feeling-btn" data-feeling="5" onclick="selectFeeling(5)">💪</button>
+                </div>
+                <div class="feeling-labels">
+                    <span>Svårt</span>
+                    <span>Jobbigt</span>
+                    <span>OK</span>
+                    <span>Bra</span>
+                    <span>Lätt</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Anteckningar (valfritt)</label>
+                <textarea id="notes" rows="3" placeholder="T.ex. kände mig stark idag, lite öm i knäet..."></textarea>
+            </div>
+
+            <button class="btn-primary" onclick="logActivity()">✓ Registrera aktivitet</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboardTab" class="card" style="display: none;">
+            <h2 style="margin-bottom: 20px; color: #667eea;">Översikt</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalActivities">0</div>
+                    <div class="stat-label">Aktiviteter</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalMinutes">0</div>
+                    <div class="stat-label">Minuter</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgIntensity">0</div>
+                    <div class="stat-label">Snitt intensitet</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-label">Dagars streak</div>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0 10px 0; color: #667eea;">Intensitet över tid</h3>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="changeChartView('week')">7 dagar</button>
+                <button class="view-btn" onclick="changeChartView('month')">30 dagar</button>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars" id="chartBars"></div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="historyTab" class="card" style="display: none;">
+            <h2 style="margin-bottom: 20px; color: #667eea;">Historik</h2>
+            <div class="activity-list" id="activityList"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFeeling = null;
+        let currentChartView = 'week';
+
+        // Load activities from localStorage
+        function loadActivities() {
+            const stored = localStorage.getItem('rehabActivities');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        // Save activities to localStorage
+        function saveActivities(activities) {
+            localStorage.setItem('rehabActivities', JSON.stringify(activities));
+        }
+
+        // Switch between tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('logTab').style.display = 'none';
+            document.getElementById('dashboardTab').style.display = 'none';
+            document.getElementById('historyTab').style.display = 'none';
+
+            if (tab === 'log') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('logTab').style.display = 'block';
+            } else if (tab === 'dashboard') {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('dashboardTab').style.display = 'block';
+                updateDashboard();
+            } else if (tab === 'history') {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+                document.getElementById('historyTab').style.display = 'block';
+                displayHistory();
+            }
+        }
+
+        // Select feeling
+        function selectFeeling(feeling) {
+            selectedFeeling = feeling;
+            document.querySelectorAll('.feeling-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector(`[data-feeling="${feeling}"]`).classList.add('selected');
+        }
+
+        // Calculate intensity (duration * feeling)
+        function calculateIntensity(duration, feeling) {
+            return duration * feeling;
+        }
+
+        // Get intensity category
+        function getIntensityCategory(intensity) {
+            if (intensity < 30) return 'low';
+            if (intensity < 60) return 'medium';
+            return 'high';
+        }
+
+        // Get intensity label
+        function getIntensityLabel(intensity) {
+            if (intensity < 30) return 'Låg';
+            if (intensity < 60) return 'Medel';
+            return 'Hög';
+        }
+
+        // Log activity
+        function logActivity() {
+            const activity = document.getElementById('activitySelect').value;
+            const duration = parseInt(document.getElementById('duration').value);
+            const notes = document.getElementById('notes').value;
+
+            if (!activity) {
+                alert('Vänligen välj en övning');
+                return;
+            }
+
+            if (!duration || duration < 1) {
+                alert('Vänligen ange varaktighet');
+                return;
+            }
+
+            if (!selectedFeeling) {
+                alert('Vänligen välj hur det kändes');
+                return;
+            }
+
+            const intensity = calculateIntensity(duration, selectedFeeling);
+            
+            const activityData = {
+                id: Date.now(),
+                activity,
+                duration,
+                feeling: selectedFeeling,
+                intensity,
+                notes,
+                timestamp: new Date().toISOString()
+            };
+
+            const activities = loadActivities();
+            activities.push(activityData);
+            saveActivities(activities);
+
+            // Reset form
+            document.getElementById('activitySelect').value = '';
+            document.getElementById('duration').value = '10';
+            document.getElementById('notes').value = '';
+            document.querySelectorAll('.feeling-btn').forEach(btn => btn.classList.remove('selected'));
+            selectedFeeling = null;
+
+            alert('✓ Aktivitet registrerad!');
+            switchTab('dashboard');
+        }
+
+        // Display history
+        function displayHistory() {
+            const activities = loadActivities();
+            const list = document.getElementById('activityList');
+
+            if (activities.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>Inga aktiviteter registrerade än</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedActivities = activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            list.innerHTML = sortedActivities.map(act => {
+                const date = new Date(act.timestamp);
+                const formattedDate = date.toLocaleDateString('sv-SE', { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const intensityCategory = getIntensityCategory(act.intensity);
+                const intensityLabel = getIntensityLabel(act.intensity);
+                
+                const feelingEmojis = ['😫', '😰', '😐', '🙂', '💪'];
+
+                return `
+                    <div class="activity-item">
+                        <div class="activity-header">
+                            <div>
+                                <div class="activity-name">${act.activity}</div>
+                                <div class="activity-date">${formattedDate}</div>
+                            </div>
+                            <span class="intensity-badge intensity-${intensityCategory}">
+                                ${intensityLabel}: ${act.intensity}
+                            </span>
+                        </div>
+                        <div class="activity-details">
+                            <span>⏱️ ${act.duration} min</span>
+                            <span>${feelingEmojis[act.feeling - 1]} Känsla: ${act.feeling}/5</span>
+                        </div>
+                        ${act.notes ? `<div style="margin-top: 8px; font-size: 12px; color: #666;">📝 ${act.notes}</div>` : ''}
+                        <button class="delete-btn" onclick="deleteActivity(${act.id})">🗑️ Ta bort</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Delete activity
+        function deleteActivity(id) {
+            if (!confirm('Är du säker på att du vill ta bort denna aktivitet?')) return;
+            
+            let activities = loadActivities();
+            activities = activities.filter(act => act.id !== id);
+            saveActivities(activities);
+            displayHistory();
+            updateDashboard();
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const activities = loadActivities();
+            
+            // Total activities
+            document.getElementById('totalActivities').textContent = activities.length;
+
+            // Total minutes
+            const totalMinutes = activities.reduce((sum, act) => sum + act.duration, 0);
+            document.getElementById('totalMinutes').textContent = totalMinutes;
+
+            // Average intensity
+            const avgIntensity = activities.length > 0 
+                ? Math.round(activities.reduce((sum, act) => sum + act.intensity, 0) / activities.length)
+                : 0;
+            document.getElementById('avgIntensity').textContent = avgIntensity;
+
+            // Calculate streak
+            const streak = calculateStreak(activities);
+            document.getElementById('streak').textContent = streak;
+
+            // Update chart
+            updateChart(activities);
+        }
+
+        // Calculate streak
+        function calculateStreak(activities) {
+            if (activities.length === 0) return 0;
+
+            const sortedActivities = activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let streak = 0;
+            let currentDate = new Date(today);
+
+            for (let i = 0; i < 365; i++) {
+                const hasActivity = sortedActivities.some(act => {
+                    const actDate = new Date(act.timestamp);
+                    actDate.setHours(0, 0, 0, 0);
+                    return actDate.getTime() === currentDate.getTime();
+                });
+
+                if (hasActivity) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else if (i === 0) {
+                    // Check yesterday if no activity today
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+
+            return streak;
+        }
+
+        // Change chart view
+        function changeChartView(view) {
+            currentChartView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateChart(loadActivities());
+        }
+
+        // Update chart
+        function updateChart(activities) {
+            const chartBars = document.getElementById('chartBars');
+            const days = currentChartView === 'week' ? 7 : 30;
+            
+            const dailyIntensity = {};
+            const today = new Date();
+            
+            // Initialize all days
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                dailyIntensity[dateStr] = 0;
+            }
+
+            // Sum up intensities per day
+            activities.forEach(act => {
+                const dateStr = act.timestamp.split('T')[0];
+                if (dailyIntensity.hasOwnProperty(dateStr)) {
+                    dailyIntensity[dateStr] += act.intensity;
+                }
+            });
+
+            const maxIntensity = Math.max(...Object.values(dailyIntensity), 1);
+
+            chartBars.innerHTML = Object.entries(dailyIntensity).map(([date, intensity]) => {
+                const height = (intensity / maxIntensity) * 100;
+                const dateObj = new Date(date);
+                const label = currentChartView === 'week' 
+                    ? dateObj.toLocaleDateString('sv-SE', { weekday: 'short' })
+                    : dateObj.getDate();
+                
+                return `
+                    <div class="chart-bar" style="height: ${height}%">
+                        <div class="chart-label">${label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize dashboard on load
+        updateDashboard();
+    </script>
+</body>
+</html>
