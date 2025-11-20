@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Händelsehantering | Backa Barnet</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Google Sans', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0B57D0', 
+                        onPrimary: '#FFFFFF',
+                        primaryContainer: '#D3E3FD',
+                        onPrimaryContainer: '#041E49',
+                        surface: '#FFFFFF',
+                        surfaceVariant: '#F0F4F9',
+                        onSurface: '#1F1F1F',
+                        onSurfaceVariant: '#444746',
+                        outline: '#747775',
+                        success: '#146C2E',
+                        warning: '#B3261E',
+                        neutral: '#757575'
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 1.5s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        
+        .screen {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: none;
+        }
+
+        .screen.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .mic-ring {
+            position: absolute;
+            border-radius: 50%;
+            background: #D3E3FD;
+            z-index: -1;
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* Sound Wave Animation */
+        .bar {
+            animation: sound 0ms -800ms linear infinite alternate;
+            transition: height 0.1s;
+        }
+        @keyframes sound {
+            0% { height: 4px; opacity: 0.5; }
+            100% { height: 24px; opacity: 1; }
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0B57D0;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0B57D0;
+        }
+        
+        /* Increased spacer to make sure content clears the fixed footer */
+        .content-spacer { padding-bottom: 220px; }
+        
+        /* Spinner for simulation loading */
+        .spinner {
+            border: 2px solid rgba(11, 87, 208, 0.1);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border-left-color: #0B57D0;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            color: #0284c7;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
+</head>
+<body class="bg-white text-onSurface h-screen w-full flex flex-col relative">
+
+    <!-- APP HEADER -->
+    <header class="flex items-center justify-between px-4 py-3 bg-surface/95 backdrop-blur sticky top-0 z-50 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+            <div class="bg-primary/10 p-2 rounded-full text-primary">
+                <span class="material-symbols-rounded text-2xl">shield_person</span>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold leading-tight text-gray-800">Händelsehantering</h1>
+                <p class="text-xs text-gray-500 font-medium">Backa Barnet</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 bg-surfaceVariant px-3 py-1.5 rounded-full">
+            <span class="text-xs font-medium text-gray-600">Demo</span>
+            <div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="toggle" id="demoToggle" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300" style="top:2px; left:2px;"/>
+                <label for="demoToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 overflow-y-auto relative w-full max-w-md mx-auto bg-white">
+        
+        <!-- ==================== SCREEN 1: CAPTURE ==================== -->
+        <div id="screen-1" class="screen active h-full">
+            
+            <div class="pt-6 px-4 content-spacer">
+                <h2 class="text-2xl font-Google Sans font-medium mb-4 text-gray-800">Vad har hänt?</h2>
+                
+                <!-- Stacked Context Boxes -->
+                <div class="flex flex-col gap-3 mb-6">
+                    <div class="bg-orange-50 border border-orange-100 p-4 rounded-2xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-orange-800">
+                            <span class="material-symbols-rounded text-lg">visibility</span>
+                            <span class="text-xs font-bold uppercase tracking-wide">Observation</span>
+                        </div>
+                        <p class="text-sm text-gray-700">Vad har du sett eller hört? Beskriv händelsen sakligt.</p>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-blue-800">
+                            <span class="material-symbols-rounded text-lg">analytics</span>
+                            <span class="text-xs font-bold uppercase tracking-wide">Analys</span>
+                        </div>
+                        <p class="text-sm text-gray-700">Varför är detta oroväckande? Är det en engångshändelse eller ett mönster?</p>
+                    </div>
+
+                    <div class="bg-green-50 border border-green-100 p-4 rounded-2xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-green-800">
+                            <span class="material-symbols-rounded text-lg">task_alt</span>
+                            <span class="text-xs font-bold uppercase tracking-wide">Åtgärder</span>
+                        </div>
+                        <p class="text-sm text-gray-700">Vad har gjorts hittills? Har du pratat med barnet eller vårdnadshavare?</p>
+                    </div>
+                </div>
+
+                <!-- Dynamic Transcript Area -->
+                <div class="min-h-[100px]">
+                    <div id="transcriptPlaceholder" class="text-center text-gray-400 mt-4 transition-opacity duration-300">
+                        <span class="material-symbols-rounded text-4xl mb-2 opacity-50">graphic_eq</span>
+                        <p>Tryck på mikrofonen för att dokumentera.</p>
+                    </div>
+                    <div id="liveTranscript" class="text-lg leading-relaxed text-gray-800 hidden bg-gray-50 p-4 rounded-xl border border-gray-100 min-h-[60px]"></div>
+                    <div id="processingIndicator" class="hidden flex items-center gap-2 mt-2 text-primary text-sm font-medium animate-pulse">
+                        <span class="material-symbols-rounded text-lg">neurology</span> Bearbetar transkription...
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIXED FOOTER (Recording Module) -->
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] flex flex-col items-center gap-4 transition-all duration-300">
+                
+                <!-- Visualizer & Status (Initially hidden) -->
+                <div id="recordingContainer" class="w-full max-w-xs transition-all duration-300 flex flex-col items-center gap-2 h-0 overflow-hidden opacity-0">
+                     <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
+                        <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
+                     </div>
+                     <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full rounded-full border border-red-100">
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 458ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 400ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 427ms"></div>
+                    </div>
+                </div>
+
+                <!-- Controls Container -->
+                <div class="flex items-center gap-6">
+                    <button onclick="resetRecording()" class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
+                        <span class="material-symbols-rounded">restart_alt</span>
+                    </button>
+                    
+                    <!-- Mic Button -->
+                    <button id="recordBtn" onclick="toggleRecording()" class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
+                        <div id="micRing" class="mic-ring hidden"></div>
+                        <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
+                    </button>
+
+                    <button onclick="analyzeAndProceed()" class="w-12 h-12 flex items-center justify-center rounded-full bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
+                        <span class="material-symbols-rounded">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SCREEN 2: TRIAGE ==================== -->
+        <div id="screen-2" class="screen min-h-full px-4 pt-6 pb-24">
+            <button onclick="navigateTo(1)" class="flex items-center text-gray-500 mb-4 text-sm font-medium">
+                <span class="material-symbols-rounded text-lg mr-1">arrow_back</span> Tillbaka
+            </button>
+            
+            <h2 class="text-2xl font-Google Sans font-medium mb-2">Välj åtgärd</h2>
+            <p class="text-gray-500 mb-6 text-sm">Baserat på beskrivningen rekommenderas:</p>
+
+            <!-- Upptäckarkort -->
+            <div onclick="navigateTo(3)" class="bg-white border-2 border-primary rounded-2xl p-5 shadow-lg shadow-blue-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer mb-4">
+                <div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Rekommenderas</div>
+                <div class="flex items-start gap-4 mb-3">
+                    <div class="bg-primary/10 p-3 rounded-xl text-primary shrink-0">
+                        <span class="material-symbols-rounded text-2xl">assignment_ind</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Upptäckarkort</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Tecken som visar att något inte står rätt till hos barnet.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-primary text-sm">send</span><span><strong>Mottagare:</strong> Skolan.</span></div>
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-orange-600 text-sm">lock</span><span>Samtycke krävs.</span></div>
+                </div>
+            </div>
+
+            <!-- Incidentrapport -->
+            <div class="bg-white border-2 border-red-200 rounded-2xl p-5 shadow-lg shadow-red-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer mb-4">
+                <div class="flex items-start gap-4 mb-3">
+                    <div class="bg-red-50 p-3 rounded-xl text-red-600 shrink-0">
+                        <span class="material-symbols-rounded text-2xl">warning</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Incidentrapport</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Rapportering om brott eller akuta hot.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-gray-500 text-sm">domain</span><span><strong>Mottagare:</strong> Internt.</span></div>
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Samtycke behövs inte.</span></div>
+                </div>
+            </div>
+
+            <!-- Orosanmälan -->
+            <div class="bg-white border-2 border-orange-200 rounded-2xl p-5 shadow-lg shadow-orange-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer">
+                <div class="flex items-start gap-4 mb-3">
+                    <div class="bg-orange-50 p-3 rounded-xl text-orange-600 shrink-0">
+                        <span class="material-symbols-rounded text-2xl">report</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Orosanmälan</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Vid misstanke att ett barn far illa.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-gray-500 text-sm">send</span><span><strong>Mottagare:</strong> Socialtjänsten.</span></div>
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Samtycke behövs inte.</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SCREEN 3: DISCOVERY CARD ==================== -->
+        <div id="screen-3" class="screen min-h-full bg-surfaceVariant/50">
+            
+            <div class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm">
+                <button onclick="navigateTo(2)" class="text-gray-500 hover:text-gray-800">
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <div class="flex-1">
+                    <h2 class="font-bold text-gray-800 text-sm">Nytt Upptäckarkort</h2>
+                    <div class="text-xs text-gray-500">Steg 3 av 3</div>
+                </div>
+            </div>
+
+            <div class="p-4 space-y-6 pb-32">
+                
+                <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Barnet</h3>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <label class="text-xs text-gray-500 font-medium ml-1">Personnummer</label>
+                            <input type="text" id="childId" class="w-full mt-1 p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition font-mono text-gray-800" placeholder="YYYYMMDD-XXXX">
+                            <button onclick="lookupChild()" class="absolute right-2 top-7 text-primary p-1 hover:bg-blue-50 rounded-full">
+                                <span class="material-symbols-rounded">search</span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <label class="text-xs text-gray-500 font-medium ml-1">Namn</label>
+                            <input type="text" id="childName" class="w-full mt-1 p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-primary outline-none transition" placeholder="Förnamn Efternamn">
+                        </div>
+                        <div id="lookupResult" class="hidden animate-fade-in bg-blue-50 rounded-xl p-3 border border-blue-100 flex flex-col gap-3">
+                            <div class="flex items-start gap-3 text-blue-800 text-sm">
+                                <span class="material-symbols-rounded text-xl mt-0.5">school</span>
+                                <div>
+                                    <div class="font-medium text-gray-500 text-xs">Barnet är inskriven på</div>
+                                    <div class="font-bold text-base text-blue-900">Centralskolan, Skolgatan 12</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pl-8">
+                                <button class="flex items-center gap-2 bg-white text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-200 hover:bg-blue-50 transition">
+                                    <span class="material-symbols-rounded text-sm">call</span> Ring
+                                </button>
+                                <button class="flex items-center gap-2 bg-white text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-200 hover:bg-blue-50 transition">
+                                    <span class="material-symbols-rounded text-sm">mail</span> Mejla
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Behovsbedömning</h3>
+                    <p class="text-xs text-gray-500 mb-4">Är barnets behov uppfyllt?</p>
+                    <div class="space-y-3" id="sectorsContainer"></div>
+                </section>
+
+                <!-- DESCRIPTION SECTION -->
+                <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Beskrivning</h3>
+                        <div class="ai-badge hidden" id="draftBadge">
+                            <span class="material-symbols-rounded" style="font-size:12px;">auto_awesome</span> AI-utkast
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <textarea id="finalDesc" rows="10" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm leading-relaxed" placeholder="Beskriv din upptäckt..."></textarea>
+                        <!-- Loading Overlay -->
+                        <div id="descLoader" class="hidden absolute inset-0 bg-gray-50/90 backdrop-blur-sm flex items-center justify-center rounded-xl z-10">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="spinner"></div>
+                                <span class="text-xs text-primary font-medium">Bearbetar utkast...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="triggerAIDraft()" id="draftBtn" class="mt-2 text-primary text-xs font-medium flex items-center gap-1 hover:bg-blue-50 px-2 py-1 rounded transition w-max">
+                        <span class="material-symbols-rounded text-sm">auto_awesome</span> Skapa AI-utkast
+                    </button>
+                </section>
+
+                <!-- CONSENT SECTION -->
+                <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Samtycke</h3>
+                        <span class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Krävs</span>
+                    </div>
+                    <div class="space-y-3 mb-4" id="consentList">
+                        <div class="text-sm text-gray-400 italic text-center py-2">Fyll i personnummer för att hämta vårdnadshavare</div>
+                    </div>
+                    <button id="consentBtn" disabled onclick="openConsent()" class="w-full py-3 rounded-xl border border-primary text-primary font-medium text-sm flex items-center justify-center gap-2 hover:bg-blue-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-symbols-rounded">send_to_mobile</span>
+                        Begär digitalt samtycke
+                    </button>
+                </section>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 pb-8 z-40 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+                <div class="text-xs text-gray-500 px-2">
+                    Status: <span class="font-bold text-gray-700" id="formStatus">Utkast</span>
+                </div>
+                <button id="sendBtn" disabled onclick="showSuccess()" class="bg-gray-300 text-gray-500 px-8 py-3 rounded-full font-medium flex items-center gap-2 transition-all disabled:cursor-not-allowed data-[ready=true]:bg-primary data-[ready=true]:text-white data-[ready=true]:shadow-lg data-[ready=true]:shadow-blue-500/40">
+                    <span class="material-symbols-rounded">send</span>
+                    Skicka
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODALS & TOASTS -->
+    <div id="consentModal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeConsent()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 transform transition-transform duration-300 translate-y-full transition-transform" id="consentSheet" style="max-height: 85vh; overflow-y: auto;">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Begär Samtycke</h3>
+            <p class="text-sm text-gray-500 mb-6">Säker identifiering av vårdnadshavare via BankID.</p>
+            
+            <div class="mb-6 relative">
+                <div class="flex justify-between items-end mb-2">
+                    <label class="text-xs text-gray-400 uppercase font-bold block">Meddelande</label>
+                    <button onclick="generateEthicalConsent()" class="text-[10px] bg-blue-50 text-primary px-2 py-1 rounded border border-blue-100 font-bold flex items-center gap-1">
+                        <span class="material-symbols-rounded" style="font-size:12px">psychology</span> AI-förslag (Etiskt)
+                    </button>
+                </div>
+                
+                <textarea id="consentMessageEditor" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-700 focus:border-primary outline-none min-h-[180px]">Hej! Skolan vill upprätta ett Upptäckarkort för Alex för att säkerställa rätt stöd. Vänligen logga in för att läsa och godkänna.</textarea>
+                
+                <!-- Loader overlay for consent -->
+                <div id="consentLoader" class="hidden absolute inset-0 top-8 bg-white/90 flex items-center justify-center z-10 rounded-xl">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="spinner"></div>
+                        <span class="text-xs text-gray-500 text-center px-4">Formulerar etiskt förslag...<br><span class="text-[10px] text-gray-400">(Fokus på barnets bästa)</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="sendFakeSMS()" class="bg-primary text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition">
+                    <span class="material-symbols-rounded text-2xl">sms</span>
+                    <span class="text-sm font-medium">Skicka SMS</span>
+                </button>
+                <button onclick="sendFakeSMS()" class="bg-surfaceVariant text-onSurface p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition">
+                    <span class="material-symbols-rounded text-2xl">call</span>
+                    <span class="text-sm font-medium">Logga Samtal</span>
+                </button>
+            </div>
+            <button onclick="closeConsent()" class="w-full mt-4 py-3 text-gray-500 font-medium">Avbryt</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-[70] translate-y-[-150%] transition-transform duration-300 w-max max-w-[90%]">
+        <span class="material-symbols-rounded text-green-400 shrink-0">check_circle</span>
+        <span id="toastMsg" class="text-sm font-medium truncate">Sparat!</span>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        // Static Demo Data
+        const DEMO_TRANSCRIPT = "“Vid ca kl. 20:45 påträffade patrullen ett barn (ca 10–12 år) i sällskap med äldre, tydligt berusade ungdomar i centrumparken. Barnet var själv nykter och opåverkat men bedömdes befinna sig i en olämplig och potentiellt otrygg situation.\n\nPatrullen genomförde ett kort samtal med barnet om riskerna i sällskapet och barnet uttryckte därefter själv vilja att lämna platsen och gå hem. Ingen misstanke om brott och inga tecken på att barnet farit illa fysiskt.\n\nMed hänsyn till händelsen avser patrullen att inhämta samtycke från vårdnadshavare för att kunna informera barnets skola om incidenten för kännedom och eventuell stödåtgärd.”";
+        
+        const DEMO_DRAFT = "“Polisen träffade under kvällen på ett barn som befann sig i närheten av äldre ungdomar som hade druckit alkohol. Barnet var själv nykter och mådde bra, men situationen bedömdes som olämplig och otrygg för ett yngre barn.\n\nPolisen pratade en kort stund med barnet om varför miljön inte var bra, och barnet valde sedan själv att gå hem. Det finns inga tecken på att barnet har kommit till skada.\n\nFör att kunna ge skolan rätt information och möjliggöra eventuellt stöd kommer vårdnadshavare att tillfrågas om samtycke att dela en kort notis om händelsen.”";
+        
+        const DEMO_CONSENT = "“Hej,\nVi vill gärna informera ditt barns skola om en händelse där polisen mötte ditt barn i en situation som inte var farlig, men som kunde upplevas som otrygg. Ditt barn mådde bra och valde själv att gå hem.\n\nAtt dela denna information med skolan kan hjälpa dem att ge rätt stöd om det skulle behövas, samt bidra till att de får en helhetsbild av barnets trygghet och vardag.\n\nVi delar inget utan ditt godkännande.”";
+
+        // State
+        let isRecording = false;
+        let isDemoMode = false;
+
+        // --- RECORDING SIMULATION ---
+        window.toggleRecording = function() {
+            const btn = document.getElementById('recordBtn');
+            const icon = document.getElementById('recordIcon');
+            const ring = document.getElementById('micRing');
+            const vizContainer = document.getElementById('recordingContainer');
+            const placeholder = document.getElementById('transcriptPlaceholder');
+            const transcriptArea = document.getElementById('liveTranscript');
+            const processing = document.getElementById('processingIndicator');
+
+            if (!isRecording) {
+                // START SIMULATION
+                isRecording = true;
+                btn.classList.replace('bg-primary', 'bg-red-600');
+                icon.innerText = 'stop';
+                ring.classList.remove('hidden');
+                
+                // Show visualizer in footer
+                vizContainer.classList.remove('h-0', 'opacity-0');
+                vizContainer.classList.add('h-12', 'opacity-100');
+                
+                placeholder.classList.add('hidden');
+                transcriptArea.classList.remove('hidden');
+                transcriptArea.innerText = ""; // clear previous
+
+                if (isDemoMode) {
+                    // If demo mode, auto-stop after 3s and show text
+                    setTimeout(() => {
+                        if(isRecording) toggleRecording(); // stop
+                    }, 3000);
+                }
+
+            } else {
+                // STOP SIMULATION
+                isRecording = false;
+                btn.classList.replace('bg-red-600', 'bg-primary');
+                icon.innerText = 'mic';
+                ring.classList.add('hidden');
+                
+                // Hide visualizer
+                vizContainer.classList.remove('h-12', 'opacity-100');
+                vizContainer.classList.add('h-0', 'opacity-0');
+
+                if (isDemoMode) {
+                    processing.classList.remove('hidden');
+                    setTimeout(() => {
+                        processing.classList.add('hidden');
+                        typewriterEffect(transcriptArea, DEMO_TRANSCRIPT);
+                    }, 800);
+                }
+            }
+        }
+
+        function typewriterEffect(element, text) {
+            element.innerText = text;
+        }
+
+        // --- GENERATION SIMULATION ---
+        window.triggerAIDraft = function() {
+            if (!isDemoMode) { 
+                showToast("Aktivera Demo-läge för att simulera", "info"); 
+                return; 
+            }
+            
+            const loader = document.getElementById('descLoader');
+            const field = document.getElementById('finalDesc');
+            const badge = document.getElementById('draftBadge');
+
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                field.value = DEMO_DRAFT;
+                badge.classList.remove('hidden');
+                showToast("Utkast skapat (Simulerat)", "auto_awesome");
+            }, 1500);
+        }
+
+        window.generateEthicalConsent = function() {
+            if (!isDemoMode) { 
+                showToast("Aktivera Demo-läge för att simulera", "info"); 
+                return; 
+            }
+            
+            const loader = document.getElementById('consentLoader');
+            const field = document.getElementById('consentMessageEditor');
+            
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                field.value = DEMO_CONSENT;
+                showToast("Förslag skapat (Simulerat)", "psychology");
+            }, 1500);
+        }
+
+        // --- NAVIGATION & LOGIC ---
+        window.navigateTo = function(screenId) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            const target = document.getElementById(`screen-${screenId}`);
+            target.style.display = 'flex'; 
+            setTimeout(() => target.classList.add('active'), 10);
+            window.scrollTo(0,0);
+        }
+
+        const sectors = [
+            { id: 'trygghet', label: 'Trygghet', icon: 'security', desc: 'Trygghet i och utanför hemmet' },
+            { id: 'omsorg', label: 'Omsorg', icon: 'volunteer_activism', desc: 'Omsorg & pålitliga vuxna' },
+            { id: 'halsa', label: 'Må Bra', icon: 'mood', desc: 'Fysisk & psykisk hälsa' },
+            { id: 'fritid', label: 'Fritid', icon: 'sports_soccer', desc: 'Fritidsintresse & delaktighet' },
+            { id: 'tillhorighet', label: 'Tillhörighet', icon: 'diversity_3', desc: 'Tillhörighet & uppskattning' },
+            { id: 'ansvar', label: 'Ansvar', icon: 'checklist', desc: 'Förståelse för förväntningar' },
+            { id: 'respekt', label: 'Respekteras', icon: 'hearing', desc: 'Sedd, hörd & bekräftad' },
+            { id: 'utvecklas', label: 'Utvecklas', icon: 'school', desc: 'Utveckling & förmåga' }
+        ];
+
+        window.renderSectors = function() {
+            const container = document.getElementById('sectorsContainer');
+            if(container) {
+                container.innerHTML = sectors.map(s => `
+                    <div class="sector-item border border-gray-200 rounded-xl overflow-hidden transition-all duration-200 bg-white">
+                        <div class="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50" onclick="toggleSector('${s.id}')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center">
+                                    <span class="material-symbols-rounded text-lg">${s.icon}</span>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-sm text-gray-800">${s.label}</div>
+                                    <div class="text-[10px] text-gray-500 leading-tight">${s.desc}</div>
+                                </div>
+                            </div>
+                            <div id="indicator-${s.id}" class="w-3 h-3 rounded-full bg-gray-200 transition-colors duration-300"></div>
+                        </div>
+                        <div id="content-${s.id}" class="hidden bg-gray-50 p-3 border-t border-gray-100 animate-fade-in">
+                            <p class="text-xs font-medium text-gray-500 mb-2">Är barnets behov uppfyllt?</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setSectorVal('${s.id}', 'yes', this)" class="opt-btn-${s.id} py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium hover:bg-gray-100 transition">JA</button>
+                                <button onclick="setSectorVal('${s.id}', 'no', this)" class="opt-btn-${s.id} py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium hover:bg-gray-100 transition">NEJ</button>
+                                <button onclick="setSectorVal('${s.id}', 'idk', this)" class="opt-btn-${s.id} py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium hover:bg-gray-100 transition">VET EJ</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.toggleSector = function(id) {
+            document.getElementById(`content-${id}`).classList.toggle('hidden');
+        }
+
+        window.setSectorVal = function(id, val, btn) {
+            document.querySelectorAll(`.opt-btn-${id}`).forEach(b => {
+                b.className = `opt-btn-${id} py-2 rounded-lg border border-gray-200 bg-white text-xs font-medium hover:bg-gray-100 transition text-gray-800`;
+            });
+            const indicator = document.getElementById(`indicator-${id}`);
+            btn.classList.remove('bg-white', 'text-gray-800', 'border-gray-200', 'hover:bg-gray-100');
+            btn.classList.add('text-white', 'border-transparent');
+            if(val === 'yes') { indicator.className = "w-3 h-3 rounded-full bg-success"; btn.classList.add('bg-success'); }
+            else if (val === 'no') { indicator.className = "w-3 h-3 rounded-full bg-warning"; btn.classList.add('bg-warning'); }
+            else { indicator.className = "w-3 h-3 rounded-full bg-neutral"; btn.classList.add('bg-neutral'); }
+            setTimeout(() => toggleSector(id), 250);
+        }
+
+        window.lookupChild = function() {
+            const val = document.getElementById('childId').value;
+            // HARD-CODED TRIGGER for specific ID or Demo Mode
+            if(val.endsWith("1234") || val === "12345678-1234" || isDemoMode) {
+                document.getElementById('childName').value = "Alex Svensson";
+                document.getElementById('lookupResult').classList.remove('hidden');
+                document.getElementById('consentBtn').disabled = false;
+                const guardiansHTML = `
+                    <div class="flex items-center justify-between p-2 rounded-lg border border-gray-100 bg-white">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs">MS</div><div><div class="text-sm font-medium text-gray-900">Maria Svensson</div><div class="text-xs text-gray-400">Mamma</div></div><a href="tel:0701234567" class="ml-2 text-green-700 bg-green-50 p-1.5 rounded-full hover:bg-green-100 transition"><span class="material-symbols-rounded text-sm">call</span></a></div>
+                        <div id="status-g1" class="flex items-center gap-1 text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded"><span class="material-symbols-rounded text-sm">hourglass_empty</span> Väntar</div>
+                    </div>
+                    <div class="flex items-center justify-between p-2 rounded-lg border border-gray-100 bg-white">
+                        <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs">JS</div><div><div class="text-sm font-medium text-gray-900">Johan Svensson</div><div class="text-xs text-gray-400">Pappa</div></div><a href="tel:0709876543" class="ml-2 text-green-700 bg-green-50 p-1.5 rounded-full hover:bg-green-100 transition"><span class="material-symbols-rounded text-sm">call</span></a></div>
+                        <div id="status-g2" class="flex items-center gap-1 text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded"><span class="material-symbols-rounded text-sm">hourglass_empty</span> Väntar</div>
+                    </div>
+                `;
+                document.getElementById('consentList').innerHTML = guardiansHTML;
+            }
+        }
+
+        window.openConsent = function() {
+            const m = document.getElementById('consentModal');
+            const s = document.getElementById('consentSheet');
+            m.classList.remove('hidden');
+            setTimeout(() => s.classList.remove('translate-y-full'), 10);
+        }
+
+        window.closeConsent = function() {
+            const m = document.getElementById('consentModal');
+            const s = document.getElementById('consentSheet');
+            s.classList.add('translate-y-full');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        window.sendFakeSMS = function() {
+            closeConsent();
+            showToast("Säker länk skickad", "sms");
+            setTimeout(() => {
+                const signedHTML = `<span class="material-symbols-rounded text-sm">check_circle</span> Signerat`;
+                const signedClass = "flex items-center gap-1 text-xs text-green-700 font-medium bg-green-50 px-2 py-1 rounded";
+                if(document.getElementById('status-g1')) {
+                    document.getElementById('status-g1').innerHTML = signedHTML;
+                    document.getElementById('status-g1').className = signedClass;
+                    document.getElementById('status-g2').innerHTML = signedHTML;
+                    document.getElementById('status-g2').className = signedClass;
+                }
+                const btn = document.getElementById('sendBtn');
+                btn.disabled = false;
+                btn.setAttribute('data-ready', 'true');
+                document.getElementById('formStatus').innerText = "Klar";
+                document.getElementById('formStatus').className = "font-bold text-green-600";
+            }, 1500);
+        }
+
+        window.showSuccess = function() {
+            document.body.innerHTML = `<div class="h-screen w-full flex flex-col items-center justify-center bg-primary text-white text-center p-6 animate-fade-in"><div class="w-24 h-24 bg-white text-primary rounded-full flex items-center justify-center mb-6 shadow-2xl"><span class="material-symbols-rounded text-6xl">check</span></div><h2 class="text-3xl font-bold mb-2">Skickat!</h2><p class="text-blue-100 mb-8">Upptäckarkort #4928 har skickats till skolan.</p><button onclick="location.reload()" class="bg-white/20 hover:bg-white/30 px-6 py-2 rounded-full text-sm font-medium transition">Starta Ny</button></div>`;
+        }
+
+        window.showToast = function(msg, icon = "check_circle") {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toastMsg');
+            t.querySelector('span.material-symbols-rounded').innerText = icon;
+            m.innerText = msg;
+            t.style.transform = "translate(-50%, 20px)";
+            setTimeout(() => { t.style.transform = "translate(-50%, -150%)"; }, 3000);
+        }
+
+        window.resetRecording = function() {
+            document.getElementById('transcriptPlaceholder').classList.remove('hidden');
+            document.getElementById('liveTranscript').classList.add('hidden');
+            document.getElementById('liveTranscript').innerText = '';
+            document.getElementById('recordingContainer').classList.remove('h-12', 'opacity-100');
+            document.getElementById('recordingContainer').classList.add('h-0', 'opacity-0');
+        }
+        
+        window.analyzeAndProceed = function() {
+            showToast("Analyserar innehåll...", "neurology");
+            setTimeout(() => navigateTo(2), 800);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSectors();
+            // Default demo state check
+            isDemoMode = document.getElementById('demoToggle').checked;
+            
+            document.getElementById('demoToggle').addEventListener('change', (e) => {
+                isDemoMode = e.target.checked;
+                if(isDemoMode) {
+                    showToast("Demo-läge aktiverat", "science");
+                } else {
+                    resetRecording();
+                    showToast("Demo inaktiverat", "delete");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
