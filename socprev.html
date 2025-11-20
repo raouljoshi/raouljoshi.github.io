@@ -201,41 +201,54 @@
             </div>
 
             <!-- FIXED FOOTER (Recording Module) -->
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] flex flex-col items-center gap-4 transition-all duration-300">
-                
-                <!-- Visualizer & Status (Initially hidden) -->
-                <div id="recordingContainer" class="w-full max-w-xs transition-all duration-300 flex flex-col items-center gap-2 h-0 overflow-hidden opacity-0">
-                     <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
-                        <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
-                     </div>
-                     <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full rounded-full border border-red-100">
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 458ms"></div>
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 400ms"></div>
-                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 427ms"></div>
-                    </div>
-                </div>
-
-                <!-- Controls Container -->
-                <div class="flex items-center gap-6">
-                    <button onclick="resetRecording()" class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
-                        <span class="material-symbols-rounded">restart_alt</span>
-                    </button>
-                    
-                    <!-- Mic Button -->
-                    <button id="recordBtn" onclick="toggleRecording()" class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
-                        <div id="micRing" class="mic-ring hidden"></div>
-                        <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
-                    </button>
-
-                    <button onclick="analyzeAndProceed()" class="w-12 h-12 flex items-center justify-center rounded-full bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
-                        <span class="material-symbols-rounded">arrow_forward</span>
-                    </button>
-                </div>
-            </div>
+<!-- Footer Recording Module -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md 
+            border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)]
+            flex flex-col items-center gap-4 transition-all duration-300">
+    
+    <!-- Visualizer & Status -->
+    <div id="recordingContainer"
+         class="w-full max-w-xs transition-all duration-300 flex flex-col items-center 
+                gap-2 h-0 overflow-hidden opacity-0">
+         
+        <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
+            <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
         </div>
+
+        <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full 
+                    rounded-full border border-red-100">
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 458ms"></div>
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 400ms"></div>
+            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 427ms"></div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center gap-6">
+        <button onclick="resetRecording()" 
+                class="w-12 h-12 flex items-center justify-center rounded-full 
+                       bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
+            <span class="material-symbols-rounded">restart_alt</span>
+        </button>
+
+        <button id="recordBtn" onclick="toggleRecording()"
+                class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary 
+                       text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
+            <div id="micRing" class="mic-ring hidden"></div>
+            <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
+        </button>
+
+        <button onclick="analyzeAndProceed()" 
+                class="w-12 h-12 flex items-center justify-center rounded-full 
+                       bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
+            <span class="material-symbols-rounded">arrow_forward</span>
+        </button>
+    </div>
+
+</div>
 
         <!-- ==================== SCREEN 2: TRIAGE ==================== -->
         <div id="screen-2" class="screen min-h-full px-4 pt-6 pb-24">
