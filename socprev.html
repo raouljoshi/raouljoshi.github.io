@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potentialportalen</title>
+    <title>Pathways</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -200,14 +200,14 @@
             </div>
 
             <!-- FIXED FOOTER (Recording Module) -->
-            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] flex flex-col items-center gap-4 transition-all duration-300">
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-3 pt-2 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] flex flex-col items-center gap-4 transition-all duration-300">
                 
                 <!-- Visualizer & Status (Initially hidden) -->
                 <div id="recordingContainer" class="w-full max-w-xs transition-all duration-300 flex flex-col items-center gap-2 h-0 overflow-hidden opacity-0">
                      <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
                         <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
                      </div>
-                     <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full rounded-full border border-red-100">
+                     <div class="flex items-center justify-center gap-1 h-6 bg-red-50 w-full rounded-full border border-red-100">
                         <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
                         <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
                         <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
@@ -219,14 +219,14 @@
 
                 <!-- Controls Container -->
                 <div class="flex items-center gap-6">
-                    <button onclick="resetRecording()" class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
+                    <button onclick="resetRecording()" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
                         <span class="material-symbols-rounded">restart_alt</span>
                     </button>
                     
                     <!-- Mic Button -->
-                    <button id="recordBtn" onclick="toggleRecording()" class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
+                    <button id="recordBtn" onclick="toggleRecording()" class="relative w-16 h-16 flex items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
                         <div id="micRing" class="mic-ring hidden"></div>
-                        <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
+                        <span id="recordIcon" class="material-symbols-rounded text-2xl">mic</span>
                     </button>
 
                     <button onclick="analyzeAndProceed()" class="w-12 h-12 flex items-center justify-center rounded-full bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
@@ -483,7 +483,7 @@
                 
                 // Show visualizer in footer
                 vizContainer.classList.remove('h-0', 'opacity-0');
-                vizContainer.classList.add('h-12', 'opacity-100');
+                vizContainer.classList.add('h-8', 'opacity-100');
                 
                 placeholder.classList.add('hidden');
                 transcriptArea.classList.remove('hidden');
