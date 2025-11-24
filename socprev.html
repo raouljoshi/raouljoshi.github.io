@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Händelsehantering | Backa Barnet</title>
+    <title>Potentialportalen</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,8 +99,8 @@
             background-color: #0B57D0;
         }
         
-        /* Increased spacer to make sure content clears the fixed footer */
-        .content-spacer { padding-bottom: 220px; }
+        /* Increased spacer to account for the new solid footer */
+        .content-spacer { padding-bottom: 280px; }
         
         /* Spinner for simulation loading */
         .spinner {
@@ -137,8 +137,7 @@
                 <span class="material-symbols-rounded text-2xl">shield_person</span>
             </div>
             <div>
-                <h1 class="text-lg font-bold leading-tight text-gray-800">Händelsehantering</h1>
-                <p class="text-xs text-gray-500 font-medium">Backa Barnet</p>
+                <h1 class="text-lg font-bold leading-tight text-gray-800">Pathways</h1>
             </div>
         </div>
         
@@ -183,7 +182,7 @@
                             <span class="material-symbols-rounded text-lg">task_alt</span>
                             <span class="text-xs font-bold uppercase tracking-wide">Åtgärder</span>
                         </div>
-                        <p class="text-sm text-gray-700">Vilka åtgärder har du vidtagit eller planerar att ta?</p>
+                        <p class="text-sm text-gray-700">Vilka åtgärder har vidtagits och vilka effekter har dessa fått?</p>
                     </div>
                 </div>
 
@@ -193,62 +192,49 @@
                         <span class="material-symbols-rounded text-4xl mb-2 opacity-50">graphic_eq</span>
                         <p>Tryck på mikrofonen för att dokumentera.</p>
                     </div>
-                    <div id="liveTranscript" class="text-lg leading-relaxed text-gray-800 hidden bg-gray-50 p-4 rounded-xl border border-gray-100 min-h-[60px]"></div>
+                    <div id="liveTranscript" class="text-medium leading-base text-gray-800 hidden bg-gray-50 p-4 rounded-xl border border-gray-100 min-h-[60px]"></div>
                     <div id="processingIndicator" class="hidden flex items-center gap-2 mt-2 text-primary text-sm font-medium animate-pulse">
-                        <span class="material-symbols-rounded text-lg">neurology</span> Bearbetar transkription...
+                        <span class="material-symbols-rounded text-lg">neurology</span> Transkriberar...
                     </div>
                 </div>
             </div>
 
             <!-- FIXED FOOTER (Recording Module) -->
-<!-- Footer Recording Module -->
-<div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md 
-            border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)]
-            flex flex-col items-center gap-4 transition-all duration-300">
-    
-    <!-- Visualizer & Status -->
-    <div id="recordingContainer"
-         class="w-full max-w-xs transition-all duration-300 flex flex-col items-center 
-                gap-2 h-0 overflow-hidden opacity-0">
-         
-        <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
-            <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
+            <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-8 pt-4 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] flex flex-col items-center gap-4 transition-all duration-300">
+                
+                <!-- Visualizer & Status (Initially hidden) -->
+                <div id="recordingContainer" class="w-full max-w-xs transition-all duration-300 flex flex-col items-center gap-2 h-0 overflow-hidden opacity-0">
+                     <div class="text-red-600 font-bold text-xs tracking-wider uppercase flex items-center gap-2">
+                        <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div> Spelar in
+                     </div>
+                     <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full rounded-full border border-red-100">
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 458ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 400ms"></div>
+                        <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 427ms"></div>
+                    </div>
+                </div>
+
+                <!-- Controls Container -->
+                <div class="flex items-center gap-6">
+                    <button onclick="resetRecording()" class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
+                        <span class="material-symbols-rounded">restart_alt</span>
+                    </button>
+                    
+                    <!-- Mic Button -->
+                    <button id="recordBtn" onclick="toggleRecording()" class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
+                        <div id="micRing" class="mic-ring hidden"></div>
+                        <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
+                    </button>
+
+                    <button onclick="analyzeAndProceed()" class="w-12 h-12 flex items-center justify-center rounded-full bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
+                        <span class="material-symbols-rounded">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <div class="flex items-center justify-center gap-1 h-8 bg-red-50 w-full 
-                    rounded-full border border-red-100">
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 474ms"></div>
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 433ms"></div>
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 407ms"></div>
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 458ms"></div>
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 400ms"></div>
-            <div class="bar w-1.5 bg-red-500 rounded-full" style="animation-duration: 427ms"></div>
-        </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="flex items-center gap-6">
-        <button onclick="resetRecording()" 
-                class="w-12 h-12 flex items-center justify-center rounded-full 
-                       bg-gray-100 text-gray-600 hover:bg-gray-200 transition shadow-sm">
-            <span class="material-symbols-rounded">restart_alt</span>
-        </button>
-
-        <button id="recordBtn" onclick="toggleRecording()"
-                class="relative w-20 h-20 flex items-center justify-center rounded-full bg-primary 
-                       text-white shadow-lg shadow-blue-500/30 transition-all active:scale-95 hover:shadow-xl">
-            <div id="micRing" class="mic-ring hidden"></div>
-            <span id="recordIcon" class="material-symbols-rounded text-4xl">mic</span>
-        </button>
-
-        <button onclick="analyzeAndProceed()" 
-                class="w-12 h-12 flex items-center justify-center rounded-full 
-                       bg-primaryContainer text-onPrimaryContainer hover:bg-blue-200 transition shadow-sm">
-            <span class="material-symbols-rounded">arrow_forward</span>
-        </button>
-    </div>
-
-</div>
 
         <!-- ==================== SCREEN 2: TRIAGE ==================== -->
         <div id="screen-2" class="screen min-h-full px-4 pt-6 pb-24">
@@ -256,7 +242,7 @@
                 <span class="material-symbols-rounded text-lg mr-1">arrow_back</span> Tillbaka
             </button>
             
-            <h2 class="text-2xl font-Google Sans font-medium mb-2">Välj åtgärd</h2>
+            <h2 class="text-2xl font-Google Sans font-medium mb-2">Välj väg</h2>
 
             <!-- Upptäckarkort -->
             <div onclick="navigateTo(3)" class="bg-white border-2 border-primary rounded-2xl p-5 shadow-lg shadow-blue-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer mb-4">
@@ -267,29 +253,12 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-lg text-gray-800">Upptäckarkort</h3>
-                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Tecken som visar att något inte står rätt till hos barnet eller i dennes miljö.</p>
+                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Tecken som visar att något inte står rätt till i barnets välbefinnande.</p>
                     </div>
                 </div>
                 <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
                     <div class="flex items-center gap-2"><span class="material-symbols-rounded text-primary text-sm">send</span><span><strong>Mottagare:</strong> Skolans elevhälsa.</span></div>
                     <div class="flex items-center gap-2"><span class="material-symbols-rounded text-orange-600 text-sm">lock</span><span>Vårdnadshavares samtycke krävs.</span></div>
-                </div>
-            </div>
-
-            <!-- Incidentrapport -->
-            <div class="bg-white border-2 border-red-200 rounded-2xl p-5 shadow-lg shadow-red-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer mb-4">
-                <div class="flex items-start gap-4 mb-3">
-                    <div class="bg-red-50 p-3 rounded-xl text-red-600 shrink-0">
-                        <span class="material-symbols-rounded text-2xl">warning</span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg text-gray-800">Incidentrapport</h3>
-                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Rapportering om brott eller kriminell aktivitet på involverad eller livsstilsnivå.</p>
-                    </div>
-                </div>
-                <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
-                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-gray-500 text-sm">domain</span><span><strong>Mottagare:</strong> Inom myndigheten.</span></div>
-                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Inget samtycke behövs.</span></div>
                 </div>
             </div>
 
@@ -306,10 +275,27 @@
                 </div>
                 <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
                     <div class="flex items-center gap-2"><span class="material-symbols-rounded text-gray-500 text-sm">send</span><span><strong>Mottagare:</strong> Socialtjänsten.</span></div>
-                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Inget samtycke behövs (men rekommenderas).</span></div>
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Samtycke behövs inte.</span></div>
                 </div>
             </div>
         </div>
+
+         <!-- Brott -->
+            <div class="bg-white border-2 border-red-200 rounded-2xl p-5 shadow-lg shadow-red-100/50 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer mb-4">
+                <div class="flex items-start gap-4 mb-3">
+                    <div class="bg-red-50 p-3 rounded-xl text-red-600 shrink-0">
+                        <span class="material-symbols-rounded text-2xl">warning</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-800">Brottsanmälan</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed mt-1">Anmäl till polisen vid brott eller tips för att upptäcka, förebygga eller utreda brott. Kan lämnas anonymt.</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-100 text-xs text-gray-600 flex flex-col gap-1">
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-gray-500 text-sm">domain</span><span><strong>Mottagare:</strong> Polismyndigheten</span></div>
+                    <div class="flex items-center gap-2"><span class="material-symbols-rounded text-green-600 text-sm">lock_open</span><span>Samtycke behövs inte.</span></div>
+                </div>
+            </div>
 
         <!-- ==================== SCREEN 3: DISCOVERY CARD ==================== -->
         <div id="screen-3" class="screen min-h-full bg-surfaceVariant/50">
@@ -375,7 +361,7 @@
                         </div>
                     </div>
                     <div class="relative">
-                        <textarea id="finalDesc" rows="10" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm leading-relaxed" placeholder="Beskriv din upptäckt..."></textarea>
+                        <textarea id="finalDesc" rows="8" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-primary outline-none text-sm leading-relaxed" placeholder="Beskriv din upptäckt..."></textarea>
                         <!-- Loading Overlay -->
                         <div id="descLoader" class="hidden absolute inset-0 bg-gray-50/90 backdrop-blur-sm flex items-center justify-center rounded-xl z-10">
                             <div class="flex flex-col items-center gap-2">
@@ -385,7 +371,7 @@
                         </div>
                     </div>
                     <button onclick="triggerAIDraft()" id="draftBtn" class="mt-2 text-primary text-xs font-medium flex items-center gap-1 hover:bg-blue-50 px-2 py-1 rounded transition w-max">
-                        <span class="material-symbols-rounded text-sm">auto_awesome</span> Skapa AI-utkast
+                        <span class="material-symbols-rounded text-sm">auto_awesome</span> Skapa utkast
                     </button>
                 </section>
 
@@ -423,24 +409,23 @@
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeConsent()"></div>
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 transform transition-transform duration-300 translate-y-full transition-transform" id="consentSheet" style="max-height: 85vh; overflow-y: auto;">
             <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Begär samtycke</h3>
-            <p class="text-sm text-gray-500 mb-6">Vårdnadshavare samtycker digitalt med BankID.</p>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Begär Samtycke</h3>
             
             <div class="mb-6 relative">
                 <div class="flex justify-between items-end mb-2">
                     <label class="text-xs text-gray-400 uppercase font-bold block">Meddelande</label>
                     <button onclick="generateEthicalConsent()" class="text-[10px] bg-blue-50 text-primary px-2 py-1 rounded border border-blue-100 font-bold flex items-center gap-1">
-                        <span class="material-symbols-rounded" style="font-size:12px">psychology</span> AI-utkast
+                        <span class="material-symbols-rounded" style="font-size:12px">psychology</span> Skapa utkast
                     </button>
                 </div>
                 
-                <textarea id="consentMessageEditor" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-700 focus:border-primary outline-none min-h-[180px]">Hej! Skolan vill upprätta ett Upptäckarkort för Alex för att säkerställa rätt stöd. Vänligen logga in för att läsa och godkänna.</textarea>
+                <textarea id="consentMessageEditor" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-700 focus:border-primary outline-none min-h-[180px]">Vi vill meddela ditt barns skola om en situation för att säkerställa rätt stöd. Se länken för mer information och för godkännande.</textarea>
                 
                 <!-- Loader overlay for consent -->
                 <div id="consentLoader" class="hidden absolute inset-0 top-8 bg-white/90 flex items-center justify-center z-10 rounded-xl">
                     <div class="flex flex-col items-center gap-2">
                         <div class="spinner"></div>
-                        <span class="text-xs text-gray-500 text-center px-4">Formulerar förslag...<br><span class="text-[10px] text-gray-400">(Baserat på upptäcktens innehåll)</span></span>
+                        <span class="text-xs text-gray-500 text-center px-4">Formulerar förslag...</span>
                     </div>
                 </div>
             </div>
@@ -452,7 +437,7 @@
                 </button>
                 <button onclick="sendFakeSMS()" class="bg-surfaceVariant text-onSurface p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition">
                     <span class="material-symbols-rounded text-2xl">call</span>
-                    <span class="text-sm font-medium">Logga samtycke</span>
+                    <span class="text-sm font-medium">Logga Samtal</span>
                 </button>
             </div>
             <button onclick="closeConsent()" class="w-full mt-4 py-3 text-gray-500 font-medium">Avbryt</button>
@@ -467,11 +452,11 @@
     <!-- SCRIPT -->
     <script>
         // Static Demo Data
-        const DEMO_TRANSCRIPT = "Vid ca kl. 20:45 påträffade patrullen ett barn (ca 10–12 år) i sällskap med äldre, tydligt berusade ungdomar i centrumparken. Barnet var själv nykter och opåverkat men bedömdes befinna sig i en olämplig och potentiellt otrygg situation.\n\nPatrullen genomförde ett kort samtal med barnet om riskerna i sällskapet och barnet uttryckte därefter själv vilja att lämna platsen och gå hem. Ingen misstanke om brott och inga tecken på att barnet farit illa fysiskt.\n\nMed hänsyn till händelsen avser patrullen att inhämta samtycke från vårdnadshavare för att kunna informera barnets skola om incidenten för kännedom och eventuell stödåtgärd.”";
+        const DEMO_TRANSCRIPT = "Vid ca kl. 20:45 påträffade patrullen ett barn (ca 10–12 år) i sällskap med äldre, tydligt berusade ungdomar i centrumparken. Barnet var själv nykter och opåverkat men bedömdes befinna sig i en olämplig och potentiellt otrygg situation.\n\nPatrullen genomförde ett kort samtal med barnet om riskerna i sällskapet och barnet uttryckte därefter själv vilja att lämna platsen och gå hem. Ingen misstanke om brott och inga tecken på att barnet farit illa fysiskt.";
         
         const DEMO_DRAFT = "Polisen träffade under kvällen på ett barn som befann sig i närheten av äldre ungdomar som hade druckit alkohol. Barnet var själv nykter och mådde bra, men situationen bedömdes som olämplig och otrygg för ett yngre barn.\n\nPolisen pratade en kort stund med barnet om varför miljön inte var bra, och barnet valde sedan själv att gå hem. Det finns inga tecken på att barnet har kommit till skada.";
         
-        const DEMO_CONSENT = "Hej,\nVi vill gärna informera ditt barns skola om en händelse där polisen mötte ditt barn i en situation som inte var farlig, men som kunde upplevas som otrygg. Ditt barn mådde bra och valde själv att gå hem.\n\nAtt dela denna information med skolan kan hjälpa dem att ge rätt stöd om det skulle behövas, samt bidra till att de får en helhetsbild av barnets trygghet och vardag.\n\nVi delar inget utan ert godkännande.";
+        const DEMO_CONSENT = "Hej,\nVi vill gärna informera ditt barns skola om en händelse där polisen mötte ditt barn i en situation som inte var farlig, men som kunde upplevas som otrygg. Ditt barn mådde bra och valde själv att gå hem.\n\nAtt dela denna information med skolan kan hjälpa dem att ge rätt stöd om det skulle behövas, samt bidra till att de får en helhetsbild av barnets trygghet och vardag.\n\nVi delar inget utan ditt godkännande.";
 
         // State
         let isRecording = false;
