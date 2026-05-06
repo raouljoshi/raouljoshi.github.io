@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tvärsektoriellt arbete kring barn och unga — Sammanfattning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── Fertile Ground tokens ── */
+  :root {
+    --leaf-50:  #F1F4EE;
+    --leaf-100: #DCE5D7;
+    --leaf-300: #A8C29F;
+    --leaf-500: #7E9B76;
+    --leaf-700: #5E7B56;
+    --leaf-900: #3D4F38;
+
+    --sun-100:  #F8E6C5;
+    --sun-300:  #F0C683;
+    --sun-500:  #E8A750;
+    --sun-700:  #D49240;
+
+    --clay-100: #F2D7CC;
+    --clay-500: #C4725A;
+    --clay-700: #A85B45;
+
+    --paper-50:  #FFFDF7;
+    --paper-100: #FAF5EE;
+    --paper-200: #F5EDE0;
+    --paper-300: #ECE2D0;
+
+    --ink-300: #8B8E84;
+    --ink-500: #5C6055;
+    --ink-700: #3D4038;
+    --ink-900: #1F2019;
+
+    --bg:      var(--paper-100);
+    --bg-alt:  var(--paper-200);
+    --surface: var(--paper-50);
+    --text:    var(--ink-700);
+    --text-muted: color-mix(in oklab, var(--ink-700) 55%, var(--leaf-500));
+    --text-subtle: color-mix(in oklab, var(--ink-700) 40%, var(--leaf-500));
+    --text-kicker: var(--sun-700);
+    --text-annotation: var(--clay-500);
+    --border:  color-mix(in oklab, var(--leaf-500) 18%, var(--paper-200));
+    --border-strong: color-mix(in oklab, var(--leaf-500) 35%, var(--paper-200));
+    --action:  var(--leaf-500);
+    --action-hover: var(--leaf-700);
+    --shadow:  0 6px 16px -4px color-mix(in oklab, var(--ink-700) 12%, transparent);
+    --shadow-lg: 0 14px 30px -10px color-mix(in oklab, var(--ink-700) 18%, transparent);
+
+    --font-headline: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-body:     'Source Sans 3', system-ui, sans-serif;
+    --font-hero:     'DM Serif Display', Georgia, serif;
+    --font-hand:     'Caveat', cursive;
+
+    --radius-card: 20px;
+    --radius-pill: 999px;
+  }
+
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.028;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: min(780px, calc(100% - 3rem));
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Print-friendly page break ── */
+  @media print {
+    .no-print { display: none; }
+    .page-break { page-break-before: always; }
+    body { background: #fff; }
+  }
+
+  /* ── Document header ── */
+  .doc-header {
+    background: var(--ink-700);
+    padding: 3.5rem 0 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 48px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+
+  /* Orbs */
+  .doc-header .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.22;
+    pointer-events: none;
+  }
+  .orb-sage  { width: 280px; height: 280px; background: var(--leaf-500); top: -60px; left: -40px; }
+  .orb-amber { width: 220px; height: 220px; background: var(--sun-500);  top: 40px; right: -30px; }
+  .orb-clay  { width: 180px; height: 180px; background: var(--clay-500); bottom: 0; left: 40%; }
+
+  .doc-header .container { position: relative; z-index: 1; }
+
+  .header-kicker {
+    font-family: var(--font-headline);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--sun-300);
+    margin-bottom: 1rem;
+  }
+
+  .header-title {
+    font-family: var(--font-hero);
+    font-style: italic;
+    font-size: clamp(1.75rem, 4vw, 2.6rem);
+    line-height: 1.2;
+    color: var(--paper-100);
+    margin-bottom: 0.75rem;
+    max-width: 640px;
+  }
+
+  .header-sub {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: color-mix(in oklab, var(--paper-100) 70%, var(--leaf-300));
+    max-width: 540px;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: color-mix(in oklab, var(--paper-100) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--paper-100) 18%, transparent);
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.9rem;
+    font-family: var(--font-headline);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--paper-100) 85%, var(--leaf-300));
+  }
+
+  /* ── Main content ── */
+  main { padding: 3.5rem 0 5rem; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 1.75rem 2rem;
+    margin-bottom: 3.5rem;
+    box-shadow: var(--shadow);
+  }
+
+  .toc-title {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-kicker);
+    margin-bottom: 1rem;
+  }
+
+  .toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.35rem 1.5rem;
+  }
+
+  .toc ol li a {
+    text-decoration: none;
+    color: var(--action);
+    font-family: var(--font-headline);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: color 150ms;
+  }
+
+  .toc ol li a:hover { color: var(--action-hover); }
+
+  .toc ol li a::before {
+    content: attr(data-num) ' ';
+    font-family: var(--font-hand);
+    font-size: 1.1rem;
+    color: var(--text-subtle);
+    margin-right: 0.25rem;
+  }
+
+  /* ── Section titles ── */
+  .section-kicker {
+    display: inline-block;
+    font-family: var(--font-headline);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-kicker);
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-family: var(--font-hero);
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-style: italic;
+    line-height: 1.25;
+    color: var(--ink-900);
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-family: var(--font-headline);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink-700);
+    margin: 1.75rem 0 0.6rem;
+  }
+
+  p { margin-bottom: 0.9rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── Section block ── */
+  .section {
+    margin-bottom: 4rem;
+    padding-top: 0.25rem;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--leaf-300) 0%, transparent 100%);
+    border: none;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+
+  /* ── County badge ── */
+  .county-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--leaf-50);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 1rem 0.3rem 0.6rem;
+    font-family: var(--font-headline);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--leaf-700);
+    margin-bottom: 1rem;
+  }
+
+  .county-badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--leaf-500);
+  }
+
+  /* ── Callout cards ── */
+  .callout {
+    background: color-mix(in oklab, var(--leaf-500) 8%, var(--paper-100));
+    border-left: 3px solid var(--leaf-500);
+    border-radius: 0 14px 14px 0;
+    padding: 1.1rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+
+  .callout-annotation {
+    background: color-mix(in oklab, var(--clay-500) 8%, var(--paper-100));
+    border-left: 3px solid var(--clay-500);
+    border-radius: 0 14px 14px 0;
+    padding: 1.1rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+
+  .callout-amber {
+    background: color-mix(in oklab, var(--sun-500) 10%, var(--paper-100));
+    border-left: 3px solid var(--sun-500);
+    border-radius: 0 14px 14px 0;
+    padding: 1.1rem 1.4rem;
+    margin: 1.25rem 0;
+  }
+
+  .callout-title {
+    font-family: var(--font-headline);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  /* ── Insight grid ── */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow 200ms, transform 200ms;
+    position: relative;
+  }
+
+  .insight-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .insight-num {
+    font-family: var(--font-hand);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--leaf-500) 25%, var(--paper-200));
+    position: absolute;
+    top: 0.5rem; right: 1rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .insight-card h4 {
+    font-family: var(--font-headline);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--ink-900);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+  }
+
+  .insight-card p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
+    line-height: 1.55;
+  }
+
+  /* ── Three pillars (Norrbotten) ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .pillars { grid-template-columns: 1fr; }
+    .insight-grid { grid-template-columns: 1fr; }
+  }
+
+  .pillar {
+    background: var(--bg-alt);
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+  }
+
+  .pillar-num {
+    font-family: var(--font-hand);
+    font-size: 3rem;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--leaf-500) 20%, var(--paper-200));
+    position: absolute;
+    top: 0.25rem; left: 50%;
+    transform: translateX(-50%);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .pillar h4 {
+    font-family: var(--font-headline);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--leaf-700);
+    margin-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pillar p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 0;
+  }
+
+  /* ── Marginalia ── */
+  .marginalia {
+    font-family: var(--font-hand);
+    font-size: 1.05rem;
+    color: var(--clay-500);
+    transform: rotate(-1.5deg);
+    display: inline-block;
+    line-height: 1.3;
+    font-weight: 500;
+  }
+
+  .aside-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .aside-note .line {
+    width: 2px;
+    background: var(--clay-500);
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+    height: auto;
+    min-height: 100%;
+    align-self: stretch;
+    opacity: 0.5;
+  }
+
+  /* ── Quote block ── */
+  blockquote {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  blockquote::before {
+    content: '"';
+    font-family: var(--font-hero);
+    font-style: italic;
+    font-size: 4rem;
+    color: var(--leaf-300);
+    position: absolute;
+    top: -0.5rem; left: 1rem;
+    line-height: 1;
+  }
+
+  blockquote p {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 1.0625rem;
+    color: var(--ink-700);
+    padding-left: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  blockquote cite {
+    display: block;
+    padding-left: 2rem;
+    font-family: var(--font-headline);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+    font-style: normal;
+  }
+
+  /* ── Tag row ── */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  .tag {
+    background: var(--leaf-50);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    padding: 0.25rem 0.8rem;
+    font-family: var(--font-headline);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--leaf-700);
+  }
+
+  .tag-amber {
+    background: var(--sun-100);
+    border-color: color-mix(in oklab, var(--sun-500) 35%, var(--paper-200));
+    color: var(--sun-700);
+  }
+
+  /* ── Theme cards (Q&A section) ── */
+  .theme-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .theme-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+    color: var(--ink-900);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .theme-card h3 .icon {
+    width: 28px; height: 28px;
+    background: var(--leaf-50);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Footer ── */
+  .doc-footer {
+    background: var(--ink-700);
+    padding: 2.5rem 0;
+    margin-top: 2rem;
+  }
+
+  .doc-footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .footer-brand {
+    font-family: var(--font-headline);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--paper-100);
+    margin-bottom: 0.25rem;
+  }
+
+  .footer-sub {
+    font-size: 0.8125rem;
+    color: color-mix(in oklab, var(--paper-100) 55%, var(--leaf-300));
+    font-family: var(--font-body);
+    max-width: 280px;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .footer-links a {
+    text-decoration: none;
+    color: color-mix(in oklab, var(--paper-100) 65%, var(--leaf-300));
+    font-family: var(--font-headline);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: color 150ms;
+  }
+
+  .footer-links a:hover { color: var(--paper-100); }
+
+  /* ── Scroll reveal ── */
+  .mk-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mk-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mk-reveal-delay-1 { transition-delay: 80ms; }
+  .mk-reveal-delay-2 { transition-delay: 160ms; }
+  .mk-reveal-delay-3 { transition-delay: 240ms; }
+</style>
+</head>
+<body>
+
+<!-- ── Document header ── -->
+<header class="doc-header">
+  <div class="orb orb-sage"></div>
+  <div class="orb orb-amber"></div>
+  <div class="orb orb-clay"></div>
+  <div class="container">
+    <div class="header-kicker">Webbinarium · 22 april 2026</div>
+    <h1 class="header-title">Tvärsektoriellt arbete kring barn och unga</h1>
+    <p class="header-sub">En sammanfattning av tre läns erfarenheter av länsnivåsamverkan — Västmanland, Kalmar och Norrbotten — med fokus på tidigt förebyggande stöd och hållbara strukturer.</p>
+    <div class="header-meta">
+      <span class="meta-pill">SKR · Socialstyrelsen · Skolverket</span>
+      <span class="meta-pill">~400 deltagare</span>
+      <span class="meta-pill">3 länsnedslag</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main>
+<div class="container">
+
+  <!-- Table of contents -->
+  <nav class="toc no-print mk-reveal is-visible">
+    <div class="toc-title">Innehåll</div>
+    <ol>
+      <li><a href="#bakgrund" data-num="01">Nationell bakgrund</a></li>
+      <li><a href="#vastmanland" data-num="02">Västmanland</a></li>
+      <li><a href="#kalmar" data-num="03">Kalmar</a></li>
+      <li><a href="#norrbotten" data-num="04">Norrbotten</a></li>
+      <li><a href="#teman" data-num="05">Tvärsgående teman</a></li>
+      <li><a href="#nastan" data-num="06">Nästa steg</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── 01 NATIONELL BAKGRUND ── -->
+  <section class="section mk-reveal" id="bakgrund">
+    <hr class="section-divider">
+    <span class="section-kicker">01 — Bakgrund</span>
+    <h2>Varför en länspilot — och varför nu?</h2>
+    <p>Moderatorn <strong>Tyra Värvinge (SKR)</strong> inledde med att sätta scenen: det pågår ett brett och positivt utvecklingsarbete i Sverige för att stärka barns hälsa, men att skapa långsiktiga och hållbara strukturer när många aktörer är inblandade är en av de största utmaningarna. Dagens seminarium fokuserade specifikt på <em>länsnivå</em> — där alla kommuner och regionen i ett och samma län arbetar gemensamt.</p>
+
+    <h3>Socialstyrelsen: bakgrunden till länspiloten</h3>
+    <p><strong>Kerstin (Socialstyrelsen)</strong>, projektägare för länspiloten i Västmanland, beskrev tre samverkande drivkrafter:</p>
+
+    <div class="insight-grid">
+      <div class="insight-card mk-reveal mk-reveal-delay-1">
+        <span class="insight-num">1</span>
+        <h4>Ny socialtjänstlag</h4>
+        <p>Lagen förespråkar tidigt förebyggande arbete och samverkan. Kommunernas omställning till ett nytt socialt välfärdsuppdrag skapar ett gemensamt tryck.</p>
+      </div>
+      <div class="insight-card mk-reveal mk-reveal-delay-2">
+        <span class="insight-num">2</span>
+        <h4>TSI — Tidiga Samordnade Insatser</h4>
+        <p>Fleråriga regeringsuppdraget med Skolverket som nådde 90 kommuner och 16 regioner. Identifierade tydliga brister: otydliga ansvarsgränser, barn som väntar för länge, glapp mellan aktörer.</p>
+      </div>
+      <div class="insight-card mk-reveal mk-reveal-delay-3">
+        <span class="insight-num">3</span>
+        <h4>Lärdomar om projektlogik</h4>
+        <p>Samverkan tenderar att haverera när det drivs som tidsbegränsade projekt. Piloten syftar till att testa hur man bygger <em>hållbara</em> strukturer på länsnivå.</p>
+      </div>
+    </div>
+
+    <h3>Skolverket: viktigaste lärdomarna från TSI</h3>
+    <p><strong>Ebba (Skolverket)</strong> lyfte fram två nyckellärdomar från TSI-uppdraget:</p>
+
+    <div class="callout">
+      <div class="callout-title">Lärdom 1 — Teambaserat arbetssätt</div>
+      <p>Att träffas regelbundet — representanter från olika verksamheter — för att gemensamt titta på vilka insatser som behövs för ett barn utifrån dess <em>hela</em> livssituation. Insatser från olika håll måste hänga ihop.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Lärdom 2 — Gemensam länsnivå som möjliggörare</div>
+      <p>När kommuner organiserar sig olika försvåras samverkan med hälso- och sjukvård (regional) och polis (nationell). En gemensam grund på länsnivå gör det enklare att inkludera aktörer som annars arbetar på andra organisationsnivåer.</p>
+    </div>
+  </section>
+
+  <!-- ── 02 VÄSTMANLAND ── -->
+  <section class="section mk-reveal" id="vastmanland">
+    <hr class="section-divider">
+    <span class="section-kicker">02 — Länsnedslag</span>
+    <div class="county-badge"><span class="dot"></span>Västmanland</div>
+    <h2>Länspiloten tar form — kartläggning och prioriterade insatser</h2>
+    <p>Länspiloten i Västmanland är den enda piloten i landet och drivs i samarbete mellan Socialstyrelsen (projektägare), SKR och Skolverket. <strong>Maria Boman och Jeanette</strong> (projektledare, Region Västmanland) samt <strong>Rebecka</strong> (processledare, kommunal nivå) presenterade arbetet.</p>
+
+    <div class="tag-row">
+      <span class="tag">10 kommuner</span>
+      <span class="tag">Region Västmanland</span>
+      <span class="tag">Pågår t.o.m. 2026</span>
+      <span class="tag tag-amber">Projektstöd från Linköpings universitet</span>
+    </div>
+
+    <h3>Organisation och styrstruktur</h3>
+    <p>Piloten har en nationell styrgrupp (Socialstyrelsen, SKR, Skolverket + Västmanland) och ett befintligt länschefsforulm för barn och unga med beslutanderätt på länsnivå. Varje kommun har en utsedd processledare, och kontaktpersoner finns från förskola, skola, hälso- och sjukvård, tandvård, kultur, fritid och polis.</p>
+
+    <h3>Kartläggningsfasen (2025)</h3>
+    <p>Innan delmål sattes genomfördes en bred kartläggning med processledare och kontaktpersoner från hela länet. Fyra centrala behov identifierades:</p>
+
+    <div class="callout-amber">
+      <div class="callout-title">Kartläggningens huvudfynd</div>
+      <p><strong>Hänvisning vs. lossning.</strong> Behov av att i större utsträckning <em>lossa</em> till varandra — följa med in — snarare än enbart hänvisa.<br><br>
+      <strong>Samverkan behöver struktur.</strong> Befintliga samverkansformer är bra, men behöver mer hållbara strukturer över tid.<br><br>
+      <strong>Hälso- och sjukvården saknas.</strong> Teambaserat arbete finns men inkluderar sällan den regionala hälso- och sjukvården.<br><br>
+      <strong>Bristande koppling mellan nivåer.</strong> Informationsflöden och strukturer mellan operativ och ledningsnivå behöver stärkas.</p>
+    </div>
+
+    <h3>Prioriterade insatsområden (del 2)</h3>
+    <p>Utifrån kartläggningen landade piloten i två huvudspår:</p>
+
+    <div class="pillars">
+      <div class="pillar">
+        <span class="pillar-num">1</span>
+        <h4>Länsgemensam samverkansmodell</h4>
+        <p>Stärka ledningsstyrning och lärande. Rutiner för oro kring ofödda barn. Tidigt-upptäckt-rutin. Testa verktyg (Välbefinnandekollen, Barnsäkert). Stärka teambaserat arbete på skolnivå inklusive hälso- och sjukvård.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-num">2</span>
+        <h4>Stöd till socialtjänstens omställning</h4>
+        <p>Workshops kring dokumentation och uppföljning av insatser utan individuell behovsprövning. Digitalt föräldraskapsstöd. Testa nationellt material från Socialstyrelsen och Skolverket.</p>
+      </div>
+    </div>
+
+    <h3>Rutiner för oro för ofödda barn</h3>
+    <p><strong>Rebecca</strong> beskrev arbetet med att ta fram länsgemensamrutiner för när personal möter gravida föräldrar med oro för det ofödda barnet, eller barn och unga i tidigt skede. En arbetsgrupp med deltagare från hälso- och sjukvård och kommunala verksamheter driver arbetet.</p>
+    <div class="aside-note">
+      <div class="line"></div>
+      <p class="marginalia">"utan snygga dokument som bara ligger nånstans"</p>
+    </div>
+
+    <h3>Rutin för tidig upptäckt — Skottlandsmodellen som referens</h3>
+    <p>Rutinen för tidig upptäckt utgår från Skottlandsmodellens tre steg i samverkan: (1) vad kan jag göra <em>inom</em> min verksamhet, (2) länka och lotsa, (3) samordna insatser. Fokus är på de två första stegen — att agera tidigt, innan oro befästs.</p>
+
+    <blockquote>
+      <p>Rutinen ska lägga en grund för gemensam struktur och vara något att luta sig mot — att vi faktiskt har sagt att vi vill jobba så här.</p>
+      <cite>— Rebecka, processledare Västmanland</cite>
+    </blockquote>
+  </section>
+
+  <!-- ── 03 KALMAR ── -->
+  <section class="section mk-reveal" id="kalmar">
+    <hr class="section-divider">
+    <span class="section-kicker">03 — Länsnedslag</span>
+    <div class="county-badge"><span class="dot"></span>Kalmar</div>
+    <h2>Tillsammans för barnets bästa — från beslut till förändring</h2>
+    <p><strong>Denise</strong> (Region Kalmar, utvecklingsledare) och <strong>Sanna</strong> (Kommunförbundet, processledare) presenterade uppstarten av arbetet "Tillsammans för barnets bästa i Kalmar". Kalmar är ett avlångt, glesbygdsnära län med demografiska utmaningar: minskande och åldrande befolkning, låga födelsetalet och geografiska socioekonomiska skillnader.</p>
+
+    <div class="tag-row">
+      <span class="tag">12 kommuner</span>
+      <span class="tag">246 000 invånare</span>
+      <span class="tag">~49 000 barn &lt;18 år</span>
+      <span class="tag tag-amber">Startade januari 2026</span>
+    </div>
+
+    <h3>Befintlig stödstruktur som grund</h3>
+    <p>Uppdraget är förankrat i en befintlig stödstruktur för samverkan — "länsemedelsam ledning i samverkan" — med uppdragsägare i form av skolchefer, socialchefer och berörda förvaltningschefer i regionen. Det finns gemensamma styrdokument: en strategi och målbild för nära vård (2024), och en gemensam handlingsplan.</p>
+
+    <div class="callout">
+      <div class="callout-title">Nyckelinsikt</div>
+      <p><strong>Stödstrukturen gör att vi <em>kan</em> göra det. Styrdokumenten gör att vi <em>måste</em> göra det.</strong> Det politiskt förankrade mandatet är avgörande för uthållighet och prioritering.</p>
+    </div>
+
+    <h3>Personcentrerad samverkansprocess</h3>
+    <p>Kalmar har definierat en tydlig modell för sin ambition — en gemensam process med barnet och familjen i centrum:</p>
+
+    <div class="insight-grid">
+      <div class="insight-card mk-reveal mk-reveal-delay-1">
+        <h4>Uppmärksamma</h4>
+        <p>Tidigt fånga signaler, oavsett var barnet befinner sig — skola, socialtjänst eller annanstans.</p>
+      </div>
+      <div class="insight-card mk-reveal mk-reveal-delay-2">
+        <h4>Kartlägga &amp; bedöma</h4>
+        <p>Skapa en samlad bild av barnet, situationen och behoven. Samverka när egna resurser inte räcker.</p>
+      </div>
+      <div class="insight-card mk-reveal mk-reveal-delay-3">
+        <h4>Insatser &amp; uppföljning</h4>
+        <p>Säkerställa att insatser ger effekt. Processen är cirkulär — röra sig fram och tillbaka efter barnets behov.</p>
+      </div>
+    </div>
+
+    <p>Genomgående fokus: <em>främja och förebygga</em>, agera tidigt, inte sent.</p>
+
+    <h3>Förankring och involvering — maj 2026</h3>
+    <p>Kalmar är i en förberedelsfas. Digitala förankringsmöten planeras i maj för att inkludera verksamhetsnära personal tidigt i processen. Syftet är att minska glapp i förändringsresan och skapa delad förståelse för varför förändringen behövs.</p>
+    <p>En intressentanalys har gjorts och primära intressenter (skola, hälso- och sjukvård, socialtjänst) har fått riktade inbjudningar via sina chefer.</p>
+
+    <h3>Nulägesanalys och mätning</h3>
+    <p>En ny lägesanalys planeras för att skapa en baslinje. Uppföljning på tre nivåer:</p>
+
+    <div class="tag-row">
+      <span class="tag">Barnnivå — hur barnet får samordnade insatser</span>
+      <span class="tag tag-amber">Samverkansnivå — hur samverkan fungerar</span>
+      <span class="tag">Systemnivå — effekter i ett bredare perspektiv</span>
+    </div>
+
+    <p>En gruppanalytiker är knuten till arbetet för att identifiera relevanta indikatorer och analysera befintlig data, inklusive individdata från elevhälsa och eHälsa från förskoleklass till gymnasium.</p>
+
+    <blockquote>
+      <p>Vi ska inte bara göra — vi ska också kunna visa till vilken effekt vi gör det.</p>
+      <cite>— Sanna, processledare Kalmar</cite>
+    </blockquote>
+
+    <h3>Barn och unga i centrum</h3>
+    <p>Affischer i väntrum (socialtjänst, hälso- och sjukvård, skolor) och digitala forum används för att rekrytera unga och föräldrar som vill vara med och kontinuerligt bidra i arbetet och testa nya verktyg.</p>
+  </section>
+
+  <!-- ── 04 NORRBOTTEN ── -->
+  <section class="section mk-reveal" id="norrbotten">
+    <hr class="section-divider">
+    <span class="section-kicker">04 — Länsnedslag</span>
+    <div class="county-badge"><span class="dot"></span>Norrbotten</div>
+    <h2>Länsamverkan barn och unga — process, inte produkt</h2>
+    <p><strong>Karin Forsman</strong> (Norrbotten kommuner, utvecklingsledare) och <strong>Tanya Bexström</strong> (Region Norrbotten, samordnare) beskrev förarbetet och uppstarten av en ny länsövergripande samverkansstruktur. Beslut togs i början av 2025, och forumen är nu igång.</p>
+
+    <div class="tag-row">
+      <span class="tag">14 kommuner</span>
+      <span class="tag">Sveriges största län till ytan</span>
+      <span class="tag tag-amber">Beslut fattades januari 2025</span>
+    </div>
+
+    <h3>Nuläget — ett traslat garnistan</h3>
+    <p>Karin och Tanya inledde med ~20 dialogmöten med chefer i Region Norrbotten och kommunerna för att förstå problemet — inte hoppa till lösningar. Fyra mönster framträdde:</p>
+
+    <div class="callout-annotation">
+      <div class="callout-title">Identifierade strukturella problem</div>
+      <p>1. Barn- och ungafrågor har haft begränsat utrymme i samverkansforum.<br>
+      2. Otydligt ansvar och fragmenterade frågor som inte hänger ihop.<br>
+      3. Många möten, men liten koppling till handling och faktisk skillnad.<br>
+      4. Ojämlika förutsättningar i länet — strukturer kopplas inte samman.</p>
+    </div>
+    <p>Slutsatsen: problemen är <em>strukturella</em>, inte om kompetens. Det som saknas är gemensam riktning, gemensamt språk och fungerande samband mellan nivåer.</p>
+
+    <h3>Tre bärande delar</h3>
+    <p>Norrbottenteamet valde att arbeta utifrån tre genomgående perspektiv snarare än en lösningsmanual:</p>
+
+    <div class="pillars">
+      <div class="pillar">
+        <span class="pillar-num">01</span>
+        <h4>Systemsyn</h4>
+        <p>Förstå hur delar hänger samman och påverkar varandra. Strukturen är ett <em>medel</em>, inte ett mål — den ska möjliggöra tydligare ansvar och minska personberoende.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-num">02</span>
+        <h4>Komplexitet</h4>
+        <p>Orsak och verkan är sällan linjär. Arbeta med lärande, återkoppling och anpassning. "Enkla regler" (hipsich) som navigeringsverktyg snarare än detaljerade styrdokument.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-num">03</span>
+        <h4>Delaktighet</h4>
+        <p>Förändring kan inte implementeras uppifrån — den skapas tillsammans. Delaktighet är ett förhållningssätt, inte ett möte. Ägandeskap skapar ansvar.</p>
+      </div>
+    </div>
+
+    <h3>Enkla regler — ett navigeringsverktyg</h3>
+    <p>Istället för detaljerade procedurer formulerades enkla regler (hipsich) som anger riktning och värderingar men lämnar utrymme för lokala anpassningar. Format: <em>"Vi har den här situationen att… → det här behöver vi göra → det innebär… → för barn och unga innebär det…"</em></p>
+
+    <h3>Ambivalens som resurss</h3>
+    <p>Karin och Tanya lyfte att man medvetet synliggjort ambivalens — spänningar och motstridiga perspektiv — snarare än att dölja dem. Att hantera det transparent skapade förståelse och samverkan, inte konflikter.</p>
+
+    <blockquote>
+      <p>Det är inte ett problem att lyfta — utan information om hur komplext det är och vad vi behöver ta hänsyn till när vi gör det ena eller andra valet.</p>
+      <cite>— Karin Forsman, Norrbotten kommuner</cite>
+    </blockquote>
+
+    <h3>Dokumentation och narrativ</h3>
+    <p>Noggrann dokumentation av hela processen — inklusive anteckningar från alla ~20 dialogmöten — har möjliggjort ett levande och kontinuerligt justerat material. Metaforer och bilder har använts för att skapa samsyn snabbt.</p>
+    <div class="aside-note">
+      <div class="line"></div>
+      <p class="marginalia">"ett trasslat garnistan" — bilden som sätter sammanhang</p>
+    </div>
+  </section>
+
+  <!-- ── 05 TVÄRSGÅENDE TEMAN ── -->
+  <section class="section mk-reveal" id="teman">
+    <hr class="section-divider">
+    <span class="section-kicker">05 — Diskussion</span>
+    <h2>Tvärsgående teman från frågestunden</h2>
+    <p>Q&amp;A-sessionerna med alla tre länens representanter lyfte flera återkommande frågor som är centrala för vem som helst som arbetar med liknande strukturer.</p>
+
+    <div class="theme-card mk-reveal mk-reveal-delay-1">
+      <h3><span class="icon">👧</span>Barn och ungdomars delaktighet</h3>
+      <p>Alla tre län arbetar med att inkludera barn, unga och föräldrar — men på olika sätt och i olika faser. Västmanland har haft brukarorganisationen NST med från start och tar del av tidigare dialoger och rapporter. Kalmar har affischer, bussreklam och rekryterar unga direkt för att kontinuerligt delta och testa verktyg. Norrbotten utgår från mognadsanpassad metodik och tar kontakt med föräldrar vars barns erfarenheter indirekt inkluderas. <strong>Konsensus:</strong> det kräver rätt metoder, inte en åldersgräns.</p>
+    </div>
+
+    <div class="theme-card mk-reveal mk-reveal-delay-2">
+      <h3><span class="icon">📊</span>Indikatorer och uppföljning</h3>
+      <p>Uppföljning lyftes som kritiskt och svårt. Västmanland har indikatorer på tre nivåer (individ, lokal samverkan, regional samverkan) i sin länsgemensamöverenskommelse. Kalmar knyter en analytiker till arbetet för att skapa baslinje och följa effekter på barnnivå. <strong>Gemensam utmaning:</strong> att säkerställa att det som tas fram <em>efterlevs</em> och inte bara blir snygga dokument.</p>
+    </div>
+
+    <div class="theme-card mk-reveal mk-reveal-delay-3">
+      <h3><span class="icon">🏫</span>Privata aktörer och fristående skolor</h3>
+      <p>Privata utförare — framför allt inom förskola och primärvård — är en utmaning för länsgemensamrutiner. Kalmar och Västmanland löser det via primärvårdsavtal (privata utförare ska följa regionens ramverk) och genom att kontaktpersoner från fristående verksamheter inkluderas i arbetsgrupper. Principen: om ett barn finns i Västmanland ska det ha likvärdiga möjligheter oavsett om verksamheten är offentlig eller privat.</p>
+    </div>
+
+    <div class="theme-card mk-reveal">
+      <h3><span class="icon">⚖️</span>Lika vs. likvärdigt</h3>
+      <p>En central diskussion i alla tre länens arbete: vad måste vara lika (det minsta gemensamma nämnaren) och vad <em>får</em> vara olika utifrån lokala förutsättningar? Kommuner i ett och samma län kan skilja enormt i storlek (t.ex. Västerås = 57% av Västmanlands befolkning). <strong>Gemensam hållning:</strong> hitta en miniminivå för samverkansformen och principerna, men lämna utrymme för att utformningen ser olika ut.</p>
+    </div>
+
+    <div class="theme-card mk-reveal mk-reveal-delay-1">
+      <h3><span class="icon">🌱</span>Från projekt till hållbar struktur</h3>
+      <p>En av de mest diskuterade frågorna. Alla tre länssatsningarna är medvetna om fällan med projektlogik. Norrbotten har medvetet valt ett agilt, icke-linjärt förändringsarbete utan fast tidsperspektiv. Kalmar värnar om att lokala initiativ inte pausas medan helheten byggs. Västmanland arbetar med att stärka ledningsstyrning och systematisk uppföljning. <strong>Gemensam insikt:</strong> förankring tar tid och <em>måste</em> få ta tid.</p>
+    </div>
+  </section>
+
+  <!-- ── 06 NÄSTA STEG ── -->
+  <section class="section mk-reveal" id="nastan">
+    <hr class="section-divider">
+    <span class="section-kicker">06 — Framåt</span>
+    <h2>Läs vidare &amp; kommande tillfällen</h2>
+
+    <div class="callout">
+      <div class="callout-title">Spridningsseminarium — höst 2026</div>
+      <p>SKR planerar ett nytt spridningsseminarium i november 2026. Håll utkik efter inbjudan.</p>
+    </div>
+
+    <div class="callout-amber">
+      <div class="callout-title">Öppet forum — barn och unga, maj 2026</div>
+      <p>Lunchwebbinarium en gång per månad. Maj-temat: <strong>"Från projekt till hållbar struktur — gemensamt ledarskap och samarbete för barn och unga"</strong> med Sandvikens kommun och Kalmar från chefsperspektiv.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Region Kronoberg</div>
+      <p>Ytterligare ett exempel på länsnivåmodell. Mer material finns på SKR:s och Region Kronobergs webbplatser.</p>
+    </div>
+
+    <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+      Inspelningen finns tillgänglig till och med <strong>23 maj 2026</strong> via SKR:s sändningslänk, tillsammans med presentationsmaterialet. Kontaktuppgifter till alla tre länens representanter delades i presentationerna.
+    </p>
+  </section>
+
+</div>
+</main>
+
+<!-- ── Footer ── -->
+<footer class="doc-footer">
+  <div class="container">
+    <div>
+      <div class="footer-brand">Tvärsektoriellt arbete kring barn och unga</div>
+      <p class="footer-sub">Sammanfattning av webbinarium den 22 april 2026, arrangerat av SKR i samarbete med Socialstyrelsen och Skolverket.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="https://skr.se" target="_blank" rel="noopener">SKR — skr.se</a></li>
+      <li><a href="https://socialstyrelsen.se" target="_blank" rel="noopener">Socialstyrelsen</a></li>
+      <li><a href="https://skolverket.se" target="_blank" rel="noopener">Skolverket</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  // Scroll-reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.mk-reveal:not(.is-visible)').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
