@@ -1,166 +1,896 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
-  <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-W3J22JLP');</script>
-<!-- End Google Tag Manager -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joshico AB</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joshico — A working library</title>
+  <meta name="description" content="Field notes from alongside the system. Tools, pieces, and cases gathered by Raoul Joshi (Joshico AB)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --primary-color: #1E3A8A;
-      --secondary-color: #FACC15;
-      --background-color: #F9FAFB;
-      --text-color: #1F2937;
+      /* Forma raw tokens */
+      --leaf-50: #F1F4EE;
+      --leaf-100: #DCE5D7;
+      --leaf-300: #A8C29F;
+      --leaf-500: #7E9B76;
+      --leaf-700: #5E7B56;
+      --leaf-900: #3D4F38;
+      --sun-100: #F8E6C5;
+      --sun-300: #F0C683;
+      --sun-500: #E8A750;
+      --sun-700: #D49240;
+      --clay-100: #F2D7CC;
+      --clay-500: #C4725A;
+      --clay-700: #A85B45;
+      --paper-50: #FFFDF7;
+      --paper-100: #FAF5EE;
+      --paper-200: #F5EDE0;
+      --paper-300: #ECE2D0;
+      --ink-300: #8B8E84;
+      --ink-500: #5C6055;
+      --ink-700: #3D4038;
+      --ink-900: #1F2019;
+
+      /* Semantic */
+      --bg: var(--paper-100);
+      --bg-alt: var(--paper-200);
+      --surface: var(--paper-50);
+      --surface-raised: #FFFFFF;
+      --text: var(--ink-700);
+      --text-muted: color-mix(in oklab, var(--ink-700) 55%, var(--leaf-500));
+      --text-subtle: color-mix(in oklab, var(--ink-700) 40%, var(--leaf-500));
+      --text-kicker: var(--sun-700);
+      --text-annotation: var(--clay-500);
+      --border-soft: color-mix(in oklab, var(--leaf-500) 18%, var(--paper-200));
+      --border-strong: color-mix(in oklab, var(--leaf-500) 32%, var(--paper-200));
+      --action: var(--leaf-500);
+      --action-hover: var(--leaf-700);
+      --action-soft: color-mix(in oklab, var(--leaf-500) 14%, var(--paper-100));
+      --focus-ring: color-mix(in oklab, var(--leaf-500) 50%, transparent);
+      --annotation: var(--clay-500);
+      --annotation-soft: color-mix(in oklab, var(--clay-500) 22%, var(--paper-100));
+
+      --font-display: "DM Serif Display", Georgia, serif;
+      --font-text: "Source Sans 3", system-ui, sans-serif;
+      --font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-hand: "Caveat", "Bradley Hand", cursive;
+
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-pill: 999px;
+
+      --shadow-sm: 0 1px 2px color-mix(in oklab, var(--ink-700) 6%, transparent);
+      --shadow: 0 6px 16px -4px color-mix(in oklab, var(--ink-700) 12%, transparent);
+      --shadow-lg: 0 14px 30px -10px color-mix(in oklab, var(--ink-700) 18%, transparent);
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --dur: 180ms;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+
+    * { box-sizing: border-box; }
+    html { font-family: var(--font-ui); scroll-behavior: smooth; }
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: var(--background-color);
-      color: var(--text-color);
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-text);
+      font-size: 16px;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+      min-height: 100vh;
     }
-    header {
-      background: var(--primary-color);
-      color: #fff;
-      padding: 40px;
-      text-align: center;
-      font-size: 2em;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    /* Grain overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.24  0 0 0 0 0.25  0 0 0 0 0.22  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: multiply;
     }
-    #intro, #public-assets, #consultancy-portfolio, #contact {
-      text-align: center;
-      padding: 50px 20px;
-      max-width: 800px;
+
+    /* Language visibility */
+    [data-lang="en"] [lang="sv"] { display: none; }
+    [data-lang="sv"] [lang="en"] { display: none; }
+
+    a { color: inherit; }
+
+    /* ---------- Header ---------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      background: color-mix(in oklab, var(--paper-100) 78%, transparent);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .site-header-inner {
+      max-width: 1120px;
       margin: 0 auto;
-      font-size: 1.2em;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
     }
-    #grid-container {
+    .wordmark {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink-700);
+      text-decoration: none;
+      line-height: 1;
+    }
+    .wordmark .dot {
+      color: var(--clay-500);
+    }
+    .site-nav {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+      align-items: center;
+    }
+    .site-nav a {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+    }
+    .site-nav a:hover {
+      color: var(--ink-700);
+      background: var(--action-soft);
+    }
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      margin-left: 16px;
+      padding: 3px;
+      background: var(--paper-200);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-pill);
+    }
+    .lang-toggle button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all var(--dur) var(--ease);
+    }
+    .lang-toggle button[aria-pressed="true"] {
+      background: var(--leaf-500);
+      color: var(--paper-100);
+      box-shadow: var(--shadow-sm);
+    }
+    .lang-toggle button:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 760px) {
+      .site-nav a { display: none; }
+      .site-header-inner { padding: 12px 20px; }
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 96px 28px 64px;
+      text-align: center;
+    }
+    .kicker {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-kicker);
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink-700);
+      margin: 0 0 28px;
+    }
+    .hero h1 .marked {
+      position: relative;
+      display: inline-block;
+    }
+    .hero h1 .marked::after {
+      content: "";
+      position: absolute;
+      left: -2%;
+      right: -2%;
+      bottom: 0.02em;
+      height: 0.28em;
+      background: var(--clay-500);
+      opacity: 0.32;
+      border-radius: 999px;
+      z-index: -1;
+      transform: skewX(-4deg);
+    }
+    .hero .subhead {
+      font-family: var(--font-text);
+      font-size: 19px;
+      color: var(--text-muted);
+      margin: 0 auto 28px;
+      max-width: 520px;
+    }
+    .byline {
+      font-family: var(--font-hand);
+      font-size: 22px;
+      color: var(--text-annotation);
+      line-height: 1;
+    }
+
+    /* ---------- Wave divider ---------- */
+    .wave {
+      display: block;
+      width: 100%;
+      height: 64px;
+      color: var(--border-soft);
+    }
+
+    /* ---------- Sections ---------- */
+    .section {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 64px 28px;
+    }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 36px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--ink-700);
+      margin: 0;
+      letter-spacing: -0.005em;
+    }
+    .section-head .count {
+      font-family: var(--font-hand);
+      font-size: 22px;
+      color: var(--text-subtle);
+    }
+
+    /* ---------- Card grid ---------- */
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      padding: 50px;
-      max-width: 1200px;
-      margin: 0 auto;
+      gap: 24px;
     }
     .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      background: color-mix(in oklab, #FFFFFF 55%, var(--paper-100));
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      cursor: pointer;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    .card-content {
-      padding: 20px;
-    }
-    .card-title {
-      font-size: 1.3em;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-    .card-description {
-      font-size: 1em;
-      color: #4B5563;
-      margin-top: 10px;
-    }
-    .contact-links a {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
-      border-radius: 5px;
       text-decoration: none;
-      color: #fff;
-      background: var(--primary-color);
-      transition: background 0.3s;
+      color: inherit;
+      transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+      box-shadow: var(--shadow-sm);
     }
-    .contact-links a:hover {
-      background: var(--secondary-color);
+    a.card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-strong);
+    }
+    a.card:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 3px;
+    }
+    .card-media {
+      aspect-ratio: 16 / 9;
+      background: var(--paper-200);
+      overflow: hidden;
+      position: relative;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-media svg.glyph {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .card-body {
+      padding: 22px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .card-kicker {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-kicker);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .card h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink-700);
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+    }
+    .card p {
+      font-family: var(--font-text);
+      font-size: 15px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .card-meta {
+      margin-top: auto;
+      padding-top: 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: var(--text-subtle);
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-size: 11px;
+      text-transform: uppercase;
+      background: var(--paper-200);
+      color: var(--text-muted);
+      border: 1px solid var(--border-soft);
+    }
+    .chip.lang { background: var(--sun-100); color: var(--sun-700); border-color: color-mix(in oklab, var(--sun-500) 30%, transparent); }
+    .chip.year { background: var(--leaf-50); color: var(--leaf-700); border-color: color-mix(in oklab, var(--leaf-500) 25%, transparent); }
+
+    /* Case (non-link) variant */
+    .card.case .card-body .mailto {
+      margin-top: 12px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--action);
+      text-decoration: none;
+      align-self: flex-start;
+      padding-bottom: 1px;
+      border-bottom: 1px solid color-mix(in oklab, var(--action) 35%, transparent);
+      transition: color var(--dur), border-color var(--dur);
+    }
+    .card.case .card-body .mailto:hover {
+      color: var(--action-hover);
+      border-color: var(--action-hover);
+    }
+
+    /* ---------- About ---------- */
+    .about {
+      max-width: 880px;
+      margin: 32px auto 0;
+      padding: 0 28px;
+    }
+    .about-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .about-card::before {
+      content: "a quick note";
+      position: absolute;
+      top: -14px;
+      right: 28px;
+      font-family: var(--font-hand);
+      font-size: 22px;
+      color: var(--text-annotation);
+      background: var(--paper-100);
+      padding: 0 8px;
+    }
+    [data-lang="sv"] .about-card::before { content: "en kort notis"; }
+    .monogram {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--leaf-100);
+      color: var(--leaf-900);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--leaf-500) 25%, transparent);
+    }
+    .about-card p {
+      margin: 0 0 14px;
+      font-size: 16px;
+      color: var(--text);
+    }
+    .about-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--dur) var(--ease);
+    }
+    .pill.primary {
+      background: var(--action);
+      color: var(--paper-100);
+      box-shadow: var(--shadow-sm);
+    }
+    .pill.primary:hover {
+      background: var(--action-hover);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+    .pill.ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-strong);
+    }
+    .pill.ghost:hover {
+      background: var(--action-soft);
+      color: var(--action-hover);
+      border-color: var(--action);
+    }
+    .pill:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 560px) {
+      .about-card { grid-template-columns: 1fr; text-align: left; padding: 24px; }
+      .monogram { width: 72px; height: 72px; font-size: 34px; }
+    }
+
+    /* ---------- In touch band ---------- */
+    .touch {
+      max-width: 880px;
+      margin: 72px auto 0;
+      padding: 0 28px;
+      text-align: center;
+    }
+    .touch .kicker { margin-bottom: 16px; }
+    .touch p {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 26px;
+      color: var(--ink-700);
+      margin: 0 0 24px;
+      line-height: 1.3;
+    }
+    .touch-links {
+      display: inline-flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      max-width: 1120px;
+      margin: 96px auto 0;
+      padding: 32px 28px 48px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text-subtle);
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W3J22JLP"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-  <header>Raoul Joshi</header>
-  
-  <section id="intro">
-    <h2>About Me</h2>
-    <p><strong>Owner, Joshico AB</strong></p>
-    <p>Joshico AB is a professional services company dedicated to enhancing children’s education and welfare through partnerships with local governments, educational institutions, healthcare organizations, and law enforcement agencies.</p>
-    <p>Previously an Associate Partner at McKinsey & Company, I specialized in digital transformation and operational excellence across industries and the public sector. I co-authored a <a href="https://www.mckinsey.com/featured-insights/artificial-intelligence/notes-from-the-ai-frontier-modeling-the-impact-of-ai-on-the-world-economy" target="_blank">global study on the impact of artificial intelligence</a> and have experience teaching secondary school students in Stockholm as a Teaching Fellow with Teach For Sweden and Teach For All.</p>
-    <p>My career began at the International Telecommunication Union (ITU), the United Nations’ specialized technology agency, where I advised on policy development to bridge the digital divide. With expertise in artificial intelligence, education, and public sector innovation, I focus on AI’s socioeconomic impacts and the development of hands-on, data-driven tools for education management.</p>
-    <p>My experience spans educational program development, resource optimization, and strategic advisory for government institutions. Having taught electrical engineering, business administration, and mathematics at both secondary and university levels, I understand the practical needs of educators and students. Currently, my work involves helping government entities implement and scale integrated public-sector responses for early discovery and intervention programs benefiting children and youth.</p>
-  </section>
-  
-  <section id="public-assets">
-    <h2>Tools & Assets</h2>
-    <div id="grid-container">
-      <div class="card" onclick="window.location.href='sankey.html'">
-        <img src="sankey_preview.png" alt="Sankey Diagram Preview">
-        <div class="card-content">
-          <h2 class="card-title">Social Outcomes Sankey Visualization</h2>
-          <p class="card-description">Explore how various protective and risk factors influence social outcomes. Click to interact with the visualization.</p>
-        </div>
-      </div>
-      <div class="card" onclick="window.location.href='https://girfec.joshico.org'">
-        <img src="girfec.jpg" alt="GIRFEC Review">
-        <div class="card-content">
-          <h2 class="card-title">Getting it Right for Every Child</h2>
-          <p class="card-description">A background and review of Scotland's model for early and coordinated interventions. In Swedish.</p>
-        </div>
+
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="#top" class="wordmark">Joshico<span class="dot">.</span></a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="#tools"><span lang="en">Tools</span><span lang="sv">Verktyg</span></a>
+        <a href="#pieces"><span lang="en">Pieces</span><span lang="sv">Texter</span></a>
+        <a href="#cases"><span lang="en">Cases</span><span lang="sv">Uppdrag</span></a>
+        <a href="#about"><span lang="en">About</span><span lang="sv">Om</span></a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-toggle-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-toggle-lang="sv" aria-pressed="false">SV</button>
       </div>
     </div>
-  </section>
-  
-  <section id="consultancy-portfolio">
-    <h2>Advisory Portfolio</h2>
-    <div id="grid-container">
-      <div class="card">
-        <img src="placeholder.png" alt="Portfolio Placeholder">
-        <div class="card-content">
-          <h2 class="card-title">Early discovery and intervention program transformation (2024).</h2>
-          <p class="card-description">Turnaround of a multi-year organizational government transformation addressing ways of working for children's wellbeing across education and social care institutions - departments representing 65% of government operations (~2 BSEK).</p>
+  </header>
+
+  <main id="top">
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="kicker">
+        <span lang="en">A working library</span>
+        <span lang="sv">Ett arbetsbibliotek</span>
+      </div>
+      <h1>
+        <span lang="en">Field notes from <span class="marked">alongside</span> the system.</span>
+        <span lang="sv">Fältanteckningar från <span class="marked">sidan av</span> systemet.</span>
+      </h1>
+      <p class="subhead">
+        <span lang="en">Tools, pieces, and cases.</span>
+        <span lang="sv">Verktyg, texter och uppdrag.</span>
+      </p>
+      <p class="byline">
+        <span lang="en">Gathered by Raoul Joshi · Joshico AB</span>
+        <span lang="sv">Samlat av Raoul Joshi · Joshico AB</span>
+      </p>
+    </section>
+
+    <!-- Wave divider -->
+    <svg class="wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,40 C200,10 380,55 600,30 C820,5 1000,50 1200,25 L1200,60 L0,60 Z" fill="currentColor" opacity="0.5"/>
+      <path d="M0,45 C220,20 400,55 600,38 C820,18 1000,55 1200,35" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.9"/>
+    </svg>
+
+    <!-- ===== Tools ===== -->
+    <section class="section" id="tools">
+      <div class="section-head">
+        <h2><span lang="en">Tools</span><span lang="sv">Verktyg</span></h2>
+        <span class="count"><span lang="en">three</span><span lang="sv">tre</span></span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="sankey.html">
+          <div class="card-media">
+            <img src="sankey_preview.png" alt="" />
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Interactive · Data viz</span><span lang="sv">Interaktiv · Datavis</span></div>
+            <h3><span lang="en">Social Outcomes Sankey</span><span lang="sv">Sankey: sociala utfall</span></h3>
+            <p>
+              <span lang="en">How protective and risk factors flow into life outcomes — an interactive view.</span>
+              <span lang="sv">Hur skydds- och riskfaktorer flödar mot livsutfall — en interaktiv vy.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2024</span>
+              <span class="chip lang">EN</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="https://joshico.org/unicef-kommunrapport2026">
+          <div class="card-media">
+            <svg class="glyph" viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" fill="#F5EDE0"/>
+              <g fill="#7E9B76" opacity="0.55">
+                <circle cx="60" cy="50" r="5"/><circle cx="100" cy="40" r="3"/><circle cx="140" cy="60" r="6"/>
+                <circle cx="180" cy="48" r="4"/><circle cx="220" cy="65" r="5"/><circle cx="260" cy="50" r="3"/>
+                <circle cx="80" cy="90" r="4"/><circle cx="130" cy="100" r="6"/><circle cx="170" cy="95" r="3"/>
+                <circle cx="210" cy="105" r="5"/><circle cx="250" cy="90" r="4"/>
+                <circle cx="60" cy="135" r="5"/><circle cx="110" cy="140" r="3"/><circle cx="160" cy="130" r="7"/>
+                <circle cx="200" cy="145" r="4"/><circle cx="240" cy="135" r="3"/><circle cx="280" cy="140" r="5"/>
+              </g>
+              <g stroke="#C4725A" stroke-width="1.2" fill="none" opacity="0.55">
+                <path d="M60,50 C90,80 130,80 160,130"/>
+                <path d="M140,60 C150,80 170,90 200,145"/>
+                <path d="M220,65 C230,90 250,105 240,135"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Interactive · Dashboard</span><span lang="sv">Interaktiv · Dashboard</span></div>
+            <h3>UNICEF Kommunrapport 2026</h3>
+            <p>
+              <span lang="en">An interactive read of how Swedish municipalities measure up on children's rights.</span>
+              <span lang="sv">En interaktiv läsning av hur svenska kommuner står sig kring barns rättigheter.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2026</span>
+              <span class="chip lang">SV</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="pisa2022.html">
+          <div class="card-media">
+            <svg class="glyph" viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" fill="#F5EDE0"/>
+              <g fill="#7E9B76" opacity="0.5">
+                <rect x="40" y="120" width="28" height="30" rx="4"/>
+                <rect x="84" y="100" width="28" height="50" rx="4"/>
+                <rect x="128" y="80" width="28" height="70" rx="4"/>
+                <rect x="172" y="60" width="28" height="90" rx="4"/>
+                <rect x="216" y="35" width="28" height="115" rx="4"/>
+              </g>
+              <path d="M54,118 C100,110 150,90 250,40" stroke="#C4725A" stroke-width="2" fill="none" opacity="0.7" stroke-linecap="round"/>
+              <circle cx="54" cy="118" r="4" fill="#C4725A"/>
+              <circle cx="98" cy="98" r="4" fill="#C4725A"/>
+              <circle cx="142" cy="78" r="4" fill="#C4725A"/>
+              <circle cx="186" cy="58" r="4" fill="#C4725A"/>
+              <circle cx="230" cy="38" r="4" fill="#C4725A"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Interactive · Data viz</span><span lang="sv">Interaktiv · Datavis</span></div>
+            <h3><span lang="en">PISA 2022 by Quintile</span><span lang="sv">PISA 2022 per kvintil</span></h3>
+            <p>
+              <span lang="en">The inequality hidden inside national averages — PISA 2022 scores by socio-economic quintile.</span>
+              <span lang="sv">Ojämlikheten som göms i nationella genomsnitt — PISA 2022 per socioekonomisk kvintil.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2025</span>
+              <span class="chip lang">EN</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ===== Pieces ===== -->
+    <section class="section" id="pieces">
+      <div class="section-head">
+        <h2><span lang="en">Pieces</span><span lang="sv">Texter</span></h2>
+        <span class="count"><span lang="en">two</span><span lang="sv">två</span></span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="https://girfec.joshico.org">
+          <div class="card-media">
+            <img src="girfec.jpg" alt="" />
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Policy review</span><span lang="sv">Policyöversikt</span></div>
+            <h3>Getting It Right for Every Child</h3>
+            <p>
+              <span lang="en">A background and review of Scotland's model for early, coordinated interventions.</span>
+              <span lang="sv">En bakgrund och översikt av Skottlands modell för tidiga, samordnade insatser.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2025</span>
+              <span class="chip lang">SV</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="https://orkney.joshico.org">
+          <div class="card-media">
+            <svg class="glyph" viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" fill="#F5EDE0"/>
+              <g stroke="#7E9B76" stroke-width="1.4" fill="none" opacity="0.45">
+                <path d="M0,60 C60,40 120,80 180,60 C240,40 300,80 360,60"/>
+                <path d="M0,90 C60,70 120,110 180,90 C240,70 300,110 360,90"/>
+                <path d="M0,120 C60,100 120,140 180,120 C240,100 300,140 360,120"/>
+              </g>
+              <g stroke="#C4725A" stroke-width="2" fill="none" opacity="0.65" stroke-linecap="round">
+                <path d="M40,150 C70,130 100,160 130,140"/>
+                <path d="M180,150 C210,130 240,160 270,140"/>
+              </g>
+              <circle cx="240" cy="40" r="12" fill="#F0C683" opacity="0.7"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Dramatised retelling</span><span lang="sv">Dramatisering</span></div>
+            <h3><span lang="en">The Orkney Case</span><span lang="sv">Fallet Orkney</span></h3>
+            <p>
+              <span lang="en">The Orkney child-protection scandal, told as true crime — when vigilance and harm meet.</span>
+              <span lang="sv">Barnskyddsskandalen på Orkney, berättad som true crime — när vaksamhet och skada möts.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2025</span>
+              <span class="chip lang">EN</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ===== Cases ===== -->
+    <section class="section" id="cases">
+      <div class="section-head">
+        <h2><span lang="en">Cases</span><span lang="sv">Uppdrag</span></h2>
+        <span class="count"><span lang="en">two</span><span lang="sv">två</span></span>
+      </div>
+      <div class="grid">
+
+        <article class="card case">
+          <div class="card-media">
+            <svg class="glyph" viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" fill="#F8E6C5"/>
+              <g opacity="0.55">
+                <rect x="60" y="50" width="40" height="40" rx="4" fill="#7E9B76"/>
+                <rect x="110" y="50" width="40" height="40" rx="4" fill="#A8C29F"/>
+                <rect x="60" y="100" width="40" height="40" rx="4" fill="#A8C29F"/>
+                <rect x="110" y="100" width="40" height="40" rx="4" fill="#7E9B76"/>
+              </g>
+              <circle cx="200" cy="80" r="38" stroke="#C4725A" stroke-width="3" fill="none" opacity="0.8"/>
+              <line x1="228" y1="108" x2="260" y2="140" stroke="#C4725A" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+              <circle cx="200" cy="80" r="14" fill="#C4725A" opacity="0.25"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Advisory</span><span lang="sv">Rådgivning</span></div>
+            <h3><span lang="en">Strategic reviews & diagnostics</span><span lang="sv">Strategiska översyner & diagnostik</span></h3>
+            <p>
+              <span lang="en">Operating-model reviews across multisectoral welfare — children's wellbeing, elderly care, public governance — drawing on a long McKinsey background in agile and product-led organisations.</span>
+              <span lang="sv">Översyner av driftmodeller i sektorsövergripande välfärd — barns välbefinnande, äldreomsorg, offentlig styrning — med grund i en lång bakgrund från McKinsey inom agila och produktledda organisationer.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2024–2025</span>
+              <span class="chip"><span lang="en">Multiple agencies · Sweden</span><span lang="sv">Flera myndigheter · Sverige</span></span>
+            </div>
+            <a class="mailto" href="mailto:raoul@joshico.org?subject=About%20your%20strategic%20reviews%20work">
+              <span lang="en">For more, get in touch →</span>
+              <span lang="sv">För mer, hör av dig →</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="card case">
+          <div class="card-media">
+            <svg class="glyph" viewBox="0 0 320 180" aria-hidden="true">
+              <rect width="320" height="180" fill="#F1F4EE"/>
+              <path d="M30,150 C80,130 100,90 140,90 C190,90 210,140 260,90 C290,60 300,50 310,40"
+                    stroke="#5E7B56" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+              <circle cx="30" cy="150" r="6" fill="#C4725A"/>
+              <circle cx="140" cy="90" r="5" fill="#E8A750"/>
+              <circle cx="260" cy="90" r="5" fill="#E8A750"/>
+              <circle cx="305" cy="42" r="8" fill="#5E7B56"/>
+              <path d="M305,42 L298,32 L312,32 Z" fill="#5E7B56"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-kicker"><span lang="en">Advisory · Program</span><span lang="sv">Rådgivning · Program</span></div>
+            <h3><span lang="en">Multi-year transformation programs</span><span lang="sv">Fleråriga transformationsprogram</span></h3>
+            <p>
+              <span lang="en">Designing and stewarding multi-year transformations across Swedish agencies — translating roadmaps into the everyday work.</span>
+              <span lang="sv">Utforma och hålla i fleråriga transformationer hos svenska myndigheter — från färdplan till vardag.</span>
+            </p>
+            <div class="card-meta">
+              <span class="chip year">2026 →</span>
+              <span class="chip"><span lang="en">Multiple agencies · Sweden</span><span lang="sv">Flera myndigheter · Sverige</span></span>
+            </div>
+            <a class="mailto" href="mailto:raoul@joshico.org?subject=About%20your%20transformation%20program%20work">
+              <span lang="en">For more, get in touch →</span>
+              <span lang="sv">För mer, hör av dig →</span>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section class="about" id="about">
+      <div class="about-card">
+        <div class="monogram" aria-hidden="true">RJ</div>
+        <div>
+          <p lang="en">Raoul Joshi works alongside governments and agencies on the systems that serve children, families, and communities. Previously at McKinsey &amp; Company (with a focus on agile and product-led organisations), the ITU, and Teach For Sweden. Based in Stockholm; gathers tools and notes here as he goes.</p>
+          <p lang="sv">Raoul Joshi arbetar tillsammans med myndigheter och kommuner kring de system som tjänar barn, familjer och samhällen. Tidigare på McKinsey &amp; Company (med fokus på agila och produktledda organisationer), ITU och Teach For Sweden. Bor i Stockholm; samlar verktyg och anteckningar här efter hand.</p>
+          <div class="about-links">
+            <a class="pill primary" href="mailto:raoul@joshico.org">
+              <span lang="en">Email</span><span lang="sv">E-post</span>
+            </a>
+            <a class="pill ghost" href="https://www.linkedin.com/in/raoul-joshi-5018047/" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
         </div>
       </div>
-      <!-- <div class="card">
-        <img src="placeholder.png" alt="Portfolio Placeholder">
-        <div class="card-content">
-          <h2 class="card-title">Preventing domestic violence (2025)</h2>
-          <p class="card-description">More details to be added soon.</p>
-        </div>
+    </section>
+
+    <!-- ===== In touch ===== -->
+    <section class="touch">
+      <div class="kicker">
+        <span lang="en">In touch</span>
+        <span lang="sv">Kontakt</span>
       </div>
-    </div> -->
-  </section>
-  
-  <section id="contact">
-    <h2>Contact Me</h2>
-    <div class="contact-links">
-      <a href="https://www.linkedin.com/in/raoul-joshi-5018047/" target="_blank">Connect on LinkedIn</a>
-      <a href="mailto:raoul@joshico.org">Email Me</a>
-    </div>
-  </section>
+      <p>
+        <span lang="en">Conversations welcome — about a tool, a piece, or work you're trying to move.</span>
+        <span lang="sv">Samtal välkomnas — om ett verktyg, en text eller ett arbete du försöker föra framåt.</span>
+      </p>
+      <div class="touch-links">
+        <a class="pill primary" href="mailto:raoul@joshico.org">raoul@joshico.org</a>
+        <a class="pill ghost" href="https://www.linkedin.com/in/raoul-joshi-5018047/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wordmark" aria-hidden="true">Joshico<span class="dot">.</span></div>
+    <div>© 2026 Joshico AB</div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var buttons = document.querySelectorAll('[data-toggle-lang]');
+      function setLang(lang) {
+        root.setAttribute('data-lang', lang);
+        root.setAttribute('lang', lang);
+        try { localStorage.setItem('joshico.lang', lang); } catch (e) {}
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.toggleLang === lang ? 'true' : 'false');
+        });
+      }
+      var stored = null;
+      try { stored = localStorage.getItem('joshico.lang'); } catch (e) {}
+      var initial = stored || ((navigator.language || '').toLowerCase().indexOf('sv') === 0 ? 'sv' : 'en');
+      setLang(initial);
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { setLang(b.dataset.toggleLang); });
+      });
+    })();
+  </script>
+
 </body>
 </html>
